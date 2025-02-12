@@ -1,35 +1,48 @@
-import React, { useState, ReactNode } from 'react';
-import Header from '../components/Header/index';
-import Sidebar from '../components/Sidebar/index';
+import React, { useState, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import Header from './Header';
+import Footer from './Footer/Footer';
+import { useAuth } from '../pages/Authentication/AuthContext';  // Import the useAuth hook
 
-const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
+const DefaultLayout: React.FC = () => {
+  const { userRole, isAuthenticated, isLoading: authLoading } = useAuth();  // Use AuthContext to get the userRole and isAuthenticated
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Wait until authentication context is ready
+  useEffect(() => {
+    if (authLoading === false) {
+      // Additional logic can go here if needed when loading is false
+    }
+  }, [authLoading]);
+
+  // If still loading from AuthContext, show loading state
+  if (authLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // If the user is not authenticated, don't render the layout
+  if (!isAuthenticated) {
+    return <div>You are not authenticated.</div>;
+  }
+
   return (
-    <div className="dark:bg-boxdark-2 dark:text-bodydark">
-      {/* <!-- ===== Page Wrapper Start ===== --> */}
-      <div className="flex h-screen overflow-hidden">
-        {/* <!-- ===== Sidebar Start ===== --> */}
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        {/* <!-- ===== Sidebar End ===== --> */}
-
-        {/* <!-- ===== Content Area Start ===== --> */}
-        <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-          {/* <!-- ===== Header Start ===== --> */}
-          <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-          {/* <!-- ===== Header End ===== --> */}
-
-          {/* <!-- ===== Main Content Start ===== --> */}
-          <main>
-            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-              {children}
-            </div>
-          </main>
-          {/* <!-- ===== Main Content End ===== --> */}
-        </div>
-        {/* <!-- ===== Content Area End ===== --> */}
+    <div className="flex h-screen overflow-hidden bg-red-50"> {/* Added bg-red-50 */}
+      {/* Sidebar */}
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} role={userRole || ''} /> {/* Ensure role is a string */}
+      
+      <div className="relative flex-1 flex flex-col overflow-y-auto overflow-x-hidden">
+        {/* Header */}
+        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        
+        {/* Main Content */}
+        <main className="flex-1 p-4 md:p-6 lg:p-8 xl:p-10 2xl:p-12">
+          <Outlet />
+        </main>
+        
+        {/* Footer */}
+        <Footer />
       </div>
-      {/* <!-- ===== Page Wrapper End ===== --> */}
     </div>
   );
 };
