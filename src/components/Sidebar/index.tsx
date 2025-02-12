@@ -4,14 +4,16 @@ import Logo from "../../images/logo-sanoh.png";
 import { SuperAdmin } from "./SidebarMenu/SuperAdmin";
 import { AdminAccounting } from "./SidebarMenu/AdminAccounting";
 import { Supplier } from "./SidebarMenu/Supplier";
+import { useAuth } from "../../pages/Authentication/AuthContext"; // Import useAuth
 
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
-  role: string | null;
+  role: string | null; // Ensure role can be null as well
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) => {
+const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
+  const { userRole } = useAuth(); // Get userRole from context
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -20,37 +22,43 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) 
     storedSidebarExpanded === null ? false : storedSidebarExpanded === "true"
   );
 
-  if (!role) {
+  // Don't render Sidebar if userRole is not set
+  if (!userRole) {
     return null;
   }
 
-  // Close on click outside
+  // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
-      if (!sidebarOpen || sidebar.current.contains(target as Node) || trigger.current.contains(target as Node)) return;
+      if (
+        !sidebarOpen ||
+        sidebar.current.contains(target as Node) ||
+        trigger.current.contains(target as Node)
+      )
+        return;
       setSidebarOpen(false);
     };
-    document.addEventListener("click", clickHandler);
-    return () => document.removeEventListener("click", clickHandler);
+    document.addEventListener('click', clickHandler);
+    return () => document.removeEventListener('click', clickHandler);
   });
 
-  // Close if the ESC key is pressed
+  // close if the esc key is pressed
   useEffect(() => {
     const keyHandler = ({ keyCode }: KeyboardEvent) => {
       if (!sidebarOpen || keyCode !== 27) return;
       setSidebarOpen(false);
     };
-    document.addEventListener("keydown", keyHandler);
-    return () => document.removeEventListener("keydown", keyHandler);
+    document.addEventListener('keydown', keyHandler);
+    return () => document.removeEventListener('keydown', keyHandler);
   });
 
   useEffect(() => {
-    localStorage.setItem("sidebar-expanded", sidebarExpanded.toString());
+    localStorage.setItem('sidebar-expanded', sidebarExpanded.toString());
     if (sidebarExpanded) {
-      document.querySelector("body")?.classList.add("sidebar-expanded");
+      document.querySelector('body')?.classList.add('sidebar-expanded');
     } else {
-      document.querySelector("body")?.classList.remove("sidebar-expanded");
+      document.querySelector('body')?.classList.remove('sidebar-expanded');
     }
   }, [sidebarExpanded]);
 
@@ -59,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) 
       ref={sidebar}
       className={`absolute left-0 top-0 z-50 flex h-screen w-65 flex-col overflow-y-hidden bg-white dark:bg-boxdark shadow-md transition-transform duration-300 ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:static lg:translate-x-0`}
+      } lg:static lg:translate-x-0`} // Ensure the sidebar is static on larger screens
     >
       {/* SIDEBAR HEADER */}
       <div className="flex items-center justify-between mx-auto px-6 py-5.5 lg:py-6.5">
@@ -72,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) 
           onClick={() => setSidebarOpen(!sidebarOpen)}
           aria-controls="sidebar"
           aria-expanded={sidebarOpen}
-          className="block lg:hidden"
+          className="block lg:hidden" // Ensure this button is visible only on small screens
         >
           <svg
             className="fill-current"
@@ -91,30 +99,26 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) 
       </div>
       {/* SIDEBAR HEADER */}
 
-     {/* SIDEBAR MENU */}
-     <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
-        {/* <!-- Sidebar Menu --> */}
+      {/* SIDEBAR MENU */}
+      <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+        {/* Sidebar Menu */}
         <nav className="mt-2 py-4 px-4 lg:mt-2 lg:px-6">
-          {/* <!-- Menu Group Berdasarkan Peran --> */}
-
-          {role === 'super-admin' ? (
+          {/* Menu Group Based on Role */}
+          {userRole === 'super-admin' ? (
             <SuperAdmin />
-          ) : role === 'admin-accounting' ? (
+          ) : userRole === 'admin-accounting' ? (
             <AdminAccounting />
-          ) : role === 'supplier' ? (
+          ) : userRole === 'supplier' ? (
             <Supplier />
           ) : (
             <div className="text-center text-gray-500 mt-4">
               No menu available for this role
             </div>
           )}
-
-          {/* <!-- Menu Group Berdasarkan Peran --> */}
         </nav>
-        {/* <!-- Sidebar Menu --> */}
+        {/* Sidebar Menu */}
       </div>
       {/* SIDEBAR MENU */}
-
     </aside>
   );
 };

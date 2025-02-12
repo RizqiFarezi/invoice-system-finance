@@ -29,15 +29,15 @@ const App = () => {
         <Route path="/auth/login" element={<SignIn />} />
         
         {/* Routes for Admin & Superadmin */}
-        <Route element={<ProtectedRoute allowedRoles={['1', '2']} />}>
-            <Route element={<DefaultLayout />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/settings" element={<Settings />} />
-            </Route>
+        <Route element={<ProtectedRoute allowedRoles={['super-admin', 'admin-accounting']} />}>
+          <Route element={<DefaultLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
         </Route>
 
         {/* Routes for Supplier */}
-        <Route element={<ProtectedRoute allowedRoles={['3']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['supplier']} />}>
           <Route path="/" element={<DefaultLayout />}>
             <Route path="/tables" element={<><PageTitle title="Tables | PT SANOH INDONESIA" /><Tables /></>} />
           </Route>

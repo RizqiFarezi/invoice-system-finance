@@ -27,13 +27,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     if (username === 'admin' && password === 'admin123') {
       setIsAuthenticated(true);
-      setUserRole('1'); // Admin role
+      setUserRole('super-admin'); // Admin role
       setIsLoading(false);
       return true;
     }
     if (username === 'supplier' && password === 'supplier123') {
       setIsAuthenticated(true);
-      setUserRole('3'); // Supplier role
+      setUserRole('supplier'); // Supplier role
       setIsLoading(false);
       return true;
     }

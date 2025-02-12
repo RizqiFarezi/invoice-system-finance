@@ -1,31 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from './Header';
 import Footer from './Footer/Footer';
+import { useAuth } from '../pages/Authentication/AuthContext';  // Import the useAuth hook
 
 const DefaultLayout: React.FC = () => {
+  const { userRole, isAuthenticated, isLoading: authLoading } = useAuth();  // Use AuthContext to get the userRole and isAuthenticated
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetching user role from localStorage and setting the state
+  // Wait until authentication context is ready
   useEffect(() => {
-    const role = localStorage.getItem('role');
-    console.log('User Role:', role); // Debugging role value
-    setUserRole(role);
-    setIsLoading(false);
-  }, []);
+    if (authLoading === false) {
+      // Additional logic can go here if needed when loading is false
+    }
+  }, [authLoading]);
 
-  // If still loading, show loading state
-  if (isLoading) {
+  // If still loading from AuthContext, show loading state
+  if (authLoading) {
     return <div>Loading...</div>;
+  }
+
+  // If the user is not authenticated, don't render the layout
+  if (!isAuthenticated) {
+    return <div>You are not authenticated.</div>;
   }
 
   return (
     <div className="flex h-screen overflow-hidden bg-red-50"> {/* Added bg-red-50 */}
       {/* Sidebar */}
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} role={userRole} />
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} role={userRole || ''} /> {/* Ensure role is a string */}
       
       <div className="relative flex-1 flex flex-col overflow-y-auto overflow-x-hidden">
         {/* Header */}
