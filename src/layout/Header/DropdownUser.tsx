@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import UserLogo from '../../images/user/user_logo_default.png';
 import { useAuth } from '../../pages/Authentication/AuthContext';
 import ClickOutside from '../../components/ClickOutside';
 
@@ -64,10 +63,10 @@ const DropdownUser = () => {
 
         <span className="h-12 w-12 rounded-full">
           <img
-            src={supplierImage || UserLogo}
+            src={supplierImage}
             alt="User"
             onError={(e) => {
-              e.currentTarget.src = UserLogo;
+              e.currentTarget.src;
             }}
             className="rounded-full"
           />
