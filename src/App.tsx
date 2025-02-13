@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Loader from './common/Loader';
 import SignIn from './pages/Authentication/Pages/SignIn';
@@ -7,9 +7,11 @@ import Settings from './pages/Settings';
 import Tables from './pages/Tables';
 import DefaultLayout from './layout/DefaultLayout';
 import ProtectedRoute from './pages/Authentication/ProtectedRoute';
-import ListUser from './components/Sidebar/SidebarMenu/component/ListUser';  // Ensure this path is correct
-import AddUser from './components/Sidebar/SidebarMenu/component/AddUser';  // Ensure this path is correct
+import ManageUser from './pages/ManageUser/Pages/ManageUser';  // Ensure this path is correct
+import AddUser from './pages/ManageUser/Pages/AddUser';  // Ensure this path is correct
+import EditUser from './pages/ManageUser/Pages/EditUser';  // Ensure this path is correct
 import { AuthProvider } from './pages/Authentication/AuthContext';
+import GrTracking from './pages/GrTracking';
 
 const App = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -24,6 +26,7 @@ const App = () => {
 
   return (
     <AuthProvider>
+      <HashRouter>
       <Routes>
         {/* Public Route */}
         <Route path="/auth/login" element={<SignIn />} />
@@ -34,8 +37,10 @@ const App = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
             {/* ListUser is now directly accessible under this route */}
-            <Route path="/list-user" element={<ListUser />} />
+            <Route path="/list-user" element={<ManageUser />} />
             <Route path="/add-user" element={<AddUser />} />
+            <Route path="/edit-user" element={<EditUser />} />
+            <Route path="/gr-tracking" element={<GrTracking />} />
           </Route>
         </Route>
 
@@ -49,6 +54,7 @@ const App = () => {
         {/* Optional 404 route */}
         <Route path="*" element={<div>Page Not Found</div>} />
       </Routes>
+      </HashRouter>
     </AuthProvider>
   );
 };

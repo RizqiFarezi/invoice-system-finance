@@ -1,6 +1,7 @@
 import Dashboard from './component/Dashboard';  // Ensure correct path
 import ListUser from './component/ListUser';  // Ensure correct path
 import AddUser from './component/AddUser';  // Ensure correct path
+import GRTracking from './component/GRTracking';  // Ensure correct path
 
 export const SuperAdmin = () => {
     console.log("Rendering SuperAdmin Menu");
@@ -8,7 +9,7 @@ export const SuperAdmin = () => {
     return (
         <div>
             <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2 dark:text-bodydark2">
-                ADMIN MENU
+                SUPER ADMIN MENU
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
                 {/* Menu Items for SuperAdmin */}
@@ -20,6 +21,9 @@ export const SuperAdmin = () => {
                 </li>
                 <li>
                     <AddUser />
+                </li>
+                <li>
+                    <GRTracking />
                 </li>
             </ul>
         </div>
