@@ -11,7 +11,7 @@ const Dashboard: React.FC = () => {
     setUserRole(role);
   }, []);
 
-  if (userRole === '') {
+  if (userRole === 'super-admin') {
     return <DashboardSuperAdmin />;
   } else if (userRole === 'admin-accounting') {
     return <DashboardAdminAccounting />;
@@ -20,6 +20,7 @@ const Dashboard: React.FC = () => {
   } else {
     return <div>No dashboard available for your role.</div>;
   }
+  
 };
 
 export default Dashboard;

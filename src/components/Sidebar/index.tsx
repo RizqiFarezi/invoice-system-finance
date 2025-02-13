@@ -23,7 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   );
 
   // Don't render Sidebar if userRole is not set
-  if (!userRole) {
+  if (!userRole || userRole === '') {
     return null;
   }
 

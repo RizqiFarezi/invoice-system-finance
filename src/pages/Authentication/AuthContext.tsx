@@ -21,26 +21,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (username: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-
-    // Dummy authentication logic
     await new Promise((resolve) => setTimeout(resolve, 1000));  // Simulate a delay
-
+  
+    console.log('Attempting login with:', username);
+  
+    let role = '';
     if (username === 'admin' && password === 'admin123') {
-      setIsAuthenticated(true);
-      setUserRole('super-admin'); // Admin role
+      role = 'super-admin';
+    } else if (username === 'finance' && password === 'finance123') {
+      role = 'admin-accounting';
+    } else if (username === 'supplier' && password === 'supplier123') {
+      role = 'supplier';
+    } else {
       setIsLoading(false);
-      return true;
+      return false;
     }
-    if (username === 'supplier' && password === 'supplier123') {
-      setIsAuthenticated(true);
-      setUserRole('supplier'); // Supplier role
-      setIsLoading(false);
-      return true;
-    }
-
+  
+    setIsAuthenticated(true);
+    setUserRole(role);
+    localStorage.setItem('role', role); // Store role in localStorage
+    console.log(`Assigned role: ${role}`);
+    
     setIsLoading(false);
-    return false;
+    return true;
   };
+  
 
   const logout = () => {
     setIsAuthenticated(false);

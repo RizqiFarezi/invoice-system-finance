@@ -12,6 +12,8 @@ import AddUser from './pages/ManageUser/Pages/AddUser';  // Ensure this path is 
 import EditUser from './pages/ManageUser/Pages/EditUser';  // Ensure this path is correct
 import { AuthProvider } from './pages/Authentication/AuthContext';
 import GrTracking from './pages/GrTracking';
+import InvoiceCreation from './pages/InvoiceCreation';
+import InvoiceReport from './pages/InvoiceReport';
 
 const App = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -31,8 +33,8 @@ const App = () => {
         {/* Public Route */}
         <Route path="/auth/login" element={<SignIn />} />
 
-        {/* Protected Routes for Admin & Superadmin */}
-        <Route element={<ProtectedRoute allowedRoles={['super-admin', 'admin-accounting']} />}>
+        {/* Protected Routes for Superadmin */}
+        <Route element={<ProtectedRoute allowedRoles={['super-admin']} />}>
           <Route element={<DefaultLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
@@ -41,6 +43,19 @@ const App = () => {
             <Route path="/add-user" element={<AddUser />} />
             <Route path="/edit-user" element={<EditUser />} />
             <Route path="/gr-tracking" element={<GrTracking />} />
+            <Route path="/invoice-creation" element={<InvoiceCreation />} />
+            <Route path="/invoice-report" element={<InvoiceReport />} />
+          </Route>
+        </Route>
+
+        {/* Protected Routes for Admin Accounting */}
+        <Route element={<ProtectedRoute allowedRoles={['admin-accounting']} />}>
+          <Route element={<DefaultLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/gr-tracking" element={<GrTracking />} />
+            <Route path="/invoice-creation" element={<InvoiceCreation />} />
+            <Route path="/invoice-report" element={<InvoiceReport />} />
+
           </Route>
         </Route>
 

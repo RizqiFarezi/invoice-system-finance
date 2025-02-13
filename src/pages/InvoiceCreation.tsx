@@ -7,8 +7,8 @@ import Pagination from '../components/Table/Pagination';
 import SearchBar from '../components/Table/SearchBar';
 import SearchMonth from '../components/Table/SearchMonth';
 
-const GrTracking = () => {
-  interface GrTracking {
+const InvoiceCreation = () => {
+  interface InvoiceCreation {
     noDN: string;
     noPO: string;
     createdDate: string;
@@ -17,8 +17,8 @@ const GrTracking = () => {
     progress: string;
   }
 
-  const [data, setData] = useState<GrTracking[]>([]);
-  const [filteredData, setFilteredData] = useState<GrTracking[]>([]);
+  const [data, setData] = useState<InvoiceCreation[]>([]);
+  const [filteredData, setFilteredData] = useState<InvoiceCreation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,23 +29,22 @@ const GrTracking = () => {
   const navigate = useNavigate();
 
   // Dummy data
-  const dummyData: GrTracking[] = [
+  const dummyData: InvoiceCreation[] = [
     { noDN: 'DN001', noPO: 'PO001', createdDate: '2025-01-01', planDNDate: '2025-01-05', statusDN: 'Delivered', progress: 'Completed' },
     { noDN: 'DN002', noPO: 'PO002', createdDate: '2025-01-02', planDNDate: '2025-01-06', statusDN: 'Pending', progress: 'In Progress' },
     { noDN: 'DN003', noPO: 'PO003', createdDate: '2025-01-03', planDNDate: '2025-01-07', statusDN: 'Delivered', progress: 'Completed' },
     { noDN: 'DN004', noPO: 'PO004', createdDate: '2025-01-04', planDNDate: '2025-01-08', statusDN: 'Shipped', progress: 'In Progress' },
-    // Add more dummy data as needed
   ];
 
   // Simulate fetching data
-  const fetchGrTracking = () => {
+  const fetchInvoiceCreation = () => {
     setData(dummyData);
     setFilteredData(dummyData);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchGrTracking();
+    fetchInvoiceCreation();
 
     const savedPage = localStorage.getItem('dn_current_page');
     if (savedPage) {
@@ -73,8 +72,8 @@ const GrTracking = () => {
     // Apply sorting
     if (sortConfig.key) {
       filtered.sort((a, b) => {
-        let aValue = a[sortConfig.key as keyof GrTracking];
-        let bValue = b[sortConfig.key as keyof GrTracking];
+        let aValue = a[sortConfig.key as keyof InvoiceCreation];
+        let bValue = b[sortConfig.key as keyof InvoiceCreation];
 
         if (typeof aValue === 'string') aValue = aValue.toLowerCase();
         if (typeof bValue === 'string') bValue = bValue.toLowerCase();
@@ -98,7 +97,7 @@ const GrTracking = () => {
     localStorage.setItem('dn_current_page', page.toString());
   };
 
-  const handleSort = (key: keyof GrTracking) => {
+  const handleSort = (key: keyof InvoiceCreation) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
@@ -106,20 +105,18 @@ const GrTracking = () => {
     setSortConfig({ key, direction });
   };
 
-  // Navigate to PO Detail page with noPO parameter
-  const handlePONavigate = (noPO: string) => {
-    navigate(`/purchase-order-detail?noPO=${noPO}`);
-  };
+    function handleDNNavigate(noDN: string): void {
+        throw new Error('Function not implemented.');
+    }
 
-  // Navigate to DN Detail page with noDN parameter
-  const handleDNNavigate = (noDN: string) => {
-    navigate(`/delivery-note-detail-edit?noDN=${noDN}`);
-  };
+    function handlePONavigate(noPO: string): void {
+        throw new Error('Function not implemented.');
+    }
 
   return (
     <>
       <ToastContainer position="top-right" />
-      <Breadcrumb pageName="GR Tracking" />
+      <Breadcrumb pageName="Invoice Creation" />
       <div className="font-poppins bg-white text-black p-2 md:p-4 lg:p-6 space-y-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="w-full md:w-1/3">
@@ -128,7 +125,7 @@ const GrTracking = () => {
           </div>
           <div className="w-full md:w-1/3">
             <SearchBar
-              placeholder="Search GR Tracking here..."
+              placeholder="Search Invoice Creation here..."
               onSearchChange={setSearchQuery}
             />
           </div>
@@ -235,7 +232,7 @@ const GrTracking = () => {
                 ) : (
                   <tr>
                     <td colSpan={6} className="px-3 py-4 text-center text-gray-500">
-                      No GR Tracking available for now
+                      No Invoice Creation available for now
                     </td>
                   </tr>
                 )}
@@ -255,4 +252,4 @@ const GrTracking = () => {
   );
 };
 
-export default GrTracking;
+export default InvoiceCreation;
