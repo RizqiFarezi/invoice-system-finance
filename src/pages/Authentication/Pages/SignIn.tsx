@@ -28,8 +28,10 @@ const SignIn: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) =
         
         switch (role) {
           case 'super-admin':
-          case 'admin-accounting':
             navigate('/dashboard');
+            break;
+          case 'admin-finance':
+            navigate('/dashboardfinance');
             break;
           case 'supplier':
             navigate('/tables');
@@ -57,11 +59,15 @@ const SignIn: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) =
           <div className="flex flex-col w-6/12 my-auto max-md:w-full">
             <div className="flex flex-col w-full max-w-[500px]">
               <img loading="lazy" src={Logo} alt="Company logo" className="object-contain w-[120px]" />
-              <h2 className="text-lg text-slate-800 mt-2">Welcome to our platform, please sign in to access your account.</h2>
-              <h2 className="text-2xl font-semibold text-slate-800 mt-2">Sign in to your account</h2>
-              <form className="flex flex-col mt-6 w-full" onSubmit={onSubmit} autoComplete="off">
+
+
+              {/* Form dengan border */}
+              <form className="flex flex-col mt-6 w-full border border-gray-200 rounded-lg p-6" onSubmit={onSubmit} autoComplete="off">
                 <div className="flex flex-col">
-                  <label htmlFor="username" className="text-base text-slate-800 mb-2">Username</label>
+                  {/* Tambahkan teks di luar border */}
+                  <h2 className="text-xs text-slate-800 mt-4 font-medium">Welcome to our platform, please login to access your account</h2>
+                  <h2 className="text-xl font-semibold text-slate-800 mt-3">Log in Your Account</h2>
+                  <label htmlFor="username" className="text-base text-slate-800 mb-2 mt-3">Username</label>
                   <input
                     type="text"
                     id="username"
@@ -88,12 +94,13 @@ const SignIn: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) =
                 </div>
                 <button
                   type="submit"
-                  className="bg-red-600 text-white py-2 rounded-lg mt-4 hover:bg-red-700 transition"
+                  className="px-4 py-3.5 bg-red-600 text-white py-2 rounded-lg mt-6 hover:bg-red-700 transition"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Loading...' : 'Sign In'}
+                  {isLoading ? 'Loading...' : 'Log In'}
                 </button>
               </form>
+
             </div>
           </div>
         </div>

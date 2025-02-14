@@ -13,7 +13,7 @@ const Dashboard: React.FC = () => {
 
   if (userRole === 'super-admin') {
     return <DashboardSuperAdmin />;
-  } else if (userRole === 'admin-accounting') {
+  } else if (userRole === 'admin-finance') {
     return <DashboardAdminAccounting />;
   } else if (userRole === 'supplier') {
     return <DashboardSupplier />;

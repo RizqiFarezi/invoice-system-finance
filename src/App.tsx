@@ -49,12 +49,12 @@ const App = () => {
         </Route>
 
         {/* Protected Routes for Admin Accounting */}
-        <Route element={<ProtectedRoute allowedRoles={['admin-accounting']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['admin-finance']} />}>
           <Route element={<DefaultLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/gr-tracking" element={<GrTracking />} />
-            <Route path="/invoice-creation" element={<InvoiceCreation />} />
-            <Route path="/invoice-report" element={<InvoiceReport />} />
+            <Route path="/dashboardfinance" element={<Dashboard />} />
+            <Route path="/gr-tracking2" element={<GrTracking />} />
+            <Route path="/invoice-creation2" element={<InvoiceCreation />} />
+            <Route path="/invoice-report2" element={<InvoiceReport />} />
 
           </Route>
         </Route>

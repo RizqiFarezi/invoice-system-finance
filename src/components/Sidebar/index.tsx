@@ -106,7 +106,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           {/* Menu Group Based on Role */}
           {userRole === 'super-admin' ? (
             <SuperAdmin />
-          ) : userRole === 'admin-accounting' ? (
+          ) : userRole === 'admin-finance' ? (
             <AdminAccounting />
           ) : userRole === 'supplier' ? (
             <Supplier />

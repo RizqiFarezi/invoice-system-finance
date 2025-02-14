@@ -1,250 +1,313 @@
-import { useEffect, useState } from 'react';
-import { FaSortDown, FaSortUp } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
-import Pagination from '../components/Table/Pagination';
+import React, { useState } from 'react';
+import { ToastContainer } from 'react-toastify'; // Ensure react-toastify is installed
+import Breadcrumb from '../components/Breadcrumbs/Breadcrumb'; // Check path if necessary
 import SearchBar from '../components/Table/SearchBar';
-import SearchMonth from '../components/Table/SearchMonth';
+
+interface GrSaRecord {
+  transactionType: string;
+  dnNumber: string;
+  grSaNumber: string;
+  poNumber: string;
+  poCategory: string;
+  poDate: string;
+  currency: string;
+  totalAmount: number;
+  invoiceNumber: string;
+  supplier: string;
+  createdBy: string;
+  createdDate: string;
+  updatedBy: string;
+  updatedDate: string;
+}
+interface SearchBarProps {
+  placeholder: string;
+  onSearchChange: (value: string) => void;
+}
 
 const InvoiceReport = () => {
-  interface InvoiceReport {
-    noDN: string;
-    noPO: string;
-    createdDate: string;
-    planDNDate: string;
-    statusDN: string;
-    progress: string;
-  }
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
+  const [invoiceNumber, setInvoiceNumber] = useState<string>('');
+  const [transactionTypes, setTransactionTypes] = useState<string[]>([]);
+  const [poDate, setPoDate] = useState<string>('');
+  const [poNumber, setPoNumber] = useState<string>('');
+  const [grSaDate, setGrSaDate] = useState<string>('');
+  const [selectedRecords, setSelectedRecords] = useState<number>(0);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [searchSupplier, setSearchSupplier] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const [data, setData] = useState<InvoiceReport[]>([]);
-  const [filteredData, setFilteredData] = useState<InvoiceReport[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(10);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
-
-  const navigate = useNavigate();
-
-  // Dummy data
-  const dummyData: InvoiceReport[] = [
-    { noDN: 'DN001', noPO: 'PO001', createdDate: '2025-01-01', planDNDate: '2025-01-05', statusDN: 'Delivered', progress: 'Completed' },
-    { noDN: 'DN002', noPO: 'PO002', createdDate: '2025-01-02', planDNDate: '2025-01-06', statusDN: 'Pending', progress: 'In Progress' },
-    { noDN: 'DN003', noPO: 'PO003', createdDate: '2025-01-03', planDNDate: '2025-01-07', statusDN: 'Delivered', progress: 'Completed' },
-    { noDN: 'DN004', noPO: 'PO004', createdDate: '2025-01-04', planDNDate: '2025-01-08', statusDN: 'Shipped', progress: 'In Progress' },
+  const grSaList: GrSaRecord[] = [
+    {
+      transactionType: 'Purchase',
+      dnNumber: 'DN001',
+      grSaNumber: 'GRSA001',
+      poNumber: 'PO001',
+      poCategory: 'Category A',
+      poDate: '2025-02-01',
+      currency: 'USD',
+      totalAmount: 500,
+      invoiceNumber: 'INV001',
+      supplier: 'Supplier A',
+      createdBy: 'Admin',
+      createdDate: '2025-02-01',
+      updatedBy: 'Admin',
+      updatedDate: '2025-02-01',
+    },
+    {
+      transactionType: 'Return',
+      dnNumber: 'DN002',
+      grSaNumber: 'GRSA002',
+      poNumber: 'PO002',
+      poCategory: 'Category B',
+      poDate: '2025-02-10',
+      currency: 'EUR',
+      totalAmount: 250,
+      invoiceNumber: 'INV002',
+      supplier: 'Supplier B',
+      createdBy: 'Admin',
+      createdDate: '2025-02-10',
+      updatedBy: 'Admin',
+      updatedDate: '2025-02-10',
+    },
   ];
 
-  // Simulate fetching data
-  const fetchInvoiceReport = () => {
-    setData(dummyData);
-    setFilteredData(dummyData);
-    setLoading(false);
+  const handleSupplierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
+    setSelectedSuppliers(selectedOptions);
   };
 
-  useEffect(() => {
-    fetchInvoiceReport();
-
-    const savedPage = localStorage.getItem('dn_current_page');
-    if (savedPage) {
-      setCurrentPage(parseInt(savedPage));
-    }
-  }, []);
-
-  useEffect(() => {
-    let filtered = [...data];
-
-    // Filter by month using PO date
-    if (selectedMonth) {
-      filtered = filtered.filter((row) => row.createdDate.startsWith(selectedMonth));
-    }
-
-    // Apply search filter
-    if (searchQuery) {
-      filtered = filtered.filter((row) =>
-        row.noDN.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.noPO.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.statusDN.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Apply sorting
-    if (sortConfig.key) {
-      filtered.sort((a, b) => {
-        let aValue = a[sortConfig.key as keyof InvoiceReport];
-        let bValue = b[sortConfig.key as keyof InvoiceReport];
-
-        if (typeof aValue === 'string') aValue = aValue.toLowerCase();
-        if (typeof bValue === 'string') bValue = bValue.toLowerCase();
-
-        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
-      });
-    }
-
-    setFilteredData(filtered);
-  }, [searchQuery, sortConfig, data, selectedMonth]);
-
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    localStorage.setItem('dn_current_page', page.toString());
+  const handleTransactionTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const options = event.target.selectedOptions;
+    const values = Array.from(options, (option) => option.value);
+    setTransactionTypes(values);
   };
 
-  const handleSort = (key: keyof InvoiceReport) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
+  const handleRecordSelection = (record: GrSaRecord) => {
+    setSelectedRecords((prev) => prev + 1);
+    setTotalAmount((prev) => prev + record.totalAmount);
   };
 
-    function handleDNNavigate(noDN: string): void {
-        throw new Error('Function not implemented.');
-    }
+  const handleInvoiceCreation = () => {
+    // Logic for invoice creation
+    alert('Invoice Created');
+  };
 
+  const handleCancelInvoice = () => {
+    // Logic for canceling invoice
+    alert('Invoice Cancelled');
+  };
+
+  const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onSearchChange }) => {
+    return (
+      <input
+        type="text"
+        className="w-full border border-gray-200 p-2 rounded-md text-xs"
+        placeholder={placeholder}
+        onChange={(e) => onSearchChange(e.target.value)}
+      />
+    );
+  };
+  
   return (
-    <>
-      <ToastContainer position="top-right" />
+    <div className="space-y-4">
       <Breadcrumb pageName="Invoice Report" />
-      <div className="font-poppins bg-white text-black p-2 md:p-4 lg:p-6 space-y-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="w-full md:w-1/3">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Month</label>
-            <SearchMonth selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} />
-          </div>
-          <div className="w-full md:w-1/3">
-            <SearchBar
-              placeholder="Search Invoice Report here..."
-              onSearchChange={setSearchQuery}
-            />
-          </div>
-        </div>
-
-        <div className="relative overflow-hidden shadow-md rounded-lg border border-gray-300">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-x border-b border-gray-200 w-[15%]">No. DN</th>
-                  <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-x border-b border-gray-200 w-[15%]">No. PO</th>
-                  <th
-                    className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-x border-b border-gray-200 cursor-pointer w-[20%]"
-                    onClick={() => handleSort('createdDate')}
-                  >
-                    <span className="flex items-center justify-center">
-                      {sortConfig.key === 'createdDate' ? (
-                        sortConfig.direction === 'asc' ? <FaSortUp className="mr-1" /> : <FaSortDown className="mr-1" />
-                      ) : (
-                        <FaSortDown className="opacity-50 mr-1" />
-                      )}
-                      Created Date
-                    </span>
-                  </th>
-                  <th
-                    className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-x border-b border-gray-200 cursor-pointer w-[20%]"
-                    onClick={() => handleSort('planDNDate')}
-                  >
-                    <span className="flex items-center justify-center">
-                      {sortConfig.key === 'planDNDate' ? (
-                        sortConfig.direction === 'asc' ? <FaSortUp className="mr-1" /> : <FaSortDown className="mr-1" />
-                      ) : (
-                        <FaSortDown className="opacity-50 mr-1" />
-                      )}
-                      Plan Delivery Date
-                    </span>
-                  </th>
-                  <th
-                    className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-x border-b border-gray-200 cursor-pointer w-[15%]"
-                    onClick={() => handleSort('statusDN')}
-                  >
-                    <span className="flex items-center justify-center">
-                      {sortConfig.key === 'statusDN' ? (
-                        sortConfig.direction === 'asc' ? <FaSortUp className="mr-1" /> : <FaSortDown className="mr-1" />
-                      ) : (
-                        <FaSortDown className="opacity-50 mr-1" />
-                      )}
-                      Status DN
-                    </span>
-                  </th>
-                  <th className="px-3 py-3.5 text-xs font-bold text-gray-700 uppercase tracking-wider text-center border-x border-b border-gray-200 w-[15%]">Progress</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {loading ? (
-                  Array.from({ length: rowsPerPage }).map((_, index) => (
-                    <tr key={index} className="animate-pulse">
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                      </td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                      </td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                      </td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                      </td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                      </td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                      </td>
-                    </tr>
-                  ))
-                ) : paginatedData.length > 0 ? (
-                  paginatedData.map((row, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <button
-                          onClick={() => handleDNNavigate(row.noDN)}
-                          className="text-blue-600 underline"
-                        >
-                          {row.noDN}
-                        </button>
-                      </td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <button
-                          onClick={() => handleDNNavigate(row.noPO)}
-                          className="text-blue-600 underline"
-                        >
-                          {row.noPO}
-                        </button>
-                      </td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">{row.createdDate}</td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">{row.planDNDate}</td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">{row.statusDN}</td>
-                      <td className="px-3 py-3 text-center whitespace-nowrap">{row.progress}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="px-3 py-4 text-center text-gray-500">
-                      No Invoice Report available for now
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+      <ToastContainer />
+      <form className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          {/* Select Supplier */}
+          <div className="flex gap-4 w-full">
+            <select
+              className="w-full border border-gray-200 p-2 rounded-md text-xs"
+              value={searchSupplier}
+              onChange={(e) => setSearchSupplier(e.target.value)}
+            >
+              <option value="">Select Supplier</option>
+              {/* Replace these with actual supplier options */}
+              <option value="Supplier A">Supplier A</option>
+              <option value="Supplier B">Supplier B</option>
+              <option value="Supplier C">Supplier C</option>
+            </select>
           </div>
         </div>
 
-        <Pagination
-          totalRows={filteredData.length}
-          rowsPerPage={rowsPerPage}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
+          <input
+            type="date"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            value={invoiceNumber}
+            onChange={(e) => setInvoiceNumber(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="GR/SA Date"
+            value={grSaDate}
+            onChange={(e) => setGrSaDate(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="Invoice Number"
+            value={invoiceNumber}
+            onChange={(e) => setInvoiceNumber(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">PO Number</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="PO Number"
+            value={poNumber}
+            onChange={(e) => setPoNumber(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
+          <input
+            type="date"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            value={invoiceNumber}
+            onChange={(e) => setInvoiceNumber(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Transaction Type</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="Transaction Type"
+            value={poNumber}
+            onChange={(e) => setPoNumber(e.target.value)}
+          />
+        </div>
+      </form>
+
+      <div className="flex justify-end items-center gap-4 mt-6 mb-2">          
+          <button className="bg-red-600 text-xs text-white px-8 py-2 rounded">Search</button>
+          <button
+            className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
+            onClick={() => {
+              setSearchSupplier('');
+              setSearchQuery(''); // Clear both search fields
+            }}
+          >
+            Clear
+          </button>
       </div>
-    </>
+
+      {/* Section for GR/SA Outstanding */}
+      <h3 className="text-xl font-medium text-gray-700 mt-4">GR / SA Outstanding</h3>
+      <div className="bg-white p-6 space-y-2">
+        <div className="overflow-x-auto shadow-md border rounded-lg">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-3 py-3.5 text-center border">Transaction Type</th>
+                <th className="px-3 py-3.5 text-center border">Supplier Code</th>
+                <th className="px-3 py-3.5 text-center border">Supplier Name</th>
+                <th className="px-3 py-3.5 text-center border">GR/SA Number</th>
+                <th className="px-3 py-3.5 text-center border">Total Amount</th>
+                <th className="px-3 py-3.5 text-center border">Currency</th>
+              </tr>
+            </thead>
+            <tbody>
+              {grSaList.map((item, index) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="px-3 py-2 text-center">{item.transactionType}</td>
+                  <td className="px-3 py-2 text-center">{item.supplier}</td>
+                  <td className="px-3 py-2 text-center">{item.supplier}</td>
+                  <td className="px-3 py-2 text-center">{item.grSaNumber}</td>
+                  <td className="px-3 py-2 text-center">{item.totalAmount}</td>
+                  <td className="px-3 py-2 text-center">{item.currency}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Separate Section for GR/SA List */}
+      <h3 className="text-xl font-medium text-gray-700">GR / SA List</h3>
+      <div className="bg-white p-6 space-y-6 mt-8">
+        <div className="flex justify-between mb-8">
+          <div>
+            <button className="bg-red-500 text-white px-6 py-2 rounded">Invoice Upload</button>
+            <button className="bg-red-500 text-white px-6 py-2 rounded ml-4">Download GR/SA</button>
+          </div>
+          <div>
+            <button
+              className="bg-blue-900 text-white px-6 py-2 rounded"
+              onClick={handleInvoiceCreation}
+            >
+              Invoice Creation
+            </button>
+            <button
+              className="bg-red-600 text-white px-6 py-2 rounded ml-4"
+              onClick={handleCancelInvoice}
+            >
+              Cancel Invoice
+            </button>
+          </div>
+        </div>
+        <div className="overflow-x-auto shadow-md border rounded-lg">
+          <table className="w-full text-sm text-left">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-3 py-2 text-center">Transaction Type</th>
+              <th className="px-3 py-2 text-center">DN Number</th>
+              <th className="px-3 py-2 text-center">GR/SA Number</th>
+              <th className="px-3 py-2 text-center">PO Number</th>
+              <th className="px-3 py-2 text-center">PO Category</th>
+              <th className="px-3 py-2 text-center">PO Date</th>
+              <th className="px-3 py-2 text-center">Currency</th>
+              <th className="px-3 py-2 text-center">Total Amount</th>
+              <th className="px-3 py-2 text-center">Invoice Number</th>
+              <th className="px-3 py-2 text-center">Supplier</th>
+              <th className="px-3 py-2 text-center">Created By</th>
+              <th className="px-3 py-2 text-center">Created Date</th>
+              <th className="px-3 py-2 text-center">Updated By</th>
+              <th className="px-3 py-2 text-center">Updated Date</th>
+            </tr>
+          </thead>
+
+            <tbody>
+              {grSaList.map((item, index) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="px-3 py-2 text-center">{item.transactionType}</td>
+                  <td className="px-3 py-2 text-center">{item.dnNumber}</td>
+                  <td className="px-3 py-2 text-center">{item.grSaNumber}</td>
+                  <td className="px-3 py-2 text-center">{item.poNumber}</td>
+                  <td className="px-3 py-2 text-center">{item.poCategory}</td>
+                  <td className="px-3 py-2 text-center">{item.poDate}</td>
+                  <td className="px-3 py-2 text-center">{item.currency}</td>
+                  <td className="px-3 py-2 text-center">{item.totalAmount}</td>
+                  <td className="px-3 py-2 text-center">{item.invoiceNumber}</td>
+                  <td className="px-3 py-2 text-center">{item.supplier}</td>
+                  <td className="px-3 py-2 text-center">{item.createdBy}</td>
+                  <td className="px-3 py-2 text-center">{item.createdDate}</td>
+                  <td className="px-3 py-2 text-center">{item.updatedBy}</td>
+                  <td className="px-3 py-2 text-center">{item.updatedDate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 };
 

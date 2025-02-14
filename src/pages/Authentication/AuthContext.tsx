@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (username === 'admin' && password === 'admin123') {
       role = 'super-admin';
     } else if (username === 'finance' && password === 'finance123') {
-      role = 'admin-accounting';
+      role = 'admin-finance';
     } else if (username === 'supplier' && password === 'supplier123') {
       role = 'supplier';
     } else {
