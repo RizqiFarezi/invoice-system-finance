@@ -3,6 +3,7 @@ import CardDataStats from '../../../../components/CardDataStats';
 import UserOnline from '../../../../components/UserOnline';
 import { FaUserCheck, FaUserClock, FaUsers, FaUserTimes } from 'react-icons/fa';
 import { User as UserOnlineType } from '../../../../components/UserOnline'; // Import User type from UserOnline
+import Pagination from '../../../../components/Table/Pagination';
 
 const DashboardSuperAdmin: React.FC = () => {
   const [userOnline, setUserOnline] = useState<string>("0");
@@ -53,9 +54,17 @@ const DashboardSuperAdmin: React.FC = () => {
     return roles[roleId] || "Unknown";
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+  const filteredData = onlineUsers; // Ubah sesuai dengan kebutuhan filter
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
         <CardDataStats
           title="User Online"
           total={userOnline}
@@ -95,11 +104,22 @@ const DashboardSuperAdmin: React.FC = () => {
       </div>
 
       {/* Tabel User Online */}
-      <UserOnline
-        onlineUsers={onlineUsers} // Pass the correctly typed dummy data
-        handleLogoutUser={handleLogoutUser}
-        getRoleName={getRoleName}
-      />
+      <div className="bg-white">
+        <div className="p-2 md:p-4 lg:p-6 space-y-6">
+          <UserOnline
+            onlineUsers={onlineUsers} // Pass the correctly typed dummy data
+            handleLogoutUser={handleLogoutUser}
+            getRoleName={getRoleName}
+          />
+          {/* Pagination */}
+          <Pagination
+              totalRows={filteredData.length}
+              rowsPerPage={rowsPerPage}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </div>
     </div>
   );
 };

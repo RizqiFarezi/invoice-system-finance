@@ -1,11 +1,11 @@
-import { FaList } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { FaFileAlt } from 'react-icons/fa';  // Import the appropriate icon for report
+import { NavLink } from 'react-router-dom';
 
-const GRTracking = () => {
+const InvoiceReport = () => {
     return (
         <li>
             <NavLink
-                to="/gr-tracking"
+                to="/invoice-report"
                 className={({ isActive }) =>
                     `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out ${
                         isActive
@@ -14,11 +14,11 @@ const GRTracking = () => {
                     }`
                 }
             >
-                <FaList className="fill-current" size={18} />
-                GR Tracking
+                <FaFileAlt className="fill-current" size={18} />  {/* Use FaFileAlt for report */}
+                Invoice Report
             </NavLink>
         </li>
     );
 };
 
-export default GRTracking;
+export default InvoiceReport;

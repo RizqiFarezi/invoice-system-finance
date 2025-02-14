@@ -28,7 +28,7 @@ const Breadcrumb = ({ pageName, isSubMenu = false, parentMenu }: BreadcrumbProps
                 <FaArrowLeft className="text-xl" />
               </button>
             )}
-            <h2 className="text-title-md2 font-semibold text-black dark:text-white">
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white"> {/* Changed to red-500 */}
               {pageName}
             </h2>
           </div>
@@ -42,12 +42,12 @@ const Breadcrumb = ({ pageName, isSubMenu = false, parentMenu }: BreadcrumbProps
               </li>
               {isSubMenu && parentMenu && (
               <li>
-                <Link className="font-medium" to={parentMenu.link}>
+                <Link className="font-medium text-red-500" to={parentMenu.link}>
                 {parentMenu.name} /
                 </Link>
               </li>
               )}
-              <li className="font-medium text-primary">{pageName}</li>
+              <li className="font-medium text-red-700 text-primary">{pageName}</li>
             </ol>
           </nav>
         </div>

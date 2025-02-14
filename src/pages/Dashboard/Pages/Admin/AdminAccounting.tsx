@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CardDataStats from '../../../../components/CardDataStats';
 
-const Dashboard: React.FC = () => {
+const DashboardAdminAccounting: React.FC = () => {
   const [userOnline, setUserOnline] = useState<string>("0");
   const [totalUser, setTotalUser] = useState<string>("0");
   const [userActive, setUserActive] = useState<string>("0");
@@ -77,6 +77,6 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardAdminAccounting;
 
 

@@ -19,6 +19,7 @@
     "@daypilot/daypilot-lite-react": "^3.30.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@heroicons/react": "^2.2.0",
     "@mui/material": "^6.1.6",
     "@mui/x-date-pickers": "^7.22.3",
     "@mui/x-date-pickers-pro": "^7.22.2",

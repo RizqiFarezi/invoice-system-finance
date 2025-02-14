@@ -1,11 +1,11 @@
-import { FaList } from "react-icons/fa";
+import { FaFileInvoice } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
-const GRTracking = () => {
+const InvoiceCreation = () => {
     return (
         <li>
             <NavLink
-                to="/gr-tracking"
+                to="/invoice-creation"
                 className={({ isActive }) =>
                     `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out ${
                         isActive
@@ -14,11 +14,11 @@ const GRTracking = () => {
                     }`
                 }
             >
-                <FaList className="fill-current" size={18} />
-                GR Tracking
+                <FaFileInvoice className="fill-current" size={18} />
+                Invoice Creation
             </NavLink>
         </li>
     );
 };
 
-export default GRTracking;
+export default InvoiceCreation;

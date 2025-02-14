@@ -18,10 +18,10 @@ interface UserOnlineProps {
 }
 
 const UserOnline: React.FC<UserOnlineProps> = ({ onlineUsers, handleLogoutUser, getRoleName }) => (
-    <div className="bg-white shadow rounded-lg p-6">
+    <div className="bg-white rounded-lg p-6 ">
         <h2 className="text-xl font-semibold mb-6 ">User Online</h2>
-        <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-left">
+        <div className="relative overflow-hidden shadow-md rounded-lg border">
+            <table className="min-w-full divide-y divide-gray-200 text-left ">
                 <thead className="bg-gray-50">
                     <tr>
                         <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider">Username</th>
@@ -34,7 +34,7 @@ const UserOnline: React.FC<UserOnlineProps> = ({ onlineUsers, handleLogoutUser, 
                         </th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 ">
                     {onlineUsers.length > 0 ? (
                         onlineUsers.map((user) => (
                         <tr key={user.token} className="hover:bg-gray-50">

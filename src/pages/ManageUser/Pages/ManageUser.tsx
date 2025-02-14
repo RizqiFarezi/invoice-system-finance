@@ -156,9 +156,16 @@ const ManageUser: React.FC = () => {
             <div className="bg-white">
                 <div className="p-2 md:p-4 lg:p-6 space-y-6">
 
-                    {/* Header Section */}
-                    <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+                {/* Header Section */}
+                <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
                         <div className='flex flex-col sm:flex-row gap-4 w-full lg:w-1/2'>
+                            {/* <button
+                                onClick={() => navigate('/add-user')}
+                                className="bg-blue-900 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors whitespace-nowrap flex items-center justify-center"
+                            >
+                                <FaUserPlus className="mr-2" />
+                                Add User
+                            </button> */}
                             <Button
                                 title="Add User"
                                 onClick={() => navigate('/add-user')}
@@ -214,44 +221,81 @@ const ManageUser: React.FC = () => {
                                             </span>
                                         </th>
                                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[10%]">Action</th>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Status</th>
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[10%]">Edit User</th>
                                     </tr>
                                 </thead>
-
-                                <tbody className="divide-y">
+                                <tbody className="divide-y divide-gray-200 bg-white">
                                     {loading ? (
-                                        <tr>
-                                            <td colSpan={6} className="text-center py-4">
-                                                Loading...
-                                            </td>
-                                        </tr>
-                                    ) : paginatedData.length > 0 ? (
-                                        paginatedData.map((user, index) => (
-                                            <tr key={index} className="text-gray-700">
-                                                <td className="px-3 py-2 text-center">{user.Username}</td>
-                                                <td className="px-3 py-2 text-center">{user.SupplierCode}</td>
-                                                <td className="px-3 py-2 text-center">{user.Name}</td>
-                                                <td className="px-3 py-2 text-center">{user.Role}</td>
-                                                <td className="px-3 py-2 text-center">
-                                                    <Button
-                                                        title={user.Status === 'Active' ? 'Deactivate' : 'Activate'}
-                                                        icon={user.Status === 'Active' ? FaToggleOn : FaToggleOff}
-                                                        onClick={() => handleStatusChange(user.UserID, user.Status === 'Active' ? 2 : 1, user.Username)}
-                                                    />
+                                        Array.from({ length: rowsPerPage }).map((_, index) => (
+                                            <tr key={index} className="animate-pulse">
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="h-4 bg-gray-200 rounded"></div>
                                                 </td>
-                                                <td className="px-3 py-2 text-center">
-                                                    <Button
-                                                        title="Edit"
-                                                        icon={FaUserEdit}
-                                                        onClick={() => handleEditPage(user.UserID)}
-                                                    />
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="h-4 bg-gray-200 rounded"></div>
+                                                </td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="h-4 bg-gray-200 rounded"></div>
+                                                </td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="h-4 bg-gray-200 rounded"></div>
+                                                </td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="h-4 bg-gray-200 rounded"></div>
+                                                </td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="w-8 h-8 mx-auto bg-gray-200 rounded-full"></div>
+                                                </td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="w-8 h-8 mx-auto bg-gray-200 rounded-full"></div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : paginatedData.length > 0 ? (
+                                        paginatedData.map((row, index) => (
+                                            <tr key={index} className="hover:bg-gray-50">
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Username}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.SupplierCode}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Name}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Role}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Status}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    {row.isLoading ? (
+                                                        <div className="flex justify-center">
+                                                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-900"></div>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            onClick={async () => {
+                                                                const updatedData = data.map(item =>
+                                                                    item.UserID === row.UserID ? { ...item, isLoading: true } : item
+                                                                );
+                                                                setData(updatedData);
+                                                                await handleStatusChange(row.UserID, row.Status === 'Active' ? 0 : 1, row.Username);
+                                                            }}
+                                                            className="hover:opacity-80 transition-opacity"
+                                                        >
+                                                            {row.Status === 'Active' ?
+                                                                <FaToggleOn className="text-2xl text-red-900" /> :
+                                                                <FaToggleOff className="text-2xl text-gray-500" /> 
+                                                            }
+                                                        </button>
+                                                    )}
+                                                </td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <button
+                                                        onClick={() => handleEditPage(row.UserID)}
+                                                        className="hover:opacity-80 transition-opacity"
+                                                    >
+                                                        <FaUserEdit className="text-xl text-lg text-red-700" /> {/* Changed to red-700 */}
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className="text-center py-4">
-                                                No users found.
+                                            <td colSpan={7} className="px-3 py-4 text-center text-gray-500">
+                                                No List User available for now
                                             </td>
                                         </tr>
                                     )}
@@ -260,14 +304,12 @@ const ManageUser: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Pagination */}
                     <Pagination
-                        totalRows={filteredData.length}  
+                        totalRows={filteredData.length}
                         rowsPerPage={rowsPerPage}
                         currentPage={currentPage}
                         onPageChange={handlePageChange}
                     />
-
                 </div>
             </div>
         </>
