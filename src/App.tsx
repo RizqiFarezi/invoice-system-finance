@@ -33,7 +33,7 @@ const App = () => {
         <Route path="/auth/login" element={<SignIn />} />
 
         {/* Protected Routes for Superadmin */}
-        <Route element={<ProtectedRoute allowedRoles={['super-admin']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['super-admin']} children={undefined} />}>
           <Route element={<DefaultLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
@@ -48,7 +48,7 @@ const App = () => {
         </Route>
 
         {/* Protected Routes for Admin Accounting */}
-        <Route element={<ProtectedRoute allowedRoles={['admin-finance']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['admin-finance']} children={undefined} />}>
           <Route element={<DefaultLayout />}>
             <Route path="/dashboardfinance" element={<Dashboard />} />
             <Route path="/gr-tracking2" element={<GrTracking />} />
@@ -58,7 +58,7 @@ const App = () => {
         </Route>
 
         {/* Protected Routes for Supplier */}
-        <Route element={<ProtectedRoute allowedRoles={['supplier']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['supplier']} children={undefined} />}>
           <Route path="/" element={<DefaultLayout />}>
             <Route path="/dashboardsupplier" element={<Dashboard />} />
             <Route path="/gr-tracking3" element={<GrTracking />} />
