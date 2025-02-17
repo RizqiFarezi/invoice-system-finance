@@ -1,7 +1,6 @@
-import Dashboard from "./component/Dashboard2";
-import GRTracking from "./component/GRTracking2";
-import InvoiceCreation from "./component/InvoiceCreation2";
-import InvoiceReport from "./component/InvoiceReport2";
+import Dashboard from "./component/Dashboard";
+import GRTracking from "./component/GRTracking";
+import InvoiceReport from "./component/InvoiceReport";
 
 export const AdminAccounting = () => {
 
@@ -17,9 +16,6 @@ export const AdminAccounting = () => {
                     </li>
                     <li>
                     <GRTracking />
-                    </li>
-                    <li>
-                    <InvoiceCreation />
                     </li>
                     <li>
                     <InvoiceReport />
