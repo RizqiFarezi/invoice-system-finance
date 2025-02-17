@@ -50,10 +50,9 @@ const ManageUser: React.FC = () => {
 
         // Dummy data for users
         const dummyData = [
-            { UserID: '1', SupplierCode: 'S001', Username: 'john_doe', Name: 'John Doe', Role: 'Admin Purchasing', RoleCode: '2', Status: 'Active' },
-            { UserID: '2', SupplierCode: 'S002', Username: 'jane_smith', Name: 'Jane Smith', Role: 'Admin Warehouse', RoleCode: '3', Status: 'Deactive' },
-            { UserID: '3', SupplierCode: 'S003', Username: 'mary_jones', Name: 'Mary Jones', Role: 'Admin Subcont', RoleCode: '4', Status: 'Active' },
-            { UserID: '4', SupplierCode: 'S004', Username: 'alex_brown', Name: 'Alex Brown', Role: 'Supplier Marketing', RoleCode: '5', Status: 'Deactive' },
+            { UserID: '1', SupplierCode: 'S001', Username: 'john_doe', Name: 'John Doe', Role: 'Super Admin', RoleCode: '2', Status: 'Active' },
+            { UserID: '2', SupplierCode: 'S002', Username: 'jane_smith', Name: 'Jane Smith', Role: 'Admin Finance', RoleCode: '3', Status: 'Deactive' },
+            { UserID: '3', SupplierCode: 'S003', Username: 'mary_jones', Name: 'Mary Jones', Role: 'Supplier', RoleCode: '4', Status: 'Active' },
             // Add more dummy users here
         ];
 
@@ -185,6 +184,7 @@ const ManageUser: React.FC = () => {
                         {/* Filters */}
                         <div className="w-full lg:w-1/3">
                             <MultiSelect
+                                id="roleSelect"
                                 label="Filter by Role"
                                 options={roleOptions}
                                 selectedOptions={selectedRoles}
@@ -192,7 +192,7 @@ const ManageUser: React.FC = () => {
                             />
                         </div>
                     </div>
-
+                    
                     {/* Table */}
                     <div className="relative overflow-hidden shadow-md rounded-lg border border-gray-300">
                         <div className="overflow-x-auto">

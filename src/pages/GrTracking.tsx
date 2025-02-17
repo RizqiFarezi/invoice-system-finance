@@ -169,7 +169,7 @@ const GrTracking = () => {
       );
     }
 
-    setFilteredData(filtered); // Set filtered data after search
+  setFilteredData(filtered); // Set filtered data after search
   }, [searchSupplier, searchQuery, data]);
 
   // Paginate data based on current page and rows per page
@@ -196,7 +196,23 @@ const GrTracking = () => {
           <input
             type="text"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs" // Add rounded-md class for rounded corners
-            placeholder="Supplier Code"
+            placeholder="----------   ----"
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Number</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="----------   ----"
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Tax Number</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="----------   ----"
           />
         </div>
         <div className="flex items-center gap-4">
@@ -204,7 +220,23 @@ const GrTracking = () => {
           <input
             type="text"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Supplier Name"
+            placeholder="----------   ----"
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
+          <input
+            type="date"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="PO Date"
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Tax Date</label>
+          <input
+            type="date"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder=""
           />
         </div>
         <div className="flex items-center gap-4">
@@ -212,7 +244,23 @@ const GrTracking = () => {
           <input
             type="text"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="PO Number"
+            placeholder="----------   ----"
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="----------   ----"
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Status</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="----------   ----"
           />
         </div>
         <div className="flex items-center gap-4">
@@ -224,43 +272,19 @@ const GrTracking = () => {
           />
         </div>
         <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Transaction Type</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Transaction Type"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">GR/SA Number</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="GR/SA Number"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">GR/SA Date</label>
-          <input
-            type="date"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="GR/SA Date"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Invoice Number"
-          />
-        </div>
-        <div className="flex items-center gap-4">
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
           <input
             type="date"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Invoice Date"
+            placeholder="PO Date"
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Transaction Type</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="----------   ----"
           />
         </div>
         <div className="flex items-center gap-4">
@@ -268,45 +292,16 @@ const GrTracking = () => {
           <input
             type="text"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="DN Number"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Tax Number</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Tax Number"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Tax Date</label>
-          <input
-            type="date"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Tax Date"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Status</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Status"
+            placeholder="----------   ----"
           />
         </div>
       </form>
     </div>
 
 
-      {/* Search Supplier & Buttons */}
+      {/* Buttons */}
       <div className="my-6 flex flex-col md:flex-row md:items-center md:justify-between gap-100">
-        <SearchBar
-          placeholder="Search Supplier Code/Name..."
-          onSearchChange={setSearchSupplier}
-        />
-
-        <div className="flex gap-4"> {/* Adjusted gap to 4 for more space */}
+        <div className="flex gap-4 ml-auto"> {/* Adjusted gap to 4 for more space */}
           <button className="bg-red-600 text-xs text-white px-8 py-2 rounded">Search</button>
           <button
             className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
@@ -318,43 +313,48 @@ const GrTracking = () => {
             Clear
           </button>
         </div>
-
       </div>
 
-      {/* Table */}
+      {/* Search dan Table */}
       <div className="bg-white p-6 space-y-6">
+      <div className="w-70">
+        <SearchBar
+          placeholder="Search Supplier Code/Name..."
+          onSearchChange={setSearchSupplier}
+          className="w-full px-3 py-2 text-sm border rounded-lg"
+        />
+      </div>
         <div className="overflow-x-auto shadow-md border rounded-lg">
           <table className="w-full text-sm text-left">
-
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-3 py-3.5 text-center border">Transaction Type</th>
-              <th className="px-3 py-3.5 text-center border">Supplier Code</th>
-              <th className="px-3 py-3.5 text-center border">Supplier Name</th>
-              <th className="px-3 py-3.5 text-center border">GR/SA Number</th>
-              <th className="px-3 py-3.5 text-center border">GR/SA Date</th>
-              <th className="px-3 py-3.5 text-center border">GR/SA Item</th>
-              <th className="px-3 py-3.5 text-center border">PO Number</th>
-              <th className="px-3 py-3.5 text-center border">PO Category</th>
-              <th className="px-3 py-3.5 text-center border">PO Item</th>
-              <th className="px-3 py-3.5 text-center border">Invoice Number</th>
-              <th className="px-3 py-3.5 text-center border">Tax Number</th>
-              <th className="px-3 py-3.5 text-center border">Tax Date</th>
-              <th className="px-3 py-3.5 text-center border">Payment Plan Date</th>
-              <th className="px-3 py-3.5 text-center border">Payment Actual</th>
-              <th className="px-3 py-3.5 text-center border">DN Number</th>
-              <th className="px-3 py-3.5 text-center border">Part No/Service Desc</th>
-              <th className="px-3 py-3.5 text-center border">Material / Service Desc</th>
-              <th className="px-3 py-3.5 text-center border">UOM</th>
-              <th className="px-3 py-3.5 text-center border">GR QTY</th>
-              <th className="px-3 py-3.5 text-center border">Price Per UOM</th>
-              <th className="px-3 py-3.5 text-center border">Total Amount</th>
-              <th className="px-3 py-3.5 text-center border">Vat Amount</th>
-              <th className="px-3 py-3.5 text-center border">PPh22 Amount</th>
-              <th className="px-3 py-3.5 text-center border">Currency</th>
-              <th className="px-3 py-3.5 text-center border">Created by</th>
-              <th className="px-3 py-3.5 text-center border">Created Date</th>
-            </tr>
+          <thead className="bg-gray-100">
+          <tr>
+            <th className="px-3 py-3.5 text-center">Transaction Type</th>
+            <th className="px-3 py-3.5 text-center">Supplier Code</th>
+            <th className="px-3 py-3.5 text-center">Supplier Name</th>
+            <th className="px-3 py-3.5 text-center">GR/SA Number</th>
+            <th className="px-3 py-3.5 text-center">GR/SA Date</th>
+            <th className="px-3 py-3.5 text-center">GR/SA Item</th>
+            <th className="px-3 py-3.5 text-center">PO Number</th>
+            <th className="px-3 py-3.5 text-center">PO Category</th>
+            <th className="px-3 py-3.5 text-center">PO Item</th>
+            <th className="px-3 py-3.5 text-center">Invoice Number</th>
+            <th className="px-3 py-3.5 text-center">Tax Number</th>
+            <th className="px-3 py-3.5 text-center">Tax Date</th>
+            <th className="px-3 py-3.5 text-center">Payment Plan Date</th>
+            <th className="px-3 py-3.5 text-center">Payment Actual</th>
+            <th className="px-3 py-3.5 text-center">DN Number</th>
+            <th className="px-3 py-3.5 text-center">Part No/Service Desc</th>
+            <th className="px-3 py-3.5 text-center">Material/Service Desc</th>
+            <th className="px-3 py-3.5 text-center">UOM</th>
+            <th className="px-3 py-3.5 text-center">GR QTY</th>
+            <th className="px-3 py-3.5 text-center">Price Per UOM</th>
+            <th className="px-3 py-3.5 text-center">Total Amount</th>
+            <th className="px-3 py-3.5 text-center">Vat Amount</th>
+            <th className="px-3 py-3.5 text-center">PPh22 Amount</th>
+            <th className="px-3 py-3.5 text-center">Currency</th>
+            <th className="px-3 py-3.5 text-center">Created by</th>
+            <th className="px-3 py-3.5 text-center">Created Date</th>
+      </tr>
           </thead>
 
           <tbody>

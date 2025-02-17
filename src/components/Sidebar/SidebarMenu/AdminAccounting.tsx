@@ -1,7 +1,7 @@
-import Dashboard from "./component/Dashboard";
-import GRTracking from "./component/GRTracking";
-import InvoiceCreation from "./component/InvoiceCreation";
-import InvoiceReport from "./component/InvoiceReport";
+import Dashboard from "./component/Dashboard2";
+import GRTracking from "./component/GRTracking2";
+import InvoiceCreation from "./component/InvoiceCreation2";
+import InvoiceReport from "./component/InvoiceReport2";
 
 export const AdminAccounting = () => {
 

@@ -34,8 +34,8 @@ const DashboardSuperAdmin: React.FC = () => {
   ]);
 
   useEffect(() => {
-    setUserOnline("10");
-    setTotalUser("100");
+    setUserOnline("30");
+    setTotalUser("40");
     setUserActive("80");
     setUserDeactive("20");
   }, []);
@@ -64,10 +64,10 @@ const DashboardSuperAdmin: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <CardDataStats
-          title="User Online"
-          total={userOnline}
+          title={<span className="text-sm font-font-medium text-green-500">User Online</span>}
+          total={<span className="text-2xl font-semibold text-green-500">{userOnline}</span>}
           rate=""
           levelUp={Number(userOnline) > 0}
           levelDown={Number(userOnline) <= 0}
@@ -75,8 +75,8 @@ const DashboardSuperAdmin: React.FC = () => {
           <FaUserClock className="fill-green-500 dark:fill-white" size={24} />
         </CardDataStats>
         <CardDataStats
-          title="Total User"
-          total={totalUser}
+          title={<span className="text-sm font-font-medium text-blue-600">Total User</span>}
+          total={<span className="text-2xl font-semibold text-blue-600">{totalUser}</span>}
           rate=""
           levelUp={Number(totalUser) > 0}
           levelDown={Number(totalUser) <= 0}
@@ -84,17 +84,17 @@ const DashboardSuperAdmin: React.FC = () => {
           <FaUsers className="fill-blue-500 dark:fill-white" size={24} />
         </CardDataStats>
         <CardDataStats
-          title="User Active"
-          total={userActive}
+          title={<span className="text-sm font-font-medium text-yellow-400">User Active</span>}
+          total={<span className="text-2xl font-semibold text-yellow-400">{userActive}</span>}
           rate=""
           levelUp={Number(userActive) > 0}
           levelDown={Number(userActive) <= 0}
         >
-          <FaUserCheck className="fill-yellow-500 dark:fill-white" size={24} />
+          <FaUserCheck className="fill-yellow-400 dark:fill-white" size={24} />
         </CardDataStats>
         <CardDataStats
-          title="User Deactive"
-          total={userDeactive}
+          title={<span className="text-sm font-font-medium text-red-600">User Deactive</span>}
+          total={<span className="text-2xl font-semibold text-red-600">{userDeactive}</span>}
           rate=""
           levelUp={Number(userDeactive) > 0}
           levelDown={Number(userDeactive) <= 0}
@@ -103,14 +103,12 @@ const DashboardSuperAdmin: React.FC = () => {
         </CardDataStats>
       </div>
 
-      {/* Tabel User Online */}
-      <div className="bg-white">
-        <div className="p-2 md:p-4 lg:p-6 space-y-6">
-          <UserOnline
-            onlineUsers={onlineUsers} // Pass the correctly typed dummy data
-            handleLogoutUser={handleLogoutUser}
-            getRoleName={getRoleName}
-          />
+        {/* Tabel User Online */}
+        <UserOnline
+          onlineUsers={onlineUsers}
+          handleLogoutUser={handleLogoutUser}
+          getRoleName={getRoleName}
+        />
           {/* Pagination */}
           <Pagination
               totalRows={filteredData.length}
@@ -119,8 +117,7 @@ const DashboardSuperAdmin: React.FC = () => {
               onPageChange={handlePageChange}
             />
           </div>
-        </div>
-    </div>
+
   );
 };
 

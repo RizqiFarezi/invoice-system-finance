@@ -1,7 +1,7 @@
-import Dashboard from "./component/Dashboard";
-import GRTracking from "./component/GRTracking";
-import InvoiceCreation from "./component/InvoiceCreation";
-import InvoiceReport from "./component/InvoiceReport";
+import Dashboard from "./component/Dashboard3";
+import GRTracking from "./component/GRTracking3";
+import InvoiceCreation from "./component/InvoiceCreation3";
+import InvoiceReport from "./component/InvoiceReport3";
 
 export const Supplier = () => {
 

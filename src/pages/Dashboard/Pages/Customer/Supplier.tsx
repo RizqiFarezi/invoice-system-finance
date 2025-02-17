@@ -1,82 +1,79 @@
 import React, { useEffect, useState } from 'react';
 import CardDataStats from '../../../../components/CardDataStats';
+import ListProgress from '../../../../components/ListProgress';
+import { FaFileInvoice, FaHourglassHalf, FaTimesCircle, FaMoneyCheckAlt, FaMoneyBillWave } from "react-icons/fa";
 
-const Dashboard: React.FC = () => {
-  const [userOnline, setUserOnline] = useState<string>("0");
+const DashboardSuperAdmin: React.FC = () => {
   const [totalUser, setTotalUser] = useState<string>("0");
   const [userActive, setUserActive] = useState<string>("0");
   const [userDeactive, setUserDeactive] = useState<string>("0");
 
   useEffect(() => {
-    // Example to set data, this can come from an API
-    setUserOnline("10");
     setTotalUser("100");
     setUserActive("80");
     setUserDeactive("20");
   }, []);
 
   return (
-    <div className="space-y-4">
-      {/* Cards Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <CardDataStats title="User Online" total={userOnline} rate="100">
-          <svg
-            className="fill-primary dark:fill-white"
-            width="22"
-            height="16"
-            viewBox="0 0 22 16"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M1 1h20v14H1z" />
-          </svg>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <CardDataStats
+          title={<span className="text-sm font-font-medium text-blue-400">New Invoice</span>}
+          total={<span className=" text-2xl font-semibold text-blue-400">{totalUser}</span>}
+          rate=""
+          levelUp={Number(totalUser) > 0}
+          levelDown={Number(totalUser) <= 0}
+        >
+          <FaFileInvoice className="fill-blue-400 dark:fill-white" size={24} />
         </CardDataStats>
-
-        <CardDataStats title="Total User" total={totalUser} rate="100">
-          <svg
-            className="fill-primary dark:fill-white"
-            width="22"
-            height="16"
-            viewBox="0 0 22 16"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M1 1h20v14H1z" />
-          </svg>
+  
+        <CardDataStats
+          title={<span className="text-sm font-font-medium text-yellow-300">In Process Invoice</span>}
+          total={<span className="text-2xl font-semibold text-yellow-300">{userActive}</span>}
+          rate=""
+          levelUp={Number(userActive) > 0}
+          levelDown={Number(userActive) <= 0}
+        >
+          <FaHourglassHalf className="fill-yellow-300 dark:fill-white" size={24} />
         </CardDataStats>
-
-        <CardDataStats title="User Active" total={userActive} rate="100">
-          <svg
-            className="fill-primary dark:fill-white"
-            width="22"
-            height="16"
-            viewBox="0 0 22 16"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M1 1h20v14H1z" />
-          </svg>
+  
+        <CardDataStats
+          title={<span className="text-sm font-font-medium text-red-500">Reject Invoice</span>}
+          total={<span className="text-2xl font-semibold text-red-500">{userDeactive}</span>}
+          rate=""
+          levelUp={Number(userDeactive) > 0}
+          levelDown={Number(userDeactive) <= 0}
+        >
+          <FaTimesCircle className="fill-red-500 dark:fill-white" size={24} />
         </CardDataStats>
-
-        <CardDataStats title="User Deactive" total={userDeactive} rate="100">
-          <svg
-            className="fill-primary dark:fill-white"
-            width="22"
-            height="16"
-            viewBox="0 0 22 16"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M1 1h20v14H1z" />
-          </svg>
+  
+        <CardDataStats
+          title={<span className="text-sm font-font-medium text-green-500">Ready to Payment</span>}
+          total={<span className="text-2xl font-semibold text-green-500">{userDeactive}</span>}
+          rate=""
+          levelUp={Number(userDeactive) > 0}
+          levelDown={Number(userDeactive) <= 0}
+        >
+          <FaMoneyCheckAlt className="fill-green-500 dark:fill-white" size={24} />
+        </CardDataStats>
+  
+        <CardDataStats
+          title={<span className="text-sm font-medium text-blue-800">Paid Invoice</span>}
+          total={<span className="text-2xl font-semibold text-blue-800">{userDeactive}</span>}
+          rate=""
+          levelUp={Number(userDeactive) > 0}
+          levelDown={Number(userDeactive) <= 0}
+        >
+          <FaMoneyBillWave className="fill-blue-800 dark:fill-white" size={24} />
         </CardDataStats>
       </div>
 
-      {/* Chart Section */}
-      <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg">
-        {/* Replace with your chart component */}
-        <p className="text-center text-white py-16">Chart Goes Here</p>
+      {/* List Progress untuk Invoice */}
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow">
+        <ListProgress />
       </div>
     </div>
   );
 };
 
-export default Dashboard;
-
-
+export default DashboardSuperAdmin;

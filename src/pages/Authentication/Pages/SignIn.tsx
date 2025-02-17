@@ -34,7 +34,7 @@ const SignIn: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) =
             navigate('/dashboardfinance');
             break;
           case 'supplier':
-            navigate('/tables');
+            navigate('/dashboardsupplier');
             break;
           default:
             navigate('/');

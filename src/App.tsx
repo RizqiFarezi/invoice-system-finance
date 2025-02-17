@@ -4,7 +4,6 @@ import Loader from './common/Loader';
 import SignIn from './pages/Authentication/Pages/SignIn';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Settings from './pages/Settings';
-import Tables from './pages/Tables';
 import DefaultLayout from './layout/DefaultLayout';
 import ProtectedRoute from './pages/Authentication/ProtectedRoute';
 import ManageUser from './pages/ManageUser/Pages/ManageUser';  // Ensure this path is correct
@@ -55,14 +54,16 @@ const App = () => {
             <Route path="/gr-tracking2" element={<GrTracking />} />
             <Route path="/invoice-creation2" element={<InvoiceCreation />} />
             <Route path="/invoice-report2" element={<InvoiceReport />} />
-
           </Route>
         </Route>
 
         {/* Protected Routes for Supplier */}
         <Route element={<ProtectedRoute allowedRoles={['supplier']} />}>
           <Route path="/" element={<DefaultLayout />}>
-            <Route path="/tables" element={<Tables />} />
+            <Route path="/dashboardsupplier" element={<Dashboard />} />
+            <Route path="/gr-tracking3" element={<GrTracking />} />
+            <Route path="/invoice-creation3" element={<InvoiceCreation />} />
+            <Route path="/invoice-report3" element={<InvoiceReport />} />
           </Route>
         </Route>
 
