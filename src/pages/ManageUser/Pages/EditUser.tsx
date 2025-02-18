@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb";
 import Swal from "sweetalert2";
 import Select from "react-select";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast, ToastContainer } from 'react-toastify';
 import Button from "../../../components/Forms/Button";
 import { roles } from "../../Authentication/Role";
+import { API_List_Partner_Admin, API_Edit_User_Admin, API_Update_User_Admin } from "../../../api/api";
 
 const EditUser = () => {
   const [suppliers, setSuppliers] = useState<{ value: string; label: string }[]>([]);
@@ -16,42 +17,111 @@ const EditUser = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState(""); // Changed to single email string
+  const [originalUsername, setOriginalUsername] = useState("");
   const navigate = useNavigate();
-  const [emails, setEmails] = useState<string[]>([""]);
-  const [originalUsername, setOriginalUsername] = useState('');
-
-  // Dummy data for suppliers and user info
-  const dummySuppliers = [
-    { value: "SUP123", label: "SUP123 | Supplier One" },
-    { value: "SUP456", label: "SUP456 | Supplier Two" },
-  ];
-
-  const dummyUserData = {
-    bp_code: "SUP123",
-    name: "John Doe",
-    role: "admin",
-    username: "johndoe123",
-    email: ["johndoe@example.com"]
-  };
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const userId = queryParams.get('userId');
 
   useEffect(() => {
-    setSuppliers(dummySuppliers);
+    fetchSuppliers();
   }, []);
 
   useEffect(() => {
-    if (dummyUserData && suppliers.length > 0) {
-      populateForm(dummyUserData);
+    if (userId && suppliers.length > 0) {
+      fetchUserData(userId);
     }
-  }, [suppliers]);
+  }, [userId, suppliers]);
 
-  const populateForm = (data: { bp_code: string; name: string; role: string; username: string; email: string[] }) => {
+  const fetchSuppliers = async () => {
+    const token = localStorage.getItem('access_token');
+    try {
+      const response = await fetch(API_List_Partner_Admin(), {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      console.log('API Response:', result);
+  
+      let suppliersData = [];
+      
+      if (result.data) {
+        suppliersData = result.data;
+      } else if (Array.isArray(result)) {
+        suppliersData = result;
+      } else {
+        throw new Error('Unexpected response format');
+      }
+  
+      if (!Array.isArray(suppliersData)) {
+        throw new Error('Suppliers data is not an array');
+      }
+  
+      const suppliersList = suppliersData
+        .filter(sup => sup && typeof sup === 'object' && 'bp_code' in sup && 'bp_name' in sup)
+        .map(sup => ({
+          value: sup.bp_code,
+          label: `${sup.bp_code} | ${sup.bp_name}`
+        }));
+  
+      if (suppliersList.length === 0) {
+        console.warn('No valid suppliers found in the response');
+      }
+  
+      setSuppliers(suppliersList);
+    } catch (error) {
+      console.error('Error fetching suppliers:', error);
+      if (error instanceof Error) {
+        toast.error(`Error fetching suppliers: ${error.message}`);
+      } else {
+        toast.error('Error fetching suppliers');
+      }
+      setSuppliers([]);
+    }
+  };
+
+  const fetchUserData = async (id: string) => {
+    const token = localStorage.getItem('access_token');
+    try {
+      const response = await fetch(`${API_Edit_User_Admin()}${id}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) throw new Error('Error fetching user data');
+
+      const dataResponse = await response.json();
+      populateForm(dataResponse.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      if (error instanceof Error) {
+        toast.error(`Error fetching user data: ${error.message}`);
+      } else {
+        toast.error('Error fetching user data');
+      }
+    }
+  };
+
+  const populateForm = (data: { bp_code: string; name: string; role: string; username: string; email: string }) => {
+    if (!data) return;
     const matchedSupplier = suppliers.find((sup) => sup.value === data.bp_code);
     setSelectedSupplier(matchedSupplier || null);
     setFirstName(data.name || "");
     setRole(data.role || "");
     setOriginalUsername(data.username || "");
     setUsername(data.username || "");
-    setEmails(Array.isArray(data.email) ? data.email : [data.email || ""]);
+    setEmail(data.email || "");
   };
 
   const generateRandomPassword = () => {
@@ -69,107 +139,55 @@ const EditUser = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!selectedSupplier) {
+    if (!selectedSupplier || !firstName || !role || !username || !email) {
       Swal.fire('Error', 'Please fill all required fields correctly.', 'error');
       return;
     }
 
-    // const payload = {
-    //   bp_code: selectedSupplier.value,
-    //   username: username === originalUsername ? "" : username,
-    //   name: firstName,
-    //   role,
-    //   password: password || "",
-    //   email: emails.filter(email => email.trim() !== ""),
-    // };
-
-    // Simulating an update with dummy response
-    toast.success('User successfully updated!');
-    setTimeout(() => {
-      navigate('/list-user');
-    }, 1000);
-  };
-
-  const EmailInput = () => {
-    const [inputValue, setInputValue] = useState('');
-    
-    const handleEmailRemove = (index: number) => {
-      setEmails(emails.filter((_, i) => i !== index));
-    };
-    
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setInputValue(value);
-
-      if (value.includes('@') && (value.endsWith('.com') || value.endsWith('.co.id') || value.endsWith('.net') || value.endsWith('.org'))) {
-        setEmails(prev => [...prev, value.trim()]);
-        setInputValue('');
-        setTimeout(() => {
-          document.getElementById('email-input')?.focus();
-        }, 0);
-      }
+    const payload = {
+      bp_code: selectedSupplier.value,
+      username: username === originalUsername ? "" : username,
+      name: firstName,
+      role,
+      password: password || "",
+      email: email.trim()
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (inputValue.includes('@') && (inputValue.endsWith('.com') || inputValue.endsWith('.co.id') || inputValue.endsWith('.net') || inputValue.endsWith('.org') || inputValue.endsWith('.edu') || inputValue.endsWith('.gov') || inputValue.endsWith('.io') || inputValue.endsWith('.tech'))) {
-          setEmails(prev => [...prev, inputValue.trim()]);
-          setInputValue('');
-          setTimeout(() => {
-            document.getElementById('email-input')?.focus();
-          }, 0);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`${API_Update_User_Admin()}${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      if (response.ok && result.status) {
+        toast.success('User successfully updated!');
+        setTimeout(() => navigate('/list-user'), 1000);
+      } else {
+        if (result.errors?.username) {
+          toast.error(result.errors.username[0]);
+        } else {
+          toast.error(result.message || 'Failed to update user');
         }
       }
-    };
-
-    const handleBlur = () => {
-      if (inputValue.includes('@') && (inputValue.endsWith('.com') || inputValue.endsWith('.co.id') || inputValue.endsWith('.net') || inputValue.endsWith('.org') || inputValue.endsWith('.edu') || inputValue.endsWith('.gov') || inputValue.endsWith('.io') || inputValue.endsWith('.tech'))) {
-      setEmails(prev => [...prev, inputValue.trim()]);
-      setInputValue('');
-      setTimeout(() => {
-        document.getElementById('email-input')?.focus();
-      }, 0);
-      }
-    };
-
-    return (
-      <div className="w-full">
-        <div className="flex flex-wrap gap-2 p-2 mb-2 rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
-          {emails.map((email, index) => (
-            <span key={index} className="bg-blue-100 px-2 py-1 rounded-md flex items-center gap-2">
-              {email}
-              <button 
-                type="button"
-                onClick={() => handleEmailRemove(index)}
-                className="text-red-500 hover:text-red-700"
-              >
-                ×
-              </button>
-            </span>
-          ))}
-          <input
-            type="text"
-            id="email-input"
-            value={inputValue}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            onBlur={handleBlur}
-            placeholder="Type email ..."
-            className="outline-none border-none flex-1 min-w-[200px]"
-          />
-        </div>
-      </div>
-    );
+    } catch (error) {
+      console.error('Error during user update:', error);
+      toast.error('An error occurred while updating the user.');
+    }
   };
 
   return (
     <>
       <ToastContainer position="top-right" />
-      <Breadcrumb 
-        pageName="Edit User" 
+      <Breadcrumb
+        pageName="Edit User"
         isSubMenu={true}
         parentMenu={{
           name: "Manage User",
@@ -201,7 +219,7 @@ const EditUser = () => {
             <div className="mb-4.5 flex flex-col md:flex-row gap-4 md:gap-6">
               <div className="w-full md:w-[300px]">
                 <label className="mb-2.5 block text-black dark:text-white">
-                  Name
+                  Name <span className="text-meta-1">*</span>
                 </label>
                 <input
                   type="text"
@@ -215,7 +233,7 @@ const EditUser = () => {
 
               <div className="w-full md:w-[300px]">
                 <label className="mb-2.5 block text-black dark:text-white">
-                  Role
+                  Role <span className="text-meta-1">*</span>
                 </label>
                 <select
                   value={role}
@@ -224,20 +242,20 @@ const EditUser = () => {
                   required
                 >
                   <option value="" disabled>Select a role</option>
-                  {roles.map((role) => (
-                      <option key={role.value} value={role.value}>
-                          {role.label}
-                      </option>
+                  {roles.map((roleObj) => (
+                    <option key={roleObj.value} value={roleObj.value}>
+                      {roleObj.label}
+                    </option>
                   ))}
                 </select>
               </div>
-
             </div>
+
             {/* Username and Email in one row */}
             <div className="mb-4.5 flex flex-col md:flex-row gap-4 md:gap-6">
               <div className="w-full md:w-[300px]">
                 <label className="mb-2.5 block text-black dark:text-white">
-                  Username
+                  Username <span className="text-meta-1">*</span>
                 </label>
                 <input
                   type="text"
@@ -249,12 +267,19 @@ const EditUser = () => {
                 />
               </div>
 
-              {/* Email Fields */}
+              {/* Email Field */}
               <div className="w-full md:w-[600px]">
                 <label className="mb-2.5 block text-black dark:text-white">
-                  Email 
+                  Email <span className="text-meta-1">*</span>
                 </label>
-                  <EmailInput />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter email address"
+                  required
+                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                />
               </div>
             </div>
 
@@ -281,10 +306,25 @@ const EditUser = () => {
                     {showPassword ? <FaEye /> : <FaEyeSlash />}
                   </button>
                 </div>
-                <Button type="button" onClick={generateRandomPassword} title="Generate Random Password" />
+                <Button
+                  type="button"
+                  onClick={generateRandomPassword}
+                  title="Generate Random Password"
+                />
               </div>
+              {password.length > 0 && password.length < 8 && (
+                <span className="text-meta-1 text-sm mt-1">
+                  Password must be at least 8 characters
+                </span>
+              )}
             </div>
-            <Button type="submit" title="Save Changes" />
+
+            {/* Submit Button */}
+            <Button 
+              type="submit"
+              title="Save Changes"
+              className="w-full justify-center bg-blue-900 hover:bg-opacity-90 text-white"
+            />
           </div>
         </form>
       </div>
