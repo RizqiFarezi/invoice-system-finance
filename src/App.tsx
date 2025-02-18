@@ -29,7 +29,7 @@ const App = () => {
       <HashRouter>
         <Routes>
           {/* Public Route */}
-          <Route path="/" element={<SignIn />} />
+          <Route path="/auth/login" element={<SignIn />} />
 
           <Route element={<DefaultLayout/>}>
 

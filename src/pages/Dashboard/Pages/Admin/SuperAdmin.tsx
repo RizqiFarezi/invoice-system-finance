@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
-import {API_Dashboard, API_User_Logout_Admin, API_User_Online_Admin,} from '../../../../api/api';
+import {API_Dashboard, API_User_Online_Admin, API_User_Logout_Admin} from '../../../../api/api';
 import CardDataStats from '../../../../components/CardDataStats';
 import UserOnline from '../../../../components/UserOnline';
 import Pagination from '../../../../components/Table/Pagination';
@@ -40,10 +40,10 @@ const DashboardSuperAdmin: React.FC = () => {
         if (result.success) {
           const data = result.data;
           setDashboardData({
-            user_online: data.active_tokens,
-            total_user: data.total_users,
-            user_active: data.active_users,
-            user_deactive: data.deactive_users,
+            user_online: data.active_tokens?.toString() || '-',
+            total_user: data.total_users?.toString() || '-',
+            user_active: data.active_users?.toString() || '-',
+            user_deactive: data.deactive_users?.toString() || '-',
           });
         } else {
           toast.error(`Error fetching dashboard data: ${result.message}`);
@@ -78,7 +78,10 @@ const DashboardSuperAdmin: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         if (result.success) {
-          setOnlineUsers(result.data);
+          // Ensure unique entries
+          const uniqueUsers = Array.from(new Set(result.data.map((user: any) => user.token)))
+            .map(token => result.data.find((user: any) => user.token === token));
+          setOnlineUsers(uniqueUsers);
         } else {
           console.error('Error fetching online users:', result.message);
           setErrorCount((prevCount) => prevCount + 1);
@@ -98,7 +101,7 @@ const DashboardSuperAdmin: React.FC = () => {
     try {
       const adminToken = localStorage.getItem('access_token');
       const response = await fetch(API_User_Logout_Admin(), {
-        method: 'POST',
+        method: 'POST', // Ensure this is the correct method
         headers: {
           Authorization: `Bearer ${adminToken}`,
           'Content-Type': 'application/json',
@@ -166,7 +169,7 @@ const DashboardSuperAdmin: React.FC = () => {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
           <CardDataStats
             title="User Online"
-            total={dashboardData.user_online.toString()}
+            total={dashboardData.user_online}
             rate=""
             levelUp={Number(dashboardData.user_online) > 0}
             levelDown={Number(dashboardData.user_online) <= 0}
@@ -175,7 +178,7 @@ const DashboardSuperAdmin: React.FC = () => {
           </CardDataStats>
           <CardDataStats
             title="Total User"
-            total={dashboardData.total_user.toString()}
+            total={dashboardData.total_user}
             rate=""
             levelUp={Number(dashboardData.total_user) > 0}
             levelDown={Number(dashboardData.total_user) <= 0}
@@ -184,7 +187,7 @@ const DashboardSuperAdmin: React.FC = () => {
           </CardDataStats>
           <CardDataStats
             title="User Active"
-            total={dashboardData.user_active.toString()}
+            total={dashboardData.user_active}
             rate=""
             levelUp={Number(dashboardData.user_active) > 0}
             levelDown={Number(dashboardData.user_active) <= 0}
@@ -193,7 +196,7 @@ const DashboardSuperAdmin: React.FC = () => {
           </CardDataStats>
           <CardDataStats
             title="User Deactive"
-            total={dashboardData.user_deactive.toString()}
+            total={dashboardData.user_deactive}
             rate=""
             levelUp={Number(dashboardData.user_deactive) > 0}
             levelDown={Number(dashboardData.user_deactive) <= 0}

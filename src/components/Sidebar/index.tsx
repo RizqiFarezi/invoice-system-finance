@@ -11,8 +11,7 @@ interface SidebarProps {
   role: string | null;
 }
 
-const Sidebar : React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) => {
-  
+const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) => {
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -24,6 +23,22 @@ const Sidebar : React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role })
   if (!role) {
     return null;
   }
+
+  // Map numeric roles to string roles
+  const getRoleString = (role: string | null) => {
+    switch (role) {
+      case '1':
+        return 'super-admin';
+      case '2':
+        return 'admin-finance';
+      case '3':
+        return 'supplier';
+      default:
+        return null;
+    }
+  };
+
+  const mappedRole = getRoleString(role);
 
   // close on click outside
   useEffect(() => {
@@ -102,11 +117,11 @@ const Sidebar : React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role })
         {/* Sidebar Menu */}
         <nav className="mt-2 py-4 px-4 lg:mt-2 lg:px-6">
           {/* Menu Group Based on Role */}
-          {role === 'super-admin' ? (
+          {mappedRole === 'super-admin' ? (
             <SuperAdmin />
-          ) : role === 'admin-finance' ? (
+          ) : mappedRole === 'admin-finance' ? (
             <AdminAccounting />
-          ) : role === 'supplier' ? (
+          ) : mappedRole === 'supplier' ? (
             <Supplier />
           ) : (
             <div className="text-center text-gray-500 mt-4">

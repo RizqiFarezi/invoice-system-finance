@@ -21,9 +21,8 @@ export const API_List_Partner_Admin = () => API + getRolePath() + `/business-par
 // export const API_Sync_Admin = () => API + getRolePath() + `/sync-inv-line`;
 
 // Manage User Admin
-export const API_User_Online_Admin = () => API + getRolePath() + `/user/online`;
-export const API_User_Logout_Admin = () => API + getRolePath() + `/user/logout`;
-export const API_User_Login_Performance__Admin = () => API + getRolePath() + `/user/monthly`;
+export const API_User_Online_Admin = () => API + getRolePath() + `/active-user`;
+export const API_User_Logout_Admin = () => API + getRolePath() + `/logout-user`;
 
 // Manage User Admin
 export const API_List_User_Admin = () => API + getRolePath() + '/index';
