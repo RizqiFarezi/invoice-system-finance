@@ -29,12 +29,12 @@ const App = () => {
       <HashRouter>
         <Routes>
           {/* Public Route */}
-          <Route path="/auth/login" element={<SignIn />} />
+          <Route path="/" element={<SignIn />} />
 
           <Route element={<DefaultLayout/>}>
 
             <Route
-              path="/"
+              path="/dashboard"
               element={
                 <ProtectedRoute allowedRoles={['1','2','3']}>
                   <Dashboard />

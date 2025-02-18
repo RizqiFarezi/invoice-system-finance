@@ -1,4 +1,4 @@
-import FotoSanoh from '../../../images/cover/foto-sanoh-2.png';
+import FotoSanoh from '../../../images/cover/cover.png';
 import Logo from '../../../images/logo-sanoh.png';
 import PasswordInput from '../../../components/PasswordInput';
 import React, { useState } from 'react';
