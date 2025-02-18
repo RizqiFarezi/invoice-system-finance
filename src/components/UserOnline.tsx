@@ -19,7 +19,7 @@ interface UserOnlineProps {
 
 const UserOnline: React.FC<UserOnlineProps> = ({ onlineUsers, handleLogoutUser, getRoleName }) => (
     <div className="bg-white rounded-lg p-6 ">
-        <h2 className="text-xl font-semibold mb-6 ">User Online</h2>
+        <h2 className="text-xl font-semibold text-black mb-6 ">User Online</h2>
         <div className="relative overflow-hidden shadow-md rounded-lg border">
             <table className="min-w-full divide-y divide-gray-200 text-left ">
                 <thead className="bg-gray-50">

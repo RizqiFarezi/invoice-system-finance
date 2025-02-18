@@ -1,30 +1,28 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import React from 'react';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 interface ProtectedRouteProps {
+  children: React.ReactNode;
   allowedRoles: string[];
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
-  const { isAuthenticated, userRole } = useAuth();
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+  const { isAuthenticated, userRole, isLoading } = useAuth();
 
-  // Debugging log to verify the values of isAuthenticated and userRole
-  console.log('isAuthenticated:', isAuthenticated);
-  console.log('userRole:', userRole);
-  console.log('allowedRoles:', allowedRoles);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  // Jika tidak terautentikasi, arahkan ke halaman login
   if (!isAuthenticated) {
-    return <Navigate to="/auth/login" />;
+    return <Navigate to="/auth/login" replace />;
   }
 
-  // Jika peran tidak diizinkan, arahkan ke halaman utama
-  if (!allowedRoles.includes(userRole)) {
-    return <Navigate to="/" />;
+  if (!allowedRoles.includes(userRole || '')) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
-  // Jika lulus pengecekan, tampilkan konten
-  return <Outlet />;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

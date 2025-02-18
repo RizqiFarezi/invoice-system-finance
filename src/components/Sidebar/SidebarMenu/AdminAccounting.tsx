@@ -1,6 +1,5 @@
 import Dashboard from "./component/Dashboard";
 import GRTracking from "./component/GRTracking";
-import InvoiceCreation from "./component/InvoiceCreation";
 import InvoiceReport from "./component/InvoiceReport";
 
 export const AdminAccounting = () => {
@@ -17,9 +16,6 @@ export const AdminAccounting = () => {
                     </li>
                     <li>
                     <GRTracking />
-                    </li>
-                    <li>
-                    <InvoiceCreation />
                     </li>
                     <li>
                     <InvoiceReport />

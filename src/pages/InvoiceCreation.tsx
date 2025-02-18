@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ToastContainer } from 'react-toastify'; // Ensure react-toastify is installed
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb'; // Check path if necessary
 import SearchBar from '../components/Table/SearchBar';
-
+import Pagination from '../components/Table/Pagination';
 interface GrSaRecord {
   transactionType: string;
   dnNumber: string;
@@ -32,10 +32,13 @@ const InvoiceCreation = () => {
   const [poDate, setPoDate] = useState<string>('');
   const [poNumber, setPoNumber] = useState<string>('');
   const [grSaDate, setGrSaDate] = useState<string>('');
-  const [selectedRecords, setSelectedRecords] = useState<number>(0);
+  const [selectedRecords, setSelectedRecords] = useState([]);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [searchSupplier, setSearchSupplier] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filteredData, setFilteredData] = useState<GrsaRecord[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage] = useState(10);
 
   const grSaList: GrSaRecord[] = [
     {
@@ -82,12 +85,11 @@ const InvoiceCreation = () => {
     const values = Array.from(options, (option) => option.value);
     setTransactionTypes(values);
   };
-
   const handleRecordSelection = (record: GrSaRecord) => {
-    setSelectedRecords((prev) => prev + 1);
+    setSelectedRecords((prev) => [...prev, record]);
     setTotalAmount((prev) => prev + record.totalAmount);
   };
-
+  
   const handleInvoiceCreation = () => {
     // Logic for invoice creation
     alert('Invoice Created');
@@ -108,6 +110,15 @@ const InvoiceCreation = () => {
       />
     );
   };
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+);
+const handlePageChange = (page: number) => {
+  setCurrentPage(page);
+  localStorage.setItem('dn_current_page', String(page)); // Save page number to localStorage
+};
 
   return (
     <div className="space-y-4">
@@ -132,7 +143,7 @@ const InvoiceCreation = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
+          <label className="w-1/4 text-sm font-medium text-gray-700">PO Date</label>
           <input
             type="date"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
@@ -209,36 +220,52 @@ const InvoiceCreation = () => {
           </button>
       </div>
 
-      {/* Section for GR/SA Outstanding */}
-      <h3 className="text-xl font-medium text-gray-700 mt-4">GR / SA Outstanding</h3>
-      <div className="bg-white p-6 space-y-2">
-        <div className="overflow-x-auto shadow-md border rounded-lg">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-3 py-3.5 text-center border">Transaction Type</th>
-                <th className="px-3 py-3.5 text-center border">Supplier Code</th>
-                <th className="px-3 py-3.5 text-center border">Supplier Name</th>
-                <th className="px-3 py-3.5 text-center border">GR/SA Number</th>
-                <th className="px-3 py-3.5 text-center border">Total Amount</th>
-                <th className="px-3 py-3.5 text-center border">Currency</th>
-              </tr>
-            </thead>
-            <tbody>
-              {grSaList.map((item, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-center">{item.transactionType}</td>
-                  <td className="px-3 py-2 text-center">{item.supplier}</td>
-                  <td className="px-3 py-2 text-center">{item.supplier}</td>
-                  <td className="px-3 py-2 text-center">{item.grSaNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.totalAmount}</td>
-                  <td className="px-3 py-2 text-center">{item.currency}</td>
+        {/* Section for GR/SA Outstanding */}
+        <h3 className="text-xl font-medium text-gray-700 mt-2">GR / SA Outstanding</h3>
+        <div className="bg-white p-4 space-y-2 flex justify-between"> {/* Reduced padding */}
+          <div className="overflow-x-auto shadow-md border rounded-lg w-2/3">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 py-3.5 text-center border">Total Record(s)</th>
+                  <th className="px-3 py-3.5 text-center border">Currency</th>
+                  <th className="px-3 py-3.5 text-center border">Total Amount</th>
+                  <th className="px-3 py-3.5 text-center border">Message</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="px-3 py-2 text-center">{grSaList.length}</td>
+                  <td className="px-3 py-2 text-center">{grSaList[0]?.currency || '-'}</td>
+                  <td className="px-3 py-2 text-center">{grSaList.reduce((sum, item) => sum + (item.totalAmount || 0), 0)}</td>
+                  <td className="px-3 py-2 text-center">Status message here</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex flex-col gap-4 mb-2">
+            <div className="flex items-center gap-4 mr-20">
+              <label className="w-1/4 text-sm font-medium text-gray-700">Selected Record(s)</label>
+              <input
+                type="text"
+                className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs text-center"
+                readOnly
+                value={(Array.isArray(selectedRecords) ? selectedRecords.length : 0)}
+              />
+            </div>
+            <div className="flex items-center gap-4 mr-20">
+              <label className="w-1/4 text-sm font-medium text-gray-700">Total Amount</label>
+              <input
+                type="text"
+                className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs text-center"
+                readOnly
+                value={(Array.isArray(selectedRecords) ? selectedRecords.reduce((sum, item) => sum + (item.totalAmount || 0), 0) : 0)}
+              />
+            </div>
+          </div>
         </div>
-      </div>
+
 
       {/* Separate Section for GR/SA List */}
       <h3 className="text-xl font-medium text-gray-700">GR / SA List</h3>
@@ -267,6 +294,8 @@ const InvoiceCreation = () => {
           <table className="w-full text-sm text-left">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-3 py-2 text-center">
+              </th>
               <th className="px-3 py-2 text-center">Transaction Type</th>
               <th className="px-3 py-2 text-center">DN Number</th>
               <th className="px-3 py-2 text-center">GR/SA Number</th>
@@ -287,6 +316,9 @@ const InvoiceCreation = () => {
             <tbody>
               {grSaList.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="px-3 py-2 text-center">
+                    <input type="checkbox" />
+                  </td>
                   <td className="px-3 py-2 text-center">{item.transactionType}</td>
                   <td className="px-3 py-2 text-center">{item.dnNumber}</td>
                   <td className="px-3 py-2 text-center">{item.grSaNumber}</td>
@@ -306,6 +338,12 @@ const InvoiceCreation = () => {
             </tbody>
           </table>
         </div>
+         {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredData.length / rowsPerPage)}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

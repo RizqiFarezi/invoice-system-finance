@@ -1,31 +1,44 @@
-import { useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
-import Logo from "../../images/logo-sanoh.png";
-import { SuperAdmin } from "./SidebarMenu/SuperAdmin";
-import { AdminAccounting } from "./SidebarMenu/AdminAccounting";
-import { Supplier } from "./SidebarMenu/Supplier";
-import { useAuth } from "../../pages/Authentication/AuthContext"; // Import useAuth
+import { useEffect, useRef, useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import Logo from '../../images/logo-sanoh.png';
+import { SuperAdmin } from './SidebarMenu/SuperAdmin';
+import { AdminAccounting } from './SidebarMenu/AdminAccounting';
+import { Supplier } from './SidebarMenu/Supplier';
 
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
-  role: string | null; // Ensure role can be null as well
+  role: string | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
-  const { userRole } = useAuth(); // Get userRole from context
+const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) => {
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
-  const storedSidebarExpanded = localStorage.getItem("sidebar-expanded");
+  const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
   const [sidebarExpanded] = useState(
-    storedSidebarExpanded === null ? false : storedSidebarExpanded === "true"
+    storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
   );
 
-  // Don't render Sidebar if userRole is not set
-  if (!userRole || userRole === '') {
+  if (!role) {
     return null;
   }
+
+  // Map numeric roles to string roles
+  const getRoleString = (role: string | null) => {
+    switch (role) {
+      case '1':
+        return 'super-admin';
+      case '2':
+        return 'admin-finance';
+      case '3':
+        return 'supplier';
+      default:
+        return null;
+    }
+  };
+
+  const mappedRole = getRoleString(role);
 
   // close on click outside
   useEffect(() => {
@@ -66,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
     <aside
       ref={sidebar}
       className={`absolute left-0 top-0 z-50 flex h-screen w-65 flex-col overflow-y-hidden bg-white dark:bg-boxdark shadow-md transition-transform duration-300 ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } lg:static lg:translate-x-0`} // Ensure the sidebar is static on larger screens
     >
       {/* SIDEBAR HEADER */}
@@ -104,11 +117,11 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         {/* Sidebar Menu */}
         <nav className="mt-2 py-4 px-4 lg:mt-2 lg:px-6">
           {/* Menu Group Based on Role */}
-          {userRole === 'super-admin' ? (
+          {mappedRole === 'super-admin' ? (
             <SuperAdmin />
-          ) : userRole === 'admin-finance' ? (
+          ) : mappedRole === 'admin-finance' ? (
             <AdminAccounting />
-          ) : userRole === 'supplier' ? (
+          ) : mappedRole === 'supplier' ? (
             <Supplier />
           ) : (
             <div className="text-center text-gray-500 mt-4">

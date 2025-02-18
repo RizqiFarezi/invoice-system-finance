@@ -1,5 +1,6 @@
 import FotoSanoh from '../../../images/cover/cover.png';
 import Logo from '../../../images/logo-sanoh.png';
+import PasswordInput from '../../../components/PasswordInput';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
@@ -24,21 +25,7 @@ const SignIn: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) =
       const success = await login(username, password);
       if (success) {
         if (onLoginSuccess) onLoginSuccess();
-        const role = localStorage.getItem('role');
-        
-        switch (role) {
-          case 'super-admin':
-            navigate('/dashboard');
-            break;
-          case 'admin-finance':
-            navigate('/dashboardfinance');
-            break;
-          case 'supplier':
-            navigate('/tables');
-            break;
-          default:
-            navigate('/');
-        }
+        navigate('/dashboard');
       } else {
         toast.error('Invalid username or password');
       }
@@ -60,11 +47,10 @@ const SignIn: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) =
             <div className="flex flex-col w-full max-w-[500px]">
               <img loading="lazy" src={Logo} alt="Company logo" className="object-contain w-[120px]" />
 
-
-              {/* Form dengan border */}
+              {/* Form with border */}
               <form className="flex flex-col mt-6 w-full border border-gray-200 rounded-lg p-6" onSubmit={onSubmit} autoComplete="off">
                 <div className="flex flex-col">
-                  {/* Tambahkan teks di luar border */}
+                  {/* Add text outside the border */}
                   <h2 className="text-xs text-slate-800 mt-4 font-medium">Welcome to our platform, please login to access your account</h2>
                   <h2 className="text-xl font-semibold text-slate-800 mt-3">Log in Your Account</h2>
                   <label htmlFor="username" className="text-base text-slate-800 mb-2 mt-3">Username</label>
@@ -80,16 +66,10 @@ const SignIn: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) =
                   />
                 </div>
                 <div className="flex flex-col mt-4">
-                  <label htmlFor="password" className="text-base text-slate-800 mb-2">Password</label>
-                  <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter Password"
-                    className="px-4 py-3.5 w-full bg-white rounded-lg border border-indigo-600 shadow-sm text-base text-black"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    aria-label="Password"
+                  <PasswordInput
+                    password={password}
+                    setPassword={setPassword}
+                    isRequired
                   />
                 </div>
                 <button

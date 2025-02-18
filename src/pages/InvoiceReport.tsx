@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ToastContainer } from 'react-toastify'; // Ensure react-toastify is installed
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb'; // Check path if necessary
 import SearchBar from '../components/Table/SearchBar';
+import Pagination from '../components/Table/Pagination';
 
 interface GrSaRecord {
   transactionType: string;
@@ -19,6 +20,7 @@ interface GrSaRecord {
   updatedBy: string;
   updatedDate: string;
 }
+
 interface SearchBarProps {
   placeholder: string;
   onSearchChange: (value: string) => void;
@@ -36,41 +38,45 @@ const InvoiceReport = () => {
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [searchSupplier, setSearchSupplier] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [autoPosting, setAutoPosting] = useState(false);
+  const [filteredData, setFilteredData] = useState<GrSaRecord[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage] = useState(10);
 
-  const grSaList: GrSaRecord[] = [
+  const grSaOutstanding: GrSaRecord[] = [
     {
       transactionType: 'Purchase',
-      dnNumber: 'DN001',
-      grSaNumber: 'GRSA001',
-      poNumber: 'PO001',
-      poCategory: 'Category A',
-      poDate: '2025-02-01',
-      currency: 'USD',
-      totalAmount: 500,
       invoiceNumber: 'INV001',
-      supplier: 'Supplier A',
-      createdBy: 'Admin',
-      createdDate: '2025-02-01',
-      updatedBy: 'Admin',
-      updatedDate: '2025-02-01',
+      invoiceDate: '2025-02-02',
+      supplierCode: 'SUP001',
+      supplierName: 'Supplier A',
+      currency: 'USD',
+      totalInvoiceAmount: 500,
+      amountBeforeTax: 450,
+      invoiceStatus: 'Approved',
+      progressStatus: 'Processing',
+      paymentDatePlan: '2025-02-15',
+      paymentDateActual: '2025-02-16',
+      taxNumber: 'TAX001',
+      taxAmount: 50,
     },
     {
       transactionType: 'Return',
-      dnNumber: 'DN002',
-      grSaNumber: 'GRSA002',
-      poNumber: 'PO002',
-      poCategory: 'Category B',
-      poDate: '2025-02-10',
-      currency: 'EUR',
-      totalAmount: 250,
       invoiceNumber: 'INV002',
-      supplier: 'Supplier B',
-      createdBy: 'Admin',
-      createdDate: '2025-02-10',
-      updatedBy: 'Admin',
-      updatedDate: '2025-02-10',
+      invoiceDate: '2025-02-11',
+      supplierCode: 'SUP002',
+      supplierName: 'Supplier B',
+      currency: 'EUR',
+      totalInvoiceAmount: 250,
+      amountBeforeTax: 225,
+      invoiceStatus: 'Pending',
+      progressStatus: 'Awaiting Approval',
+      paymentDatePlan: '2025-02-20',
+      paymentDateActual: '2025-02-21',
+      taxNumber: 'TAX002',
+      taxAmount: 25,
     },
-  ];
+  ];  
 
   const handleSupplierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
@@ -108,6 +114,15 @@ const InvoiceReport = () => {
       />
     );
   };
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    localStorage.setItem('dn_current_page', String(page)); // Save page number to localStorage
+  };
   
   return (
     <div className="space-y-4">
@@ -132,7 +147,7 @@ const InvoiceReport = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
+          <label className="w-1/4 text-sm font-medium text-gray-700">Creation Date</label>
           <input
             type="date"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
@@ -140,15 +155,13 @@ const InvoiceReport = () => {
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
-
         <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
+          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
           <input
-            type="text"
+            type="date"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="GR/SA Date"
-            value={grSaDate}
-            onChange={(e) => setGrSaDate(e.target.value)}
+            value={invoiceNumber}
+            onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
 
@@ -157,25 +170,14 @@ const InvoiceReport = () => {
           <input
             type="text"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Invoice Number"
+            placeholder="------------  ----"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
 
         <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">PO Number</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="PO Number"
-            value={poNumber}
-            onChange={(e) => setPoNumber(e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
+          <label className="w-1/4 text-sm font-medium text-gray-700">Verification Date</label>
           <input
             type="date"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
@@ -185,15 +187,47 @@ const InvoiceReport = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Transaction Type</label>
+          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Status</label>
           <input
             type="text"
             className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Transaction Type"
+            placeholder="------------  ----"
             value={poNumber}
             onChange={(e) => setPoNumber(e.target.value)}
           />
         </div>
+
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Transaction Type</label>
+          <input
+            type="text"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="------------  ----"
+            value={poNumber}
+            onChange={(e) => setPoNumber(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Payment Planning Date</label>
+          <input
+            type="date"
+            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            value={invoiceNumber}
+            onChange={(e) => setInvoiceNumber(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-4">
+        <label className="w-1/4 text-sm font-medium text-gray-700">Auto Posting</label>
+        <button
+          type="button"
+          className={`w-5 h-5 flex items-center justify-center border rounded-md text-gray-700 ${
+            autoPosting ? "bg-blue-600 text-white" : "bg-white"
+          }`}
+          onClick={() => setAutoPosting(!autoPosting)}
+        >
+          {autoPosting ? "✔" : ""}
+        </button>
+      </div>
       </form>
 
       <div className="flex justify-end items-center gap-4 mt-6 mb-2">          
@@ -209,57 +243,31 @@ const InvoiceReport = () => {
           </button>
       </div>
 
-      {/* Section for GR/SA Outstanding */}
-      <h3 className="text-xl font-medium text-gray-700 mt-4">GR / SA Outstanding</h3>
-      <div className="bg-white p-6 space-y-2">
-        <div className="overflow-x-auto shadow-md border rounded-lg">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-3 py-3.5 text-center border">Transaction Type</th>
-                <th className="px-3 py-3.5 text-center border">Supplier Code</th>
-                <th className="px-3 py-3.5 text-center border">Supplier Name</th>
-                <th className="px-3 py-3.5 text-center border">GR/SA Number</th>
-                <th className="px-3 py-3.5 text-center border">Total Amount</th>
-                <th className="px-3 py-3.5 text-center border">Currency</th>
-              </tr>
-            </thead>
-            <tbody>
-              {grSaList.map((item, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-center">{item.transactionType}</td>
-                  <td className="px-3 py-2 text-center">{item.supplier}</td>
-                  <td className="px-3 py-2 text-center">{item.supplier}</td>
-                  <td className="px-3 py-2 text-center">{item.grSaNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.totalAmount}</td>
-                  <td className="px-3 py-2 text-center">{item.currency}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Separate Section for GR/SA List */}
-      <h3 className="text-xl font-medium text-gray-700">GR / SA List</h3>
+      {/* Separate Section for GR/SA Outstanding */}
+      <h3 className="text-xl font-medium text-gray-700">GR / SA Outstanding</h3>
       <div className="bg-white p-6 space-y-6 mt-8">
         <div className="flex justify-between mb-8">
           <div>
-            <button className="bg-red-500 text-white px-6 py-2 rounded">Invoice Upload</button>
-            <button className="bg-red-500 text-white px-6 py-2 rounded ml-4">Download GR/SA</button>
+            <button className="bg-red-600 text-white px-6 py-2 rounded">Cancel Invoice</button>
           </div>
           <div>
             <button
-              className="bg-blue-900 text-white px-6 py-2 rounded"
+              className="bg-red-500 text-white px-6 py-2 rounded"
               onClick={handleInvoiceCreation}
             >
-              Invoice Creation
+              Download Attachement
             </button>
             <button
-              className="bg-red-600 text-white px-6 py-2 rounded ml-4"
+              className="bg-green-600 text-white px-6 py-2 rounded ml-4"
               onClick={handleCancelInvoice}
             >
-              Cancel Invoice
+              Verify
+            </button>
+            <button
+              className="bg-blue-900 text-white px-6 py-2 rounded ml-4"
+              onClick={handleCancelInvoice}
+            >
+              Post Invoice
             </button>
           </div>
         </div>
@@ -267,45 +275,61 @@ const InvoiceReport = () => {
           <table className="w-full text-sm text-left">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-3 py-2 text-center">
+              </th>
               <th className="px-3 py-2 text-center">Transaction Type</th>
-              <th className="px-3 py-2 text-center">DN Number</th>
-              <th className="px-3 py-2 text-center">GR/SA Number</th>
-              <th className="px-3 py-2 text-center">PO Number</th>
-              <th className="px-3 py-2 text-center">PO Category</th>
-              <th className="px-3 py-2 text-center">PO Date</th>
-              <th className="px-3 py-2 text-center">Currency</th>
-              <th className="px-3 py-2 text-center">Total Amount</th>
               <th className="px-3 py-2 text-center">Invoice Number</th>
-              <th className="px-3 py-2 text-center">Supplier</th>
-              <th className="px-3 py-2 text-center">Created By</th>
-              <th className="px-3 py-2 text-center">Created Date</th>
-              <th className="px-3 py-2 text-center">Updated By</th>
-              <th className="px-3 py-2 text-center">Updated Date</th>
+              <th className="px-3 py-2 text-center">Invoice Date</th>
+              <th className="px-3 py-2 text-center">Supplier Code</th>
+              <th className="px-3 py-2 text-center">Supplier Name</th>
+              <th className="px-3 py-2 text-center">Currency</th>
+              <th className="px-3 py-2 text-center">Total Invoice Amount</th>
+              <th className="px-3 py-2 text-center">Amount Before Tax</th>
+              <th className="px-3 py-2 text-center">Invoice Status</th>
+              <th className="px-3 py-2 text-center">Progress Status</th>
+              <th className="px-3 py-2 text-center" colSpan="2">Payment Date</th>
+              <th className="px-3 py-2 text-center">Tax Number</th>
+              <th className="px-3 py-2 text-center">Tax Amount</th>
+            </tr>
+            <tr className="bg-gray-50">
+              <th colSpan="11"></th>
+              <th className="px-3 py-2 text-center">Plan </th>
+              <th className="px-3 py-2 text-center">Actual</th>
+              <th colSpan="2"></th>
             </tr>
           </thead>
 
             <tbody>
-              {grSaList.map((item, index) => (
+              {grSaOutstanding.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-center">{item.transactionType}</td>
-                  <td className="px-3 py-2 text-center">{item.dnNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.grSaNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.poNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.poCategory}</td>
-                  <td className="px-3 py-2 text-center">{item.poDate}</td>
-                  <td className="px-3 py-2 text-center">{item.currency}</td>
-                  <td className="px-3 py-2 text-center">{item.totalAmount}</td>
-                  <td className="px-3 py-2 text-center">{item.invoiceNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.supplier}</td>
-                  <td className="px-3 py-2 text-center">{item.createdBy}</td>
-                  <td className="px-3 py-2 text-center">{item.createdDate}</td>
-                  <td className="px-3 py-2 text-center">{item.updatedBy}</td>
-                  <td className="px-3 py-2 text-center">{item.updatedDate}</td>
-                </tr>
+                  <td className="px-3 py-2 text-center">
+                    <input type="checkbox" />
+                    </td>
+                    <td className="px-3 py-2 text-center">{item.transactionType}</td>
+                    <td className="px-3 py-2 text-center">{item.invoiceNumber}</td>
+                    <td className="px-3 py-2 text-center">{item.invoiceDate}</td>
+                    <td className="px-3 py-2 text-center">{item.supplierCode}</td>
+                    <td className="px-3 py-2 text-center">{item.supplierName}</td>
+                    <td className="px-3 py-2 text-center">{item.currency}</td>
+                    <td className="px-3 py-2 text-center">{item.totalInvoiceAmount}</td>
+                    <td className="px-3 py-2 text-center">{item.amountBeforeTax}</td>
+                    <td className="px-3 py-2 text-center">{item.invoiceStatus}</td>
+                    <td className="px-3 py-2 text-center">{item.progressStatus}</td>
+                    <td className="px-3 py-2 text-center">{item.paymentDatePlan}</td>
+                    <td className="px-3 py-2 text-center">{item.paymentDateActual}</td>
+                    <td className="px-3 py-2 text-center">{item.taxNumber}</td>
+                    <td className="px-3 py-2 text-center">{item.taxAmount}</td>
+                  </tr>
               ))}
             </tbody>
           </table>
         </div>
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredData.length / rowsPerPage)}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

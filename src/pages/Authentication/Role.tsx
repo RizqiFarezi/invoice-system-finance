@@ -2,7 +2,6 @@ export const roles = [
     { value: '1', label: 'Super Admin' },
     { value: '2', label: 'Admin Finance' },
     { value: '3', label: 'Supplier' },
- // After this role please add new role from Value 10
 ];
 
 export const getRoleName = (role: string): string => {

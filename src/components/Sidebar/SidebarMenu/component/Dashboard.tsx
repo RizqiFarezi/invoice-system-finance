@@ -1,18 +1,17 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink} from "react-router-dom";
 
 const Dashboard = () => {
-    const location = useLocation();
-    const isActive = location.pathname === "/dashboard" || location.pathname === "/dashboardfinance";
-
     return (
         <li>
             <NavLink
                 to="/dashboard"
-                className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out ${
-                    isActive
-                    ? 'bg-red-700 text-white'
-                    : 'text-black-2 dark:text-bodydark2 hover:bg-red-500 hover:text-white dark:hover:bg-meta-4'
-                }`}
+                className={({ isActive }) =>
+                    `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out ${
+                        isActive
+                            ? 'bg-red-700 text-white'
+                            : 'text-black-2 dark:text-bodydark2 hover:bg-red-500 hover:text-white dark:hover:bg-meta-4'
+                    }`
+                }
             >
                  <svg
                 className="fill-current"

@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import Loader from './common/Loader';
 import SignIn from './pages/Authentication/Pages/SignIn';
 import Dashboard from './pages/Dashboard/Dashboard';
-import Settings from './pages/Settings';
-import Tables from './pages/Tables';
 import DefaultLayout from './layout/DefaultLayout';
 import ProtectedRoute from './pages/Authentication/ProtectedRoute';
 import ManageUser from './pages/ManageUser/Pages/ManageUser';  // Ensure this path is correct
@@ -29,46 +27,80 @@ const App = () => {
   return (
     <AuthProvider>
       <HashRouter>
-      <Routes>
-        {/* Public Route */}
-        <Route path="/auth/login" element={<SignIn />} />
+        <Routes>
+          {/* Public Route */}
+          <Route path="/auth/login" element={<SignIn />} />
 
-        {/* Protected Routes for Superadmin */}
-        <Route element={<ProtectedRoute allowedRoles={['super-admin']} />}>
-          <Route element={<DefaultLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/settings" element={<Settings />} />
-            {/* ListUser is now directly accessible under this route */}
-            <Route path="/list-user" element={<ManageUser />} />
-            <Route path="/add-user" element={<AddUser />} />
-            <Route path="/edit-user" element={<EditUser />} />
-            <Route path="/gr-tracking" element={<GrTracking />} />
-            <Route path="/invoice-creation" element={<InvoiceCreation />} />
-            <Route path="/invoice-report" element={<InvoiceReport />} />
+          <Route element={<DefaultLayout/>}>
+
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['1','2','3']}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/list-user"
+              element={
+                <ProtectedRoute allowedRoles={['1']}>
+                  <ManageUser/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/add-user"
+              element={
+                <ProtectedRoute allowedRoles={['1']}>
+                  <AddUser/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/edit-user"
+              element={
+                <ProtectedRoute allowedRoles={['1']}>
+                  <EditUser/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/gr-tracking"
+              element={
+                <ProtectedRoute allowedRoles={['1', '2', '3']}>
+                  <GrTracking/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/invoice-creation"
+              element={
+                <ProtectedRoute allowedRoles={['1', '3']}>
+                  <InvoiceCreation/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/invoice-report"
+              element={
+                <ProtectedRoute allowedRoles={['1', '2', '3']}>
+                  <InvoiceReport/>
+                </ProtectedRoute>
+              }
+            />
+
           </Route>
-        </Route>
 
-        {/* Protected Routes for Admin Accounting */}
-        <Route element={<ProtectedRoute allowedRoles={['admin-finance']} />}>
-          <Route element={<DefaultLayout />}>
-            <Route path="/dashboardfinance" element={<Dashboard />} />
-            <Route path="/gr-tracking2" element={<GrTracking />} />
-            <Route path="/invoice-creation2" element={<InvoiceCreation />} />
-            <Route path="/invoice-report2" element={<InvoiceReport />} />
-
-          </Route>
-        </Route>
-
-        {/* Protected Routes for Supplier */}
-        <Route element={<ProtectedRoute allowedRoles={['supplier']} />}>
-          <Route path="/" element={<DefaultLayout />}>
-            <Route path="/tables" element={<Tables />} />
-          </Route>
-        </Route>
-
-        {/* Optional 404 route */}
-        <Route path="*" element={<div>Page Not Found</div>} />
-      </Routes>
+          {/* Optional 404 route */}
+          <Route path="*" element={<div>Page Not Found</div>} />
+        </Routes>
       </HashRouter>
     </AuthProvider>
   );
