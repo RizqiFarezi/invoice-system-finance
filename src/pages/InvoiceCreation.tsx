@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { ToastContainer } from 'react-toastify'; // Ensure react-toastify is installed
+import { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify'; // Ensure react-toastify is installed
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb'; // Check path if necessary
-import SearchBar from '../components/Table/SearchBar';
 import Pagination from '../components/Table/Pagination';
+import InvoiceCreationWizard from './InvoiceCreationWizard';
+
 interface GrSaRecord {
   transactionType: string;
   dnNumber: string;
@@ -19,24 +20,15 @@ interface GrSaRecord {
   updatedBy: string;
   updatedDate: string;
 }
-interface SearchBarProps {
-  placeholder: string;
-  onSearchChange: (value: string) => void;
-}
 
 const InvoiceCreation = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
-  const [invoiceNumber, setInvoiceNumber] = useState<string>('');
-  const [transactionTypes, setTransactionTypes] = useState<string[]>([]);
-  const [poDate, setPoDate] = useState<string>('');
-  const [poNumber, setPoNumber] = useState<string>('');
-  const [grSaDate, setGrSaDate] = useState<string>('');
-  const [selectedRecords, setSelectedRecords] = useState([]);
-  const [totalAmount, setTotalAmount] = useState<number>(0);
-  const [searchSupplier, setSearchSupplier] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [filteredData, setFilteredData] = useState<GrsaRecord[]>([]);
+  const [showWizard, setShowWizard] = useState(false);
+  const [selectedRecords, setSelectedRecords] = useState<GrSaRecord[]>([]);
+  const [searchSupplier, setSearchSupplier] = useState('');
+  const [grSaDate, setGrSaDate] = useState('');
+  const [invoiceNumber, setInvoiceNumber] = useState('');
+  const [poNumber, setPoNumber] = useState('');
+  const [filteredData] = useState<GrSaRecord[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
 
@@ -75,50 +67,39 @@ const InvoiceCreation = () => {
     },
   ];
 
-  const handleSupplierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
-    setSelectedSuppliers(selectedOptions);
+  const handleRecordSelection = (record: GrSaRecord) => {
+    setSelectedRecords((prev) => {
+      const found = prev.find((r) => r.grSaNumber === record.grSaNumber);
+      if (found) return prev; 
+      return [...prev, record];
+    });
   };
 
-  const handleTransactionTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const options = event.target.selectedOptions;
-    const values = Array.from(options, (option) => option.value);
-    setTransactionTypes(values);
-  };
-  const handleRecordSelection = (record: GrSaRecord) => {
-    setSelectedRecords((prev) => [...prev, record]);
-    setTotalAmount((prev) => prev + record.totalAmount);
-  };
-  
   const handleInvoiceCreation = () => {
-    // Logic for invoice creation
-    alert('Invoice Created');
+    if (selectedRecords.length === 0) {
+      toast.error('Please select at least one record before continuing.');
+      return;
+    }
+    setShowWizard(true);
   };
 
   const handleCancelInvoice = () => {
-    // Logic for canceling invoice
-    alert('Invoice Cancelled');
+    toast.error('Invoice Cancelled');
   };
 
-  const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onSearchChange }) => {
-    return (
-      <input
-        type="text"
-        className="w-full border border-gray-200 p-2 rounded-md text-xs"
-        placeholder={placeholder}
-        onChange={(e) => onSearchChange(e.target.value)}
-      />
-    );
+  const handleWizardClose = () => {
+    setShowWizard(false);
   };
 
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-);
-const handlePageChange = (page: number) => {
-  setCurrentPage(page);
-  localStorage.setItem('dn_current_page', String(page)); // Save page number to localStorage
-};
+  const handleWizardFinish = () => {
+    setShowWizard(false);
+    toast.success('Invoice process completed!');
+    // Refresh or further logic
+  };
+
+  function setSearchQuery(_p0: string) {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <div className="space-y-4">
@@ -290,34 +271,36 @@ const handlePageChange = (page: number) => {
             </button>
           </div>
         </div>
+
         <div className="overflow-x-auto shadow-md border rounded-lg">
           <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-3 py-2 text-center">
-              </th>
-              <th className="px-3 py-2 text-center">Transaction Type</th>
-              <th className="px-3 py-2 text-center">DN Number</th>
-              <th className="px-3 py-2 text-center">GR/SA Number</th>
-              <th className="px-3 py-2 text-center">PO Number</th>
-              <th className="px-3 py-2 text-center">PO Category</th>
-              <th className="px-3 py-2 text-center">PO Date</th>
-              <th className="px-3 py-2 text-center">Currency</th>
-              <th className="px-3 py-2 text-center">Total Amount</th>
-              <th className="px-3 py-2 text-center">Invoice Number</th>
-              <th className="px-3 py-2 text-center">Supplier</th>
-              <th className="px-3 py-2 text-center">Created By</th>
-              <th className="px-3 py-2 text-center">Created Date</th>
-              <th className="px-3 py-2 text-center">Updated By</th>
-              <th className="px-3 py-2 text-center">Updated Date</th>
-            </tr>
-          </thead>
-
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-3 py-2 text-center"></th>
+                <th className="px-3 py-2 text-center">Transaction Type</th>
+                <th className="px-3 py-2 text-center">DN Number</th>
+                <th className="px-3 py-2 text-center">GR/SA Number</th>
+                <th className="px-3 py-2 text-center">PO Number</th>
+                <th className="px-3 py-2 text-center">PO Category</th>
+                <th className="px-3 py-2 text-center">PO Date</th>
+                <th className="px-3 py-2 text-center">Currency</th>
+                <th className="px-3 py-2 text-center">Total Amount</th>
+                <th className="px-3 py-2 text-center">Invoice Number</th>
+                <th className="px-3 py-2 text-center">Supplier</th>
+                <th className="px-3 py-2 text-center">Created By</th>
+                <th className="px-3 py-2 text-center">Created Date</th>
+                <th className="px-3 py-2 text-center">Updated By</th>
+                <th className="px-3 py-2 text-center">Updated Date</th>
+              </tr>
+            </thead>
             <tbody>
               {grSaList.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
                   <td className="px-3 py-2 text-center">
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      onChange={() => handleRecordSelection(item)}
+                    />
                   </td>
                   <td className="px-3 py-2 text-center">{item.transactionType}</td>
                   <td className="px-3 py-2 text-center">{item.dnNumber}</td>
@@ -338,13 +321,22 @@ const handlePageChange = (page: number) => {
             </tbody>
           </table>
         </div>
-         {/* Pagination */}
+
+        {/* Pagination */}
         <Pagination
           currentPage={currentPage}
-          totalPages={Math.ceil(filteredData.length / rowsPerPage)}
+          totalRows={filteredData.length}
+          rowsPerPage={rowsPerPage}
           onPageChange={setCurrentPage}
         />
       </div>
+
+      {showWizard && (
+        <InvoiceCreationWizard
+          onClose={handleWizardClose}
+          onFinish={handleWizardFinish}
+        />
+      )}
     </div>
   );
 };
