@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { X, Plus } from 'lucide-react';
+import PrintReceipt from './PrintReceipt';
 
 interface InvoiceCreationWizardProps {
   onClose: () => void;
@@ -37,12 +38,9 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
     { type: 'Delivery Note *', fileName: 'Surat Jalan.pdf', required: true },
     { type: 'Purchase Order *', fileName: 'Purchase Order.pdf', required: true },
   ]);
-  // Re-added checkbox state for the invoice submission disclaimer
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  // State for showing merged PrintReceipt view
   const [showPrintReceipt, setShowPrintReceipt] = useState(false);
-  // State for showing the Terms and Conditions modal popup
   const [showTermsModal, setShowTermsModal] = useState(false);
 
   // File input refs
@@ -297,7 +295,6 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
     </div>
   );
 
-  // Attach Documents section with checkbox added back
   const renderAttachDocuments = () => (
     <div className="space-y-6">
       <h2 className="text-lg font-medium text-gray-900">Attach and Submit Document</h2>
@@ -374,8 +371,6 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
     </div>
   );
 
-  // Terms and Conditions modal popup (old disclaimer design)
-  // This popup is only the white modal (no dark background overlay behind)
   const renderTermsAndConditions = () => (
     <div className="fixed inset-0 flex items-center justify-center z-[60]">
       <div className="bg-white rounded-lg w-full max-w-2xl p-6 shadow-lg">
@@ -424,70 +419,25 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
     }
   };
 
-  // Merged PrintReceipt view
-  const renderPrintReceipt = () => (
-    <div className="fixed inset-0 bg-white overflow-auto p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Invoice Receipt</h1>
-          <button
-            onClick={() => window.print()}
-            className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-md transition-colors"
-          >
-            Print Receipt
-          </button>
-        </div>
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4 border-b pb-4">
-            <div>
-              <p className="text-gray-600">Invoice Number</p>
-              <p className="font-medium">{invoiceNumber}</p>
-            </div>
-            <div>
-              <p className="text-gray-600">Invoice Date</p>
-              <p className="font-medium">{invoiceDate}</p>
-            </div>
-          </div>
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Payment Details</h2>
-            <div className="space-y-2">
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-gray-600">Tax Base Amount:</span>
-                <span className="font-medium">{taxBaseAmount}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-gray-600">Tax Amount:</span>
-                <span className="font-medium">{taxAmount}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b">
-                <span className="text-gray-600">Withholding Tax:</span>
-                <span className="font-medium">{eFakturVATAmount}</span>
-              </div>
-              <div className="flex justify-between py-4 border-t-2 border-gray-900 text-lg font-bold">
-                <span>Total Payment:</span>
-                <span>{totalInvoiceAmount}</span>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t">
-            <p className="text-sm text-gray-500 text-center">
-              This is a computer generated receipt and does not require a signature.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Handle save action (not used anymore since "I Agree" in T&C triggers it)
-  const handleSaveInvoice = () => {
-    setShowPrintReceipt(true);
-    // Optionally call onFinish() if needed
-    // onFinish();
-  };
-
   if (showPrintReceipt) {
-    return renderPrintReceipt();
+    return (
+      <PrintReceipt
+        paymentTo={paymentTo}
+        invoiceNumber={invoiceNumber}
+        taxNumber={taxNumber}
+        invoiceDate={invoiceDate}
+        taxDate={taxDate}
+        taxBaseAmount={taxBaseAmount}
+        taxAmount={taxAmount}
+        eFakturVATAmount={eFakturVATAmount}
+        totalInvoiceAmount={totalInvoiceAmount}
+        transactionType={transactionType}
+        onClose={() => {
+          setShowPrintReceipt(false);
+          onFinish();
+        }}
+      />
+    );
   }
 
   return (
@@ -509,7 +459,6 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
                 <>
                   <button
                     onClick={() => setCurrentStep(currentStep + 1)}
-                    // In step 2, disable Next if any document is missing or checkbox is not checked
                     disabled={
                       currentStep === 2 &&
                       (documents.some((doc) => !doc.fileName) || !disclaimerAccepted)
