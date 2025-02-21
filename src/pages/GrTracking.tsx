@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast} from 'react-toastify';
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import SearchBar from '../components/Table/SearchBar';
 import Pagination from '../components/Table/Pagination';
@@ -251,7 +251,6 @@ const GrTracking = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" />
       <Breadcrumb pageName="Good Receive Tracking Retrieval" />
       
       <div className="space-y-4">

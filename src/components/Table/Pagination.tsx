@@ -1,4 +1,11 @@
-const Pagination = ({ totalRows, rowsPerPage, currentPage, onPageChange }) => {
+type PaginationProps = {
+  totalRows: number;
+  rowsPerPage: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+};
+
+const Pagination = ({ totalRows, rowsPerPage, currentPage, onPageChange }: PaginationProps) => {
   const totalPages = Math.ceil(totalRows / rowsPerPage);
   const maxPageNumbersToShow = 5;
   const pageNumbers = [];

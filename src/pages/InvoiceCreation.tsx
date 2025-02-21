@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify'; // Ensure react-toastify is installed
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb'; // Check path if necessary
+import { toast, ToastContainer } from 'react-toastify';
+import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import Pagination from '../components/Table/Pagination';
 import InvoiceCreationWizard from './InvoiceCreationWizard';
 
@@ -94,7 +94,6 @@ const InvoiceCreation = () => {
   const handleWizardFinish = () => {
     setShowWizard(false);
     toast.success('Invoice process completed!');
-    // Refresh or further logic
   };
 
   function setSearchQuery(_p0: string) {
@@ -106,21 +105,17 @@ const InvoiceCreation = () => {
       <Breadcrumb pageName="Invoice Creation" />
       <ToastContainer />
       <form className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          {/* Select Supplier */}
-          <div className="flex gap-4 w-full">
-            <select
-              className="w-full border border-gray-200 p-2 rounded-md text-xs"
-              value={searchSupplier}
-              onChange={(e) => setSearchSupplier(e.target.value)}
-            >
-              <option value="">Select Supplier</option>
-              {/* Replace these with actual supplier options */}
-              <option value="Supplier A">Supplier A</option>
-              <option value="Supplier B">Supplier B</option>
-              <option value="Supplier C">Supplier C</option>
-            </select>
-          </div>
+        <div className="flex items-center">
+          <select
+            className="w-full border border-gray-200 p-2 rounded-md text-xs"
+            value={searchSupplier}
+            onChange={(e) => setSearchSupplier(e.target.value)}
+          >
+            <option value="">Select Supplier</option>
+            <option value="Supplier A">Supplier A</option>
+            <option value="Supplier B">Supplier B</option>
+            <option value="Supplier C">Supplier C</option>
+          </select>
         </div>
 
         <div className="flex items-center gap-4">
@@ -189,64 +184,63 @@ const InvoiceCreation = () => {
       </form>
 
       <div className="flex justify-end items-center gap-4 mt-2">
-          <button className="bg-purple-700 text-xs text-white px-8 py-2 rounded">Search</button>
-          <button
-            className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
-            onClick={() => {
-              setSearchSupplier('');
-              setSearchQuery(''); // Clear both search fields
-            }}
-          >
-            Clear
-          </button>
+        <button className="bg-purple-700 text-xs text-white px-8 py-2 rounded">Search</button>
+        <button
+          className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
+          onClick={() => {
+            setSearchSupplier('');
+            setSearchQuery('');
+          }}
+        >
+          Clear
+        </button>
       </div>
 
-        {/* Section for GR/SA Outstanding */}
-        <h3 className="text-xl font-medium text-gray-700 mt-2">GR / SA Outstanding</h3>
-        <div className="bg-white p-4 space-y-2 flex justify-between"> {/* Reduced padding */}
-          <div className="overflow-x-auto shadow-md border rounded-lg w-2/3">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-3 py-3.5 text-center border">Total Record(s)</th>
-                  <th className="px-3 py-3.5 text-center border">Currency</th>
-                  <th className="px-3 py-3.5 text-center border">Total Amount</th>
-                  <th className="px-3 py-3.5 text-center border">Message</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-center">{grSaList.length}</td>
-                  <td className="px-3 py-2 text-center">{grSaList[0]?.currency || '-'}</td>
-                  <td className="px-3 py-2 text-center">{grSaList.reduce((sum, item) => sum + (item.totalAmount || 0), 0)}</td>
-                  <td className="px-3 py-2 text-center">Status message here</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex flex-col gap-4 mb-2">
-            <div className="flex items-center gap-4 mr-20">
-              <label className="w-1/4 text-sm font-medium text-gray-700">Selected Record(s)</label>
-              <input
-                type="text"
-                className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs text-center"
-                readOnly
-                value={(Array.isArray(selectedRecords) ? selectedRecords.length : 0)}
-              />
-            </div>
-            <div className="flex items-center gap-4 mr-20">
-              <label className="w-1/4 text-sm font-medium text-gray-700">Total Amount</label>
-              <input
-                type="text"
-                className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs text-center"
-                readOnly
-                value={(Array.isArray(selectedRecords) ? selectedRecords.reduce((sum, item) => sum + (item.totalAmount || 0), 0) : 0)}
-              />
-            </div>
-          </div>
+      {/* Section for GR/SA Outstanding */}
+      <h3 className="text-xl font-medium text-gray-700 mt-2">GR / SA Outstanding</h3>
+      <div className="bg-white p-4 space-y-2 flex justify-between">
+        <div className="overflow-x-auto shadow-md border rounded-lg w-2/3">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-3 py-3.5 text-center border">Total Record(s)</th>
+                <th className="px-3 py-3.5 text-center border">Currency</th>
+                <th className="px-3 py-3.5 text-center border">Total Amount</th>
+                <th className="px-3 py-3.5 text-center border">Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b hover:bg-gray-50">
+                <td className="px-3 py-2 text-center">{grSaList.length}</td>
+                <td className="px-3 py-2 text-center">{grSaList[0]?.currency || '-'}</td>
+                <td className="px-3 py-2 text-center">{grSaList.reduce((sum, item) => sum + (item.totalAmount || 0), 0)}</td>
+                <td className="px-3 py-2 text-center">Status message here</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
+        <div className="flex flex-col gap-4 mb-2">
+          <div className="flex items-center gap-4 mr-20">
+            <label className="w-1/4 text-sm font-medium text-gray-700">Selected Record(s)</label>
+            <input
+              type="text"
+              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs text-center"
+              readOnly
+              value={(Array.isArray(selectedRecords) ? selectedRecords.length : 0)}
+            />
+          </div>
+          <div className="flex items-center gap-4 mr-20">
+            <label className="w-1/4 text-sm font-medium text-gray-700">Total Amount</label>
+            <input
+              type="text"
+              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs text-center"
+              readOnly
+              value={(Array.isArray(selectedRecords) ? selectedRecords.reduce((sum, item) => sum + (item.totalAmount || 0), 0) : 0)}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Separate Section for GR/SA List */}
       <h3 className="text-xl font-medium text-gray-700">GR / SA List</h3>

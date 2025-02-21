@@ -103,7 +103,7 @@ const ListProgress: React.FC = () => {
           {/* Tombol Refresh */}
           <button
             onClick={handleRefresh}
-            className="bg-purple-800 text-white px-8 py-2 rounded-lg hover:bg-blue-700 mt-1 "
+            className="bg-purple-800 text-sm text-white px-6 py-2 rounded-lg hover:bg-blue-700 mt-1 "
           >
             Refresh
           </button>
@@ -148,13 +148,15 @@ const ListProgress: React.FC = () => {
                     <span
                         className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-white text-xs font-medium ${
                           invoice.processStatus === "In Process"
-                          ? "bg-yellow-300"
+                          ? "bg-yellow-200"
                           : invoice.processStatus === "Rejected"
-                          ? "bg-red-400"
+                          ? "bg-red-500"
                           : invoice.processStatus === "Paid"
-                          ? "bg-green-500"
+                          ? "bg-blue-900"
+                          : invoice.processStatus === "Ready to Payment"
+                          ? "bg-green-400"
                           : "bg-blue-400"
-                      }`}
+                        }`}
                     >
                       {invoice.processStatus}
                     </span>
