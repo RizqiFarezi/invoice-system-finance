@@ -189,7 +189,7 @@ const InvoiceCreation = () => {
       </form>
 
       <div className="flex justify-end items-center gap-4 mt-2">
-          <button className="bg-red-600 text-xs text-white px-8 py-2 rounded">Search</button>
+          <button className="bg-purple-700 text-xs text-white px-8 py-2 rounded">Search</button>
           <button
             className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
             onClick={() => {
@@ -253,12 +253,12 @@ const InvoiceCreation = () => {
       <div className="bg-white p-6 space-y-6 mt-8">
         <div className="flex justify-between mb-8">
           <div>
-            <button className="bg-red-500 text-white px-6 py-2 rounded">Invoice Upload</button>
-            <button className="bg-red-500 text-white px-6 py-2 rounded ml-4">Download GR/SA</button>
+            <button className="bg-purple-800 text-white px-6 py-2 rounded">Invoice Upload</button>
+            <button className="bg-purple-600 text-white px-6 py-2 rounded ml-4">Download GR/SA</button>
           </div>
           <div>
             <button
-              className="bg-blue-900 text-white px-6 py-2 rounded"
+              className="bg-purple-800 text-white px-6 py-2 rounded"
               onClick={handleInvoiceCreation}
             >
               Invoice Creation

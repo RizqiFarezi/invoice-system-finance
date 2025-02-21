@@ -346,7 +346,7 @@ const ManageUser: React.FC = () => {
                               className="hover:opacity-80 transition-opacity"
                             >
                               {row.Status === 'Active' ? (
-                                <FaToggleOn className="text-2xl text-red-900" />
+                                <FaToggleOn className="text-2xl text-purple-900" />
                               ) : (
                                 <FaToggleOff className="text-2xl text-gray-500" />
                               )}
@@ -358,7 +358,7 @@ const ManageUser: React.FC = () => {
                             onClick={() => handleEditPage(row.UserID)}
                             className="hover:opacity-80 transition-opacity"
                           >
-                            <FaUserEdit className="text-xl text-lg text-red-700" />
+                            <FaUserEdit className="text-xl text-lg text-purple-900" />
                           </button>
                         </td>
                       </tr>

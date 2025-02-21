@@ -231,7 +231,7 @@ const InvoiceReport = () => {
       </form>
 
       <div className="flex justify-end items-center gap-4 mt-6 mb-2">          
-          <button className="bg-red-600 text-xs text-white px-8 py-2 rounded">Search</button>
+          <button className="bg-purple-800 text-xs text-white px-8 py-2 rounded">Search</button>
           <button
             className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
             onClick={() => {
@@ -252,7 +252,7 @@ const InvoiceReport = () => {
           </div>
           <div>
             <button
-              className="bg-red-500 text-white px-6 py-2 rounded"
+              className="bg-purple-600 text-white px-6 py-2 rounded"
               onClick={handleInvoiceCreation}
             >
               Download Attachement

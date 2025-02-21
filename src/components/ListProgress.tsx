@@ -103,7 +103,7 @@ const ListProgress: React.FC = () => {
           {/* Tombol Refresh */}
           <button
             onClick={handleRefresh}
-            className="bg-red-600 text-white px-8 py-2 rounded-lg hover:bg-blue-700 mt-1 "
+            className="bg-purple-800 text-white px-8 py-2 rounded-lg hover:bg-blue-700 mt-1 "
           >
             Refresh
           </button>
