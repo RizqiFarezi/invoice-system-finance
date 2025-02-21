@@ -1,7 +1,7 @@
 export const roles = [
     { value: '1', label: 'Super Admin' },
-    { value: '2', label: 'Admin Finance' },
-    { value: '3', label: 'Supplier' },
+    { value: '2', label: 'Finance' },
+    { value: '3', label: 'Supplier Finance' },
 ];
 
 export const getRoleName = (role: string): string => {
