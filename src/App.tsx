@@ -32,7 +32,15 @@ const App = () => {
           <Route path="/auth/login" element={<SignIn />} />
 
           <Route element={<DefaultLayout/>}>
-
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute allowedRoles={['1','2','3']}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            
             <Route
               path="/dashboard"
               element={

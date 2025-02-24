@@ -5,7 +5,6 @@ import Pagination from '../components/Table/Pagination';
 import InvoiceCreationWizard from './InvoiceCreationWizard';
 
 interface GrSaRecord {
-  transactionType: string;
   dnNumber: string;
   grSaNumber: string;
   poNumber: string;
@@ -29,12 +28,12 @@ const InvoiceCreation = () => {
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [poNumber, setPoNumber] = useState('');
   const [filteredData] = useState<GrSaRecord[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
 
   const grSaList: GrSaRecord[] = [
     {
-      transactionType: 'Purchase',
       dnNumber: 'DN001',
       grSaNumber: 'GRSA001',
       poNumber: 'PO001',
@@ -50,7 +49,6 @@ const InvoiceCreation = () => {
       updatedDate: '2025-02-01',
     },
     {
-      transactionType: 'Return',
       dnNumber: 'DN002',
       grSaNumber: 'GRSA002',
       poNumber: 'PO002',
@@ -70,9 +68,20 @@ const InvoiceCreation = () => {
   const handleRecordSelection = (record: GrSaRecord) => {
     setSelectedRecords((prev) => {
       const found = prev.find((r) => r.grSaNumber === record.grSaNumber);
-      if (found) return prev; 
+      if (found) {
+        return prev.filter((r) => r.grSaNumber !== record.grSaNumber);
+      }
       return [...prev, record];
     });
+  };
+
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    if (!selectAll) {
+      setSelectedRecords(grSaList);
+    } else {
+      setSelectedRecords([]);
+    }
   };
 
   const handleInvoiceCreation = () => {
@@ -170,21 +179,10 @@ const InvoiceCreation = () => {
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
-
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Transaction Type</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Transaction Type"
-            value={poNumber}
-            onChange={(e) => setPoNumber(e.target.value)}
-          />
-        </div>
       </form>
 
       <div className="flex justify-end items-center gap-4 mt-2">
-        <button className="bg-purple-700 text-xs text-white px-8 py-2 rounded">Search</button>
+        <button className="bg-purple-900 text-xs text-white px-8 py-2 rounded">Search</button>
         <button
           className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
           onClick={() => {
@@ -247,12 +245,12 @@ const InvoiceCreation = () => {
       <div className="bg-white p-6 space-y-6 mt-8">
         <div className="flex justify-between mb-8">
           <div>
-            <button className="bg-purple-800 text-white px-6 py-2 rounded">Invoice Upload</button>
-            <button className="bg-purple-600 text-white px-6 py-2 rounded ml-4">Download GR/SA</button>
+            <button className="bg-purple-900 text-white px-6 py-2 rounded">Invoice Upload</button>
+            <button className="bg-purple-900 text-white px-6 py-2 rounded ml-4">Download GR/SA</button>
           </div>
           <div>
             <button
-              className="bg-purple-800 text-white px-6 py-2 rounded"
+              className="bg-blue-800 text-white px-6 py-2 rounded"
               onClick={handleInvoiceCreation}
             >
               Invoice Creation
@@ -270,8 +268,14 @@ const InvoiceCreation = () => {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-3 py-2 text-center"></th>
-                <th className="px-3 py-2 text-center">Transaction Type</th>
+                <th className="px-3 py-2 text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                    className="cursor-pointer"
+                  />
+                </th>
                 <th className="px-3 py-2 text-center">DN Number</th>
                 <th className="px-3 py-2 text-center">GR/SA Number</th>
                 <th className="px-3 py-2 text-center">PO Number</th>
@@ -293,10 +297,11 @@ const InvoiceCreation = () => {
                   <td className="px-3 py-2 text-center">
                     <input
                       type="checkbox"
+                      checked={selectedRecords.some(r => r.grSaNumber === item.grSaNumber)}
                       onChange={() => handleRecordSelection(item)}
+                      className="cursor-pointer"
                     />
                   </td>
-                  <td className="px-3 py-2 text-center">{item.transactionType}</td>
                   <td className="px-3 py-2 text-center">{item.dnNumber}</td>
                   <td className="px-3 py-2 text-center">{item.grSaNumber}</td>
                   <td className="px-3 py-2 text-center">{item.poNumber}</td>

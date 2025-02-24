@@ -61,12 +61,12 @@ const GrTracking = () => {
     setUserBpCode(bpCode || '');
 
     // If supplier role, set their bp_code as selected and add to business partners
-    if (role === '3' && bpCode) {
+    if (role === '3' && bpCode && bpName && bpAddress) {
       setSelectedSupplier(bpCode);
       setBusinessPartners([{
         bp_code: bpCode,
-        bp_name: bpName || '',
-        adr_line_1: bpAddress || ''
+        bp_name: bpName,
+        adr_line_1: bpAddress
       }]);
     }
   }, []);
@@ -378,7 +378,7 @@ const GrTracking = () => {
 
       <div className="my-6 flex flex-col md:flex-row md:items-center md:justify-between gap-100">
         <div className="flex gap-4 ml-auto">
-          <button className="bg-purple-700 text-xs text-white px-8 py-2 rounded">Search</button>
+          <button className="bg-purple-900 text-xs text-white px-8 py-2 rounded">Search</button>
           <button
             className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
             onClick={handleClear}

@@ -6,7 +6,7 @@ import Footer from './Footer/Footer';
 import { useAuth } from '../pages/Authentication/AuthContext';  // Import the useAuth hook
 
 const DefaultLayout: React.FC = () => {
-  const { userRole, isAuthenticated, isLoading: authLoading } = useAuth();  // Use AuthContext to get the userRole and isAuthenticated
+  const { userRole, isLoading: authLoading } = useAuth();  // Use AuthContext to get the userRole and isAuthenticated
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Wait until authentication context is ready
@@ -19,11 +19,6 @@ const DefaultLayout: React.FC = () => {
   // If still loading from AuthContext, show loading state
   if (authLoading) {
     return <div>Loading...</div>;
-  }
-
-  // If the user is not authenticated, don't render the layout
-  if (!isAuthenticated) {
-    return <div>You are not authenticated.</div>;
   }
 
   return (

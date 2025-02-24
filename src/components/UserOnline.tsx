@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaSignOutAlt } from 'react-icons/fa';
 
-export interface User {  // Add 'export' keyword here
+export interface User {
     id: string;
     token: string;
     username: string;
@@ -18,35 +18,35 @@ interface UserOnlineProps {
 }
 
 const UserOnline: React.FC<UserOnlineProps> = ({ onlineUsers, handleLogoutUser, getRoleName }) => (
-    <div className="bg-white rounded-lg p-6 ">
-        <h2 className="text-xl font-semibold text-black mb-6 ">User Online</h2>
+    <div className="bg-white rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-black mb-6 text-center">User Online</h2>
         <div className="relative overflow-hidden shadow-md rounded-lg border">
-            <table className="min-w-full divide-y divide-gray-200 text-left ">
+            <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                     <tr>
-                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider">Username</th>
-                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider">User Role</th>
-                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider">Logged In At</th>
-                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider">Updated At</th>
-                        <th className="px-6 py-3 relative">
-                        <span className="sr-only">Action</span>
+                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider text-center">Username</th>
+                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider text-center">Name</th>
+                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider text-center">User Role</th>
+                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider text-center">Logged In At</th>
+                        <th className="px-6 py-3 text-sm font-semibold text-gray-600 uppercase tracking-wider text-center">Updated At</th>
+                        <th className="px-6 py-3 text-center">
+                            <span className="sr-only">Action</span>
                         </th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 ">
+                <tbody className="divide-y divide-gray-200">
                     {onlineUsers.length > 0 ? (
                         onlineUsers.map((user) => (
                         <tr key={user.token} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{user.username}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{user.name}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{getRoleName(user.role)}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{user.last_login}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{user.last_update}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 text-center">{user.username}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 text-center">{user.name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 text-center">{getRoleName(user.role)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 text-center">{user.last_login}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 text-center">{user.last_update}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-center">
                                 <button
                                     onClick={() => handleLogoutUser(user.id)}
-                                    className="text-red-500 hover:text-red-700"
+                                    className="text-red-500 hover:text-red-700 inline-flex items-center justify-center"
                                     title="Logout User"
                                 >
                                     <FaSignOutAlt size={18} />

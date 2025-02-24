@@ -1,24 +1,30 @@
-import React, { useState } from 'react';
-import { ToastContainer } from 'react-toastify'; // Ensure react-toastify is installed
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb'; // Check path if necessary
+import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import SearchBar from '../components/Table/SearchBar';
 import Pagination from '../components/Table/Pagination';
+import { API_Inv_Header_Admin, API_List_Partner_Admin } from '../api/api';
 
-interface GrSaRecord {
-  transactionType: string;
-  dnNumber: string;
-  grSaNumber: string;
-  poNumber: string;
-  poCategory: string;
-  poDate: string;
+interface Invoice {
+  inv_no: string;
+  doc_date: string;
+  bp_code: string;
+  bp_name: string;
   currency: string;
-  totalAmount: number;
-  invoiceNumber: string;
-  supplier: string;
-  createdBy: string;
-  createdDate: string;
-  updatedBy: string;
-  updatedDate: string;
+  total_invoice_amount: number;
+  amount_before_tax: number;
+  invoice_status: string;
+  progress_status: string;
+  payment_plan_date: string;
+  payment_actual_date: string;
+  tax_number: string;
+  tax_amount: number;
+}
+
+interface BusinessPartner {
+  bp_code: string;
+  bp_name: string;
+  adr_line_1: string;
 }
 
 interface SearchBarProps {
@@ -30,7 +36,6 @@ const InvoiceReport = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
   const [invoiceNumber, setInvoiceNumber] = useState<string>('');
-  const [transactionTypes, setTransactionTypes] = useState<string[]>([]);
   const [poDate, setPoDate] = useState<string>('');
   const [poNumber, setPoNumber] = useState<string>('');
   const [grSaDate, setGrSaDate] = useState<string>('');
@@ -39,110 +44,244 @@ const InvoiceReport = () => {
   const [searchSupplier, setSearchSupplier] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [autoPosting, setAutoPosting] = useState(false);
-  const [filteredData, setFilteredData] = useState<GrSaRecord[]>([]);
+  const [data, setData] = useState<Invoice[]>([]);
+  const [filteredData, setFilteredData] = useState<Invoice[]>([]);
+  const [businessPartners, setBusinessPartners] = useState<BusinessPartner[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userRole, setUserRole] = useState<string>('');
+  const [userBpCode, setUserBpCode] = useState<string>('');
   const [rowsPerPage] = useState(10);
 
-  const grSaOutstanding: GrSaRecord[] = [
-    {
-      transactionType: 'Purchase',
-      invoiceNumber: 'INV001',
-      invoiceDate: '2025-02-02',
-      supplierCode: 'SUP001',
-      supplierName: 'Supplier A',
-      currency: 'USD',
-      totalInvoiceAmount: 500,
-      amountBeforeTax: 450,
-      invoiceStatus: 'Approved',
-      progressStatus: 'Processing',
-      paymentDatePlan: '2025-02-15',
-      paymentDateActual: '2025-02-16',
-      taxNumber: 'TAX001',
-      taxAmount: 50,
-    },
-    {
-      transactionType: 'Return',
-      invoiceNumber: 'INV002',
-      invoiceDate: '2025-02-11',
-      supplierCode: 'SUP002',
-      supplierName: 'Supplier B',
-      currency: 'EUR',
-      totalInvoiceAmount: 250,
-      amountBeforeTax: 225,
-      invoiceStatus: 'Pending',
-      progressStatus: 'Awaiting Approval',
-      paymentDatePlan: '2025-02-20',
-      paymentDateActual: '2025-02-21',
-      taxNumber: 'TAX002',
-      taxAmount: 25,
-    },
-  ];  
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    const bpCode = localStorage.getItem('bp_code');
+    const bpName = localStorage.getItem('bp_name');
+    const bpAddress = localStorage.getItem('adr_line_1');
+
+    setUserRole(role || '');
+    setUserBpCode(bpCode || '');
+
+    // If supplier role, set their bp_code as selected and add to business partners
+    if (role === '3' && bpCode && bpName && bpAddress) {
+      setSearchSupplier(bpCode);
+      setBusinessPartners([{
+        bp_code: bpCode,
+        bp_name: bpName,
+        adr_line_1: bpAddress
+      }]);
+    }
+  }, []);
+
+  // Fetch business partners
+  useEffect(() => {
+    const fetchBusinessPartners = async () => {
+      if (userRole === '3') {
+        return;
+      }
+      const token = localStorage.getItem('access_token');
+      try {
+        const response = await fetch(API_List_Partner_Admin(), {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch business partners');
+        }
+    
+        const result = await response.json();
+        console.log('Raw Business Partners Response:', result);
+    
+        if (result && typeof result === 'object') {
+          let partnersList = [];
+    
+          if (result.bp_code && result.bp_name && result.adr_line_1) {
+            partnersList = [{
+              bp_code: result.bp_code,
+              bp_name: result.bp_name,
+              adr_line_1: result.adr_line_1,
+            }];
+          }
+          else if (Array.isArray(result.data)) {
+            partnersList = result.data.map((partner: BusinessPartner) => ({
+              bp_code: partner.bp_code,
+              bp_name: partner.bp_name,
+              adr_line_1: partner.adr_line_1,
+            }));
+          }
+          else if (result.data && typeof result.data === 'object') {
+            partnersList = Object.values(result.data).map((partner: any) => ({
+              bp_code: partner.bp_code,
+              bp_name: partner.bp_name,
+              adr_line_1: partner.adr_line_1,
+            }));
+          }
+          else if (Array.isArray(result)) {
+            partnersList = result.map((partner: BusinessPartner) => ({
+              bp_code: partner.bp_code,
+              bp_name: partner.bp_name,
+              adr_line_1: partner.adr_line_1,
+            }));
+          }
+    
+          if (partnersList.length > 0) {
+            setBusinessPartners(partnersList);
+          } else {
+            toast.warn('No business partners found in the response');
+          }
+        } else {
+          throw new Error('Invalid response structure from API');
+        }
+      } catch (error) {
+        console.error('Error fetching business partners:', error);
+        if (error instanceof Error) {
+          toast.error(`Error fetching business partners: ${error.message}`);
+        } else {
+          toast.error('Error fetching business partners');
+        }
+      }
+    };
+  
+    fetchBusinessPartners();
+  }, [userRole]);
+
+  // Fetch invoice data
+  useEffect(() => {
+    const fetchInvoiceData = async () => {
+      setIsLoading(true);
+      try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(API_Inv_Header_Admin(), {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch invoice data');
+        }
+
+        const result = await response.json();
+        
+        if (result && typeof result === 'object') {
+          let invoiceList = [];
+    
+          if (Array.isArray(result.data)) {
+            invoiceList = result.data;
+          } else if (result.data && typeof result.data === 'object') {
+            invoiceList = Object.values(result.data);
+          } else if (Array.isArray(result)) {
+            invoiceList = result;
+          }
+    
+          if (invoiceList.length > 0) {
+            setData(invoiceList);
+            setFilteredData(invoiceList);
+          } else {
+            toast.warn('No invoice data found');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching invoice data:', error);
+        toast.error('Failed to fetch invoice data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInvoiceData();
+  }, []);
+
+  // Filter data
+  useEffect(() => {
+    let filtered = [...data];
+
+    if (searchSupplier) {
+      filtered = filtered.filter(
+        (row) =>
+          row.bp_code.toLowerCase().includes(searchSupplier.toLowerCase()) ||
+          row.bp_name.toLowerCase().includes(searchSupplier.toLowerCase())
+      );
+    }
+
+    if (searchQuery) {
+      filtered = filtered.filter((row) =>
+        row.inv_no.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredData(filtered);
+    setCurrentPage(1);
+  }, [searchSupplier, searchQuery, data]);
 
   const handleSupplierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
     setSelectedSuppliers(selectedOptions);
   };
 
-  const handleTransactionTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const options = event.target.selectedOptions;
-    const values = Array.from(options, (option) => option.value);
-    setTransactionTypes(values);
-  };
-
-  const handleRecordSelection = (record: GrSaRecord) => {
+  const handleRecordSelection = (record: Invoice) => {
     setSelectedRecords((prev) => prev + 1);
-    setTotalAmount((prev) => prev + record.totalAmount);
+    setTotalAmount((prev) => prev + record.total_invoice_amount);
   };
 
   const handleInvoiceCreation = () => {
-    // Logic for invoice creation
-    alert('Invoice Created');
+    toast.info('Download attachment initiated');
   };
 
   const handleCancelInvoice = () => {
-    // Logic for canceling invoice
-    alert('Invoice Cancelled');
+    toast.info('Invoice cancelled');
   };
 
-  const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onSearchChange }) => {
-    return (
-      <input
-        type="text"
-        className="w-full border border-gray-200 p-2 rounded-md text-xs"
-        placeholder={placeholder}
-        onChange={(e) => onSearchChange(e.target.value)}
-      />
-    );
+  const handleClear = () => {
+    setSearchSupplier('');
+    setSearchQuery('');
+    setInvoiceNumber('');
+    setPoDate('');
+    setPoNumber('');
+    setGrSaDate('');
+    setCurrentPage(1);
   };
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    localStorage.setItem('dn_current_page', String(page)); // Save page number to localStorage
-  };
-  
+
   return (
     <div className="space-y-4">
       <Breadcrumb pageName="Invoice Report" />
-      <ToastContainer />
       <form className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          {/* Select Supplier */}
           <div className="flex gap-4 w-full">
-            <select
-              className="w-full border border-gray-200 p-2 rounded-md text-xs"
-              value={searchSupplier}
-              onChange={(e) => setSearchSupplier(e.target.value)}
-            >
-              <option value="">Select Supplier</option>
-              {/* Replace these with actual supplier options */}
-              <option value="Supplier A">Supplier A</option>
-              <option value="Supplier B">Supplier B</option>
-              <option value="Supplier C">Supplier C</option>
-            </select>
+            {userRole === '3' ? (
+              // Read-only input for supplier role
+              <input
+                type="text"
+                className="w-full border border-gray-200 p-2 rounded-md text-xs bg-gray-100"
+                value={`${userBpCode} | ${businessPartners[0]?.bp_name || ''}`}
+                readOnly
+              />
+            ) : (
+              // Regular select for other roles
+              <select
+                className="w-full border border-gray-200 p-2 rounded-md text-xs"
+                value={searchSupplier}
+                onChange={(e) => setSearchSupplier(e.target.value)}
+              >
+                <option value="">Select Supplier</option>
+                {businessPartners.map((partner) => (
+                  <option key={partner.bp_code} value={partner.bp_code}>
+                    {partner.bp_code} | {partner.bp_name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         </div>
 
@@ -155,6 +294,7 @@ const InvoiceReport = () => {
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
+
         <div className="flex items-center gap-4">
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
           <input
@@ -198,16 +338,6 @@ const InvoiceReport = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Transaction Type</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="------------  ----"
-            value={poNumber}
-            onChange={(e) => setPoNumber(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-4">
           <label className="w-1/4 text-sm font-medium text-gray-700">Payment Planning Date</label>
           <input
             type="date"
@@ -216,34 +346,18 @@ const InvoiceReport = () => {
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-4">
-        <label className="w-1/4 text-sm font-medium text-gray-700">Auto Posting</label>
-        <button
-          type="button"
-          className={`w-5 h-5 flex items-center justify-center border rounded-md text-gray-700 ${
-            autoPosting ? "bg-blue-600 text-white" : "bg-white"
-          }`}
-          onClick={() => setAutoPosting(!autoPosting)}
-        >
-          {autoPosting ? "✔" : ""}
-        </button>
-      </div>
       </form>
 
       <div className="flex justify-end items-center gap-4 mt-6 mb-2">          
-          <button className="bg-purple-800 text-xs text-white px-8 py-2 rounded">Search</button>
-          <button
-            className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
-            onClick={() => {
-              setSearchSupplier('');
-              setSearchQuery(''); // Clear both search fields
-            }}
-          >
-            Clear
-          </button>
+        <button className="bg-purple-800 text-xs text-white px-8 py-2 rounded">Search</button>
+        <button
+          className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
+          onClick={handleClear}
+        >
+          Clear
+        </button>
       </div>
 
-      {/* Separate Section for GR/SA Outstanding */}
       <h3 className="text-xl font-medium text-gray-700">GR / SA Outstanding</h3>
       <div className="bg-white p-6 space-y-6 mt-8">
         <div className="flex justify-between mb-8">
@@ -271,63 +385,79 @@ const InvoiceReport = () => {
             </button>
           </div>
         </div>
+
         <div className="overflow-x-auto shadow-md border rounded-lg">
           <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-3 py-2 text-center">
-              </th>
-              <th className="px-3 py-2 text-center">Transaction Type</th>
-              <th className="px-3 py-2 text-center">Invoice Number</th>
-              <th className="px-3 py-2 text-center">Invoice Date</th>
-              <th className="px-3 py-2 text-center">Supplier Code</th>
-              <th className="px-3 py-2 text-center">Supplier Name</th>
-              <th className="px-3 py-2 text-center">Currency</th>
-              <th className="px-3 py-2 text-center">Total Invoice Amount</th>
-              <th className="px-3 py-2 text-center">Amount Before Tax</th>
-              <th className="px-3 py-2 text-center">Invoice Status</th>
-              <th className="px-3 py-2 text-center">Progress Status</th>
-              <th className="px-3 py-2 text-center" colSpan="2">Payment Date</th>
-              <th className="px-3 py-2 text-center">Tax Number</th>
-              <th className="px-3 py-2 text-center">Tax Amount</th>
-            </tr>
-            <tr className="bg-gray-50">
-              <th colSpan="11"></th>
-              <th className="px-3 py-2 text-center">Plan </th>
-              <th className="px-3 py-2 text-center">Actual</th>
-              <th colSpan="2"></th>
-            </tr>
-          </thead>
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-3 py-2 text-center"></th>
+                <th className="px-3 py-2 text-center">Invoice Number</th>
+                <th className="px-3 py-2 text-center">Invoice Date</th>
+                <th className="px-3 py-2 text-center">Supplier Code</th>
+                <th className="px-3 py-2 text-center">Supplier Name</th>
+                <th className="px-3 py-2 text-center">Currency</th>
+                <th className="px-3 py-2 text-center">Total Invoice Amount</th>
+                <th className="px-3 py-2 text-center">Amount Before Tax</th>
+                <th className="px-3 py-2 text-center">Invoice Status</th>
+                <th className="px-3 py-2 text-center">Progress Status</th>
+                <th className="px-3 py-2 text-center" colSpan={2}>Payment Date</th>
+                <th className="px-3 py-2 text-center">Tax Number</th>
+                <th className="px-3 py-2 text-center">Tax Amount</th>
+              </tr>
+              <tr className="bg-gray-50">
+                <th colSpan={10}></th>
+                <th className="px-3 py-2 text-center">Plan</th>
+                <th className="px-3 py-2 text-center">Actual</th>
+                <th colSpan={2}></th>
+              </tr>
+            </thead>
 
             <tbody>
-              {grSaOutstanding.map((item, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-center">
-                    <input type="checkbox" />
+              {isLoading ? (
+                <tr>
+                  <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
+                    Loading...
+                  </td>
+                </tr>
+              ) : paginatedData.length > 0 ? (
+                paginatedData.map((invoice, index) => (
+                  <tr key={index} className="border-b hover:bg-gray-50">
+                    <td className="px-3 py-2 text-center">
+                      <input 
+                        type="checkbox" 
+                        onChange={() => handleRecordSelection(invoice)}
+                      />
                     </td>
-                    <td className="px-3 py-2 text-center">{item.transactionType}</td>
-                    <td className="px-3 py-2 text-center">{item.invoiceNumber}</td>
-                    <td className="px-3 py-2 text-center">{item.invoiceDate}</td>
-                    <td className="px-3 py-2 text-center">{item.supplierCode}</td>
-                    <td className="px-3 py-2 text-center">{item.supplierName}</td>
-                    <td className="px-3 py-2 text-center">{item.currency}</td>
-                    <td className="px-3 py-2 text-center">{item.totalInvoiceAmount}</td>
-                    <td className="px-3 py-2 text-center">{item.amountBeforeTax}</td>
-                    <td className="px-3 py-2 text-center">{item.invoiceStatus}</td>
-                    <td className="px-3 py-2 text-center">{item.progressStatus}</td>
-                    <td className="px-3 py-2 text-center">{item.paymentDatePlan}</td>
-                    <td className="px-3 py-2 text-center">{item.paymentDateActual}</td>
-                    <td className="px-3 py-2 text-center">{item.taxNumber}</td>
-                    <td className="px-3 py-2 text-center">{item.taxAmount}</td>
+                    <td className="px-3 py-2 text-center">{invoice.inv_no}</td>
+                    <td className="px-3 py-2 text-center">{invoice.doc_date}</td>
+                    <td className="px-3 py-2 text-center">{invoice.bp_code}</td>
+                    <td className="px-3 py-2 text-center">{invoice.bp_name}</td>
+                    <td className="px-3 py-2 text-center">{invoice.currency}</td>
+                    <td className="px-3 py-2 text-center">{invoice.total_invoice_amount.toLocaleString()}</td>
+                    <td className="px-3 py-2 text-center">{invoice.amount_before_tax.toLocaleString()}</td>
+                    <td className="px-3 py-2 text-center">{invoice.invoice_status}</td>
+                    <td className="px-3 py-2 text-center">{invoice.progress_status}</td>
+                    <td className="px-3 py-2 text-center">{invoice.payment_plan_date}</td>
+                    <td className="px-3 py-2 text-center">{invoice.payment_actual_date}</td>
+                    <td className="px-3 py-2 text-center">{invoice.tax_number}</td>
+                    <td className="px-3 py-2 text-center">{invoice.tax_amount.toLocaleString()}</td>
                   </tr>
-              ))}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
+                    No data available
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
-        {/* Pagination */}
+
         <Pagination
+          totalRows={filteredData.length}
+          rowsPerPage={rowsPerPage}
           currentPage={currentPage}
-          totalPages={Math.ceil(filteredData.length / rowsPerPage)}
           onPageChange={setCurrentPage}
         />
       </div>

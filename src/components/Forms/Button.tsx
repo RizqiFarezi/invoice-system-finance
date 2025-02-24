@@ -19,7 +19,7 @@ const Button: React.FC<ButtonProps> = ({
     className = '',
     type = 'button',
     disabled = false,
-    color = 'bg-purple-800',
+    color = 'bg-purple-900',
     iconClassName = '',
 }) => {
     return (

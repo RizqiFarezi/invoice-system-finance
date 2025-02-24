@@ -74,7 +74,7 @@ const SignIn: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) =
                 </div>
                 <button
                   type="submit"
-                  className="px-4 py-3.5 bg-purple-800 text-white py-2 rounded-lg mt-6 hover:bg-purple-600 transition"
+                  className="px-4 py-3.5 bg-purple-900 text-white py-2 rounded-lg mt-6 hover:bg-purple-600 transition"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Loading...' : 'Log In'}
