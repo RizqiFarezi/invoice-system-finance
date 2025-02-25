@@ -22,7 +22,7 @@ const UserOnline: React.FC<UserOnlineProps> = ({ onlineUsers, handleLogoutUser, 
         <h2 className="text-xl font-semibold text-black mb-6 text-left">User Online</h2>
         <div className="relative overflow-hidden shadow-md rounded-lg border">
             <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-purple-200">
+                <thead className="bg-gray-100">
                     <tr>
                         <th className="px-6 py-4 text-sm font-semibold text-gray-600 border uppercase tracking-wider text-center">Username</th>
                         <th className="px-6 py-4 text-sm font-semibold text-gray-600 border uppercase tracking-wider text-center">Name</th>

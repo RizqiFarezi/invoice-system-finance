@@ -256,7 +256,7 @@ const InvoiceReport = () => {
 
   return (
     <div className="space-y-6">
-      <Breadcrumb pageName="Invoice Creation" />
+      <Breadcrumb pageName="Invoice Report" />
       <ToastContainer />
       <form className="space-y-4">
 
@@ -275,7 +275,7 @@ const InvoiceReport = () => {
           styles={{
             control: (base) => ({
               ...base,
-              borderColor: "#E5E7EB", // Sama dengan border-gray-200
+              borderColor: "#D7BFDC", // Sama dengan border-gray-200
               padding: "1px", // Sama dengan p-2
               borderRadius: "6px", // Sama dengan rounded-md
               fontSize: "14px", // Sama dengan text-xs
@@ -291,7 +291,7 @@ const InvoiceReport = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
           <input
             type="text"
-            className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
             placeholder="----  ---------"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -302,7 +302,7 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Verification Date</label>
             <input
               type="date"
-              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
             />
@@ -312,7 +312,7 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Status</label>
             <input
               type="text"
-              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
               placeholder="----  ----------"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -325,7 +325,7 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Payment Planning Date</label>
             <input
               type="date"
-              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
             />
@@ -334,7 +334,7 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Creation Date</label>
             <input
               type="date"
-              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
             />
@@ -343,19 +343,18 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
             <input
               type="date"
-              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
             />
           </div>
-       
         </div>
       </form>
 
       <div className="flex justify-end items-center gap-4 ">
         <button className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-800">Search</button>
         <button
-          className="bg-gray-200 text-sm text-black px-8 py-2 rounded border border-gray-200 hover:bg-gray-100"
+          className="bg-white text-sm text-black px-8 py-2 rounded border border-purple-800 hover:bg-gray-100"
           onClick={() => {
             setSearchSupplier('');
             setSearchQuery('');
@@ -394,34 +393,31 @@ const InvoiceReport = () => {
         </div>
 
         <div className="overflow-x-auto shadow-md border rounded-lg">
-  <table className="w-full text-sm text-left">
-    <thead className="bg-gray-50 uppercase">
-      <tr>
-        <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Invoice Date</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Supplier Name</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Currency</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Total Invoice Amount</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Amount Before Tax</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Invoice Status</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Progress Status</th>
-        <th className="px-8 py-2 text-gray-700 text-center border" colSpan={2}>Payment Date</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Tax Number</th>
-        <th className="px-8 py-2 text-gray-700 text-center border">Tax Amount</th>
-      </tr>
-      <tr className="bg-gray-50 border">
-        <th colSpan={9}></th>
-        <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Plan</th>
-        <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Actual</th>
-        <th colSpan={2}></th>
-      </tr>
-    </thead>
+        <table className="w-full text-sm text-left">
+        <thead className="bg-gray-100 uppercase">
+          <tr>
+            <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
+            <th className="px-8 py-2 text-gray-700 text-center border">Invoice Date</th>
+            <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
+            <th className="px-8 py-2 text-gray-700 text-center border">Total Invoice Amount</th>
+            <th className="px-8 py-2 text-gray-700 text-center border">Amount Before Tax</th>
+            <th className="px-8 py-2 text-gray-700 text-center border">Invoice Status</th>
+            <th className="px-8 py-2 text-gray-700 text-center border" colSpan={2}>Payment Date</th>
+            <th className="px-8 py-2 text-gray-700 text-center border">Tax Number</th>
+            <th className="px-8 py-2 text-gray-700 text-center border">Tax Amount</th>
+          </tr>
+          <tr className="bg-gray-100 border">
+            <th colSpan={6}></th>
+            <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Plan</th>
+            <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Actual</th>
+            <th colSpan={2}></th>
+          </tr>
+        </thead>
 
         <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={11} className="px-6 py-4 text-center text-gray-500">
                   Loading...
                 </td>
               </tr>
@@ -437,12 +433,9 @@ const InvoiceReport = () => {
                   <td className="px-3 py-2 text-center">{invoice.inv_no}</td>
                   <td className="px-3 py-2 text-center">{invoice.doc_date}</td>
                   <td className="px-3 py-2 text-center">{invoice.bp_code}</td>
-                  <td className="px-3 py-2 text-center">{invoice.bp_name}</td>
-                  <td className="px-3 py-2 text-center">{invoice.currency}</td>
                   <td className="px-3 py-2 text-center">{invoice.total_invoice_amount.toLocaleString()}</td>
                   <td className="px-3 py-2 text-center">{invoice.amount_before_tax.toLocaleString()}</td>
                   <td className="px-3 py-2 text-center">{invoice.invoice_status}</td>
-                  <td className="px-3 py-2 text-center">{invoice.progress_status}</td>
                   <td className="px-3 py-2 text-center">{invoice.payment_plan_date}</td> {/* Payment Plan */}
                   <td className="px-3 py-2 text-center">{invoice.payment_actual_date}</td> {/* Payment Actual */}
                   <td className="px-3 py-2 text-center">{invoice.tax_number}</td>

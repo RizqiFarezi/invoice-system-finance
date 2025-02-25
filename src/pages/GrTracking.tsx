@@ -13,19 +13,18 @@ interface BusinessPartner {
 }
 
 interface GrTracking {
+  supplierCode: string;
+  poNumber: string;
+  supplierName: string;
+  grNumber: string;
   grItem: string;
   poCategory: string;
   poItem: string;
-  supplierCode: string;
-  supplierName: string;
-  grNumber: string;
-  grDate: string;
-  poNumber: string;
   invoiceNumber: string;
-  taxNumber: string;
-  taxDate: string;
-  paymentPlanDate: string;
-  paymentActual: string;
+  paymentPlanDate?: string; // Bisa nullable ('-')
+  actualReceiptDate?: string; // Baru, ada di tbody
+  actualReceiptQty?: string; // Baru, ada di tbody
+  paymentActual?: string; // Bisa nullable ('-')
   dnNumber: string;
   partNumber: string;
   materialDesc: string;
@@ -33,11 +32,11 @@ interface GrTracking {
   grQty: number;
   pricePerUOM: number;
   totalAmount: number;
-  vatAmount: number;
   currency: string;
   createdBy: string;
   createdDate: string;
 }
+
 
 const GrTracking = () => {
   const [data, setData] = useState<GrTracking[]>([]);
@@ -251,159 +250,154 @@ const GrTracking = () => {
   };
 
   return (
-    <>
-      <Breadcrumb pageName="Good Receive Tracking Retrieval" />
-      
-      <div className="space-y-4">
-        <form className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Supplier Code</label>
+  <div className="space-y-6">
+    <Breadcrumb pageName="Good Receive Tracking Retrieval" />
+    <form className="space-y-4">
+      {/* Row 1 */}
+      <div className='flex space-x-4'>
+        <div className="w-1/3 items-center">
           {userRole === "3" ? (
-            // Read-only input for supplier role
             <input
               type="text"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs bg-gray-100"
+              className="input w-full border border-purple-200 p-2 rounded-md text-xs bg-gray-100"
               value={`${userBpCode} | ${businessPartners[0]?.bp_name || ""}`}
               readOnly
             />
           ) : (
-            // React-Select untuk pemilihan supplier
-            <div className="w-2/3">
-              <Select
-                options={businessPartners.map((partner) => ({
-                  value: partner.bp_code,
-                  label: `${partner.bp_code} | ${partner.bp_name}`,
-                }))}
-                value={
-                  selectedSupplier
-                    ? {
-                        value: selectedSupplier,
-                        label:
-                          businessPartners.find((p) => p.bp_code === selectedSupplier)?.bp_name ||
-                          "Select Supplier",
-                      }
-                    : null
-                }
-                onChange={(selectedOption) => setSelectedSupplier(selectedOption.value)}
-                placeholder="Select Supplier"
-                className="text-xs"
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    borderColor: "#E5E7EB", // Sama dengan border-gray-200
-                    padding: "1px", // Sama dengan p-2
-                    borderRadius: "6px", // Sama dengan rounded-md
-                    fontSize: "13px", // Sama dengan text-xs
-                  }),
-                }}
-              />
-            </div>
+            <Select
+              options={businessPartners.map((partner) => ({
+                value: partner.bp_code,
+                label: `${partner.bp_code} | ${partner.bp_name}`,
+              }))}
+              value={
+                selectedSupplier
+                  ? {
+                      value: selectedSupplier,
+                      label:
+                        businessPartners.find((p) => p.bp_code === selectedSupplier)?.bp_name ||
+                        "Select Supplier",
+                    }
+                  : null
+              }
+              onChange={(selectedOption) => setSelectedSupplier(selectedOption.value)}
+              placeholder="Select Supplier"
+              className="w-full text-xs "
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderColor: "#D7BFDC",
+                  padding: "1px",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                }),
+              }}
+            />
           )}
         </div>
 
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Number</label>
-            <input
-              type="text"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder="----------   ----"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">Tax Number</label>
-            <input
-              type="text"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder="----------   ----"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">Supplier Name</label>
-            <input
-              type="text"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              value={businessPartners.find(p => p.bp_code === selectedSupplier)?.adr_line_1 || ''}
-              readOnly
-              placeholder="----------   ----"
-            />
-          </div>
+        <div className="flex w-1/3 items-center gap-2">
+          <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Number</label>
+          <input
+            type="text"
+            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+            placeholder="---------- ----"
+          />
+        </div>
 
-          {/* Keep all existing form fields */}
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
-            <input
-              type="date"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder="PO Date"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">Tax Date</label>
-            <input
-              type="date"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder=""
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">PO Number</label>
-            <input
-              type="text"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder="----------   ----"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
-            <input
-              type="text"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder="----------   ----"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">Status</label>
-            <input
-              type="text"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder="----------   ----"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">PO Date</label>
-            <input
-              type="date"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder="PO Date"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
-            <input
-              type="date"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder="PO Date"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="w-1/4 text-sm font-medium text-gray-700">DN Number</label>
-            <input
-              type="text"
-              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-              placeholder="----------   ----"
-            />
-          </div>
-        </form>
+        <div className="flex w-1/3 items-center gap-2">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Tax Number</label>
+          <input
+            type="text"
+            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+            placeholder="---------- ----"
+          />
+        </div>
       </div>
+
+      {/* Row 2 */}
+      <div className='flex space-x-4'>
+        <div className="flex w-1/3 items-center gap-2">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Supplier Name</label>
+          <input
+            type="text"
+            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+            value={businessPartners.find(p => p.bp_code === selectedSupplier)?.adr_line_1 || ''}
+            readOnly
+          />
+        </div>
+        
+        <div className="flex w-1/3 items-center gap-2">
+          <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
+          <input type="date" className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs" />
+        </div>
+        
+        <div className="flex w-1/3 items-center gap-2">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Tax Date</label>
+          <input type="date" className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs" />
+        </div>
+      </div>
+      
+      {/* Row 3 */}
+      <div className='flex space-x-4'>
+        <div className="flex w-1/3 items-center gap-2">
+        <label className="w-1/4 text-sm font-medium text-gray-700">PO Number</label>
+        <input
+          type="text"
+          placeholder="---------- ----"
+          className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+        />
+        </div>
+
+        <div className="flex w-1/3 items-center gap-2">
+        <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
+        <input
+          type="text"
+          placeholder="---------- ----"
+          className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+        />
+        </div>
+        
+        <div className="flex w-1/3 items-center gap-2">
+        <label className="w-1/4 text-sm font-medium text-gray-700">Status</label>
+        <input
+          type="text"
+          placeholder="---------- ----"
+          className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+        />
+        </div>
+      </div>
+      
+      {/* Row 4 */}
+      <div className='flex space-x-4'>
+        <div className="flex w-1/3 items-center gap-2">
+          <label className="w-1/4 text-sm font-medium text-gray-700">PO Date</label>
+          <input type="date" className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs" />
+        </div>
+        
+        <div className="flex w-1/3 items-center gap-2">
+          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
+          <input type="date" className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs" />
+        </div>
+        
+        <div className="flex w-1/3 items-center gap-2">
+        <label className="w-1/4 text-sm font-medium text-gray-700">DN Number</label>
+        <input
+          type="text"
+          placeholder="---------- ----"
+          className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+        />
+        </div>
+      </div>
+    </form>
 
       <div className="my-6 flex flex-col md:flex-row md:items-center md:justify-between">
         <div></div> {/* Bagian kiri dibiarkan kosong agar tombol tetap di kanan */}
-        <div className="flex justify-end gap-4 mr-4">
+        <div className="flex justify-end gap-4">
           <button className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-700">
             Search
           </button>
           <button
-            className="bg-gray-200 text-sm text-black px-8 py-2 rounded hover:bg-gray-300"
+            className="bg-white text-sm text-black px-8 py-2 rounded border border-purple-800 hover:bg-gray-100"
             onClick={handleClear}
           >
             Clear
@@ -424,17 +418,17 @@ const GrTracking = () => {
               <tr>
                 {/* Keep all existing table headers */}
                 <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO No</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Supplier Name</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA Number</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA No</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">GR/SA Item</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">PO Number</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">PO Category</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">PO Item</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Tax Number</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Tax Date</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Payment Plan Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Actual Receipt Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Actual Receipt QTY</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Payment Actual</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">DN Number</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Part No/Service Desc</th>
@@ -443,8 +437,6 @@ const GrTracking = () => {
                 <th className="px-8 py-2 text-gray-700 text-center border">GR QTY</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Price Per UOM</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Total Amount</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Vat Amount</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">PPh22 Amount</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Currency</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Created by</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Created Date</th>
@@ -454,18 +446,18 @@ const GrTracking = () => {
               {paginatedData.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
                   <td className="px-3 py-2 text-center">{item.supplierCode}</td>
+                  <td className="px-3 py-2 text-center">{item.poNumber}</td>
                   <td className="px-3 py-2 text-center">{item.supplierName}</td>
                   <td className="px-3 py-2 text-center">{item.grNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.grDate}</td>
                   <td className="px-3 py-2 text-center">{item.grItem}</td>
                   <td className="px-3 py-2 text-center">{item.poNumber}</td>
                   <td className="px-3 py-2 text-center">{item.poCategory}</td>
                   <td className="px-3 py-2 text-center">{item.poItem}</td>
                   <td className="px-3 py-2 text-center">{item.invoiceNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.taxNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.taxDate}</td>
-                  <td className="px-3 py-2 text-center">{item.paymentPlanDate}</td>
-                  <td className="px-3 py-2 text-center">{item.paymentActual}</td>
+                  <td className="px-3 py-2 text-center">{item.paymentPlanDate || '-'}</td>
+                  <td className="px-3 py-2 text-center">{item.actualReceiptDate || '-'}</td>
+                  <td className="px-3 py-2 text-center">{item.actualReceiptQty || '-'}</td>
+                  <td className="px-3 py-2 text-center">{item.paymentActual || '-'}</td>
                   <td className="px-3 py-2 text-center">{item.dnNumber}</td>
                   <td className="px-3 py-2 text-center">{item.partNumber}</td>
                   <td className="px-3 py-2 text-center">{item.materialDesc}</td>
@@ -473,7 +465,6 @@ const GrTracking = () => {
                   <td className="px-3 py-2 text-center">{item.grQty}</td>
                   <td className="px-3 py-2 text-center">{item.pricePerUOM}</td>
                   <td className="px-3 py-2 text-center">{item.totalAmount}</td>
-                  <td className="px-3 py-2 text-center">{item.vatAmount}</td>
                   <td className="px-3 py-2 text-center">{item.currency}</td>
                   <td className="px-3 py-2 text-center">{item.createdBy}</td>
                   <td className="px-3 py-2 text-center">{item.createdDate}</td>
@@ -495,7 +486,7 @@ const GrTracking = () => {
           onPageChange={handlePageChange}
         />
       </div>
-    </>
+</div>
   );
 };
 

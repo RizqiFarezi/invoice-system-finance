@@ -6,20 +6,29 @@ import InvoiceCreationWizard from './InvoiceCreationWizard';
 import Select from "react-select";
 
 interface GrSaRecord {
-  dnNumber: string;
-  grSaNumber: string;
-  poNumber: string;
-  poCategory: string;
-  poDate: string;
-  currency: string;
-  totalAmount: number;
-  invoiceNumber: string;
-  supplier: string;
-  createdBy: string;
-  createdDate: string;
-  updatedBy: string;
-  updatedDate: string;
-}
+    supplierCode: string;
+    poNumber: string;
+    supplierName: string;
+    grNumber: string;
+    grItem: string;
+    poCategory: string;
+    poItem: string;
+    invoiceNumber: string;
+    paymentPlanDate?: string; // Bisa nullable ('-')
+    actualReceiptDate?: string; // Baru, ada di tbody
+    actualReceiptQty?: string; // Baru, ada di tbody
+    paymentActual?: string; // Bisa nullable ('-')
+    dnNumber: string;
+    partNumber: string;
+    materialDesc: string;
+    uom: string;
+    grQty: number;
+    pricePerUOM: number;
+    totalAmount: number;
+    currency: string;
+    createdBy: string;
+    createdDate: string;
+  }
 
 const InvoiceCreation = () => {
   const [showWizard, setShowWizard] = useState(false);
@@ -131,7 +140,7 @@ const InvoiceCreation = () => {
           styles={{
             control: (base) => ({
               ...base,
-              borderColor: "#E5E7EB", // Sama dengan border-gray-200
+              borderColor: "#D7BFDC", // Sama dengan border-gray-200
               padding: "1px", // Sama dengan p-2
               borderRadius: "6px", // Sama dengan rounded-md
               fontSize: "14px", // Sama dengan text-xs
@@ -145,7 +154,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">PO Date</label>
           <input
             type="date"
-            className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
@@ -155,7 +164,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
           <input
             type="date"
-            className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
@@ -167,7 +176,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
           <input
             type="text"
-            className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
             placeholder="----  ---------"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -178,7 +187,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">PO Number</label>
           <input
             type="text"
-            className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
             placeholder="----  ---------"
             value={poNumber}
             onChange={(e) => setPoNumber(e.target.value)}
@@ -189,7 +198,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
           <input
             type="date"
-            className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
@@ -200,7 +209,7 @@ const InvoiceCreation = () => {
       <div className="flex justify-end items-center gap-4 ">
         <button className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-800">Search</button>
         <button
-          className="bg-gray-200 text-sm text-black px-8 py-2 rounded border border-gray-200 hover:bg-gray-100"
+          className="bg-white text-sm text-black px-8 py-2 rounded border border-purple-800 hover:bg-gray-100"
           onClick={() => {
             setSearchSupplier('');
             setSearchQuery('');
@@ -216,22 +225,22 @@ const InvoiceCreation = () => {
         {/* Table Section */}
         <div className="overflow-x-auto shadow-md border rounded-lg w-full md:w-2/3">
           <table className="w-full text-md text-left">
-            <thead className="bg-purple-200">
+            <thead className="bg-purple-300">
               <tr>
-                <th className="px-4 py-3 text-gray-700 text-center border">Total Record(s)</th>
-                <th className="px-4 py-3 text-gray-700 text-center border">Currency</th>
-                <th className="px-4 py-3 text-gray-700 text-center border">Total Amount</th>
-                <th className="px-4 py-3 text-gray-700 text-center border">Message</th>
+                <th className="px-4 py-3 text-md text-gray-800 text-center border">Total Record(s)</th>
+                <th className="px-4 py-3 text-md text-gray-800 text-center border">Currency</th>
+                <th className="px-4 py-3 text-md text-gray-800 text-center border">Total Amount</th>
+                <th className="px-4 py-3 text-md text-gray-800 text-center border">Message</th>
               </tr>
             </thead>
             <tbody>
               <tr className="border-b hover:bg-gray-50">
-                <td className="px-3 py-2 text-center">{grSaList.length}</td>
-                <td className="px-3 py-2 text-center">{grSaList[0]?.currency || '-'}</td>
-                <td className="px-3 py-2 text-center">
+                <td className="px-3 py-2 text-sm text-center">{grSaList.length}</td>
+                <td className="px-3 py-2 text-sm text-center">{grSaList[0]?.currency || '-'}</td>
+                <td className="px-3 py-2 text-sm text-center">
                   {grSaList.reduce((sum, item) => sum + (item.totalAmount || 0), 0)}
                 </td>
-                <td className="px-3 py-2 text-center">Status message here</td>
+                <td className="px-3 py-2 text-sm text-center">Status message here</td>
               </tr>
             </tbody>
           </table>
@@ -243,7 +252,7 @@ const InvoiceCreation = () => {
             <label className="w-1/3 text-sm md:text-md font-medium text-gray-700">Selected Record(s)</label>
             <input
               type="text"
-              className="w-2/3 border border-gray-300 p-2 rounded-md text-xs md:text-sm text-center"
+              className="w-2/3 border border-purple-200 p-2 rounded-md text-xs md:text-sm text-center"
               readOnly
               value={(Array.isArray(selectedRecords) ? selectedRecords.length : 0)}
             />
@@ -252,7 +261,7 @@ const InvoiceCreation = () => {
             <label className="w-1/3 text-sm md:text-md font-medium text-gray-700">Total Amount</label>
             <input
               type="text"
-              className="w-2/3 border border-gray-300 p-2 rounded-md text-xs md:text-sm text-center"
+              className="w-2/3 border border-purple-200 p-2 rounded-md text-xs md:text-sm text-center"
               readOnly
               value={(Array.isArray(selectedRecords) ? selectedRecords.reduce((sum, item) => sum + (item.totalAmount || 0), 0) : 0)}
             />
@@ -261,9 +270,9 @@ const InvoiceCreation = () => {
       </div>
 
       {/* Separate Section for GR/SA List */}
-      <h3 className="text-xl font-semibold text-gray-700">GR / SA List</h3>
-      <div className="bg-white p-6 space-y-6">
-        <div className="flex justify-between">
+      <h3 className="text-xl font-semibold text-gray-700">GR / SA Outstanding</h3>
+      <div className="bg-white p-6 space-y-6 mt-8">
+        <div className="flex justify-between mb-8">
           <div>
             <button className="bg-purple-900 text-sm text-white px-6 py-2 rounded hover:bg-purple-800">Invoice Upload</button>
             <button className="bg-purple-900 text-sm text-white px-6 py-2 rounded hover:bg-purple-800 ml-4">Download GR/SA</button>
@@ -296,19 +305,30 @@ const InvoiceCreation = () => {
                     className="cursor-pointer"
                   />
                 </th>
-                <th className="px-6 py-2 text-gray-700 text-center border">DN Number</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">GR/SA Number</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">PO Number</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">PO Category</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">PO Date</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">Currency</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">Total Amount</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">Invoice Number</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">Supplier</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">Created By</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">Created Date</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">Updated By</th>
-                <th className="px-6 py-2 text-gray-700 text-center border">Updated Date</th>
+                {/* Keep all existing table headers */}
+                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Name</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA Item</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Category</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Item</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Payment Plan Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Actual Receipt Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Actual Receipt QTY</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Payment Actual</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">DN Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Part No/Service Desc</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Material/Service Desc</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">UOM</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR QTY</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Price Per UOM</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Total Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Currency</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Created by</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Created Date</th>
               </tr>
             </thead>
             <tbody>
@@ -322,26 +342,37 @@ const InvoiceCreation = () => {
                       className="cursor-pointer"
                     />
                   </td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.dnNumber}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.grSaNumber}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.poNumber}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.poCategory}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.poDate}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.currency}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.totalAmount}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.invoiceNumber}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.supplier}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.createdBy}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.createdDate}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.updatedBy}</td>
-                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.updatedDate}</td>
+                  <td className="px-3 py-3 text-center">{item.supplierCode}</td>
+                  <td className="px-3 py-3 text-center">{item.poNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.supplierName}</td>
+                  <td className="px-3 py-3 text-center">{item.grNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.grItem}</td>
+                  <td className="px-3 py-3 text-center">{item.poNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.poCategory}</td>
+                  <td className="px-3 py-3 text-center">{item.poItem}</td>
+                  <td className="px-3 py-3 text-center">{item.invoiceNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.paymentPlanDate || '-'}</td>
+                  <td className="px-3 py-3 text-center">{item.actualReceiptDate || '-'}</td>
+                  <td className="px-3 py-3 text-center">{item.actualReceiptQty || '-'}</td>
+                  <td className="px-3 py-3 text-center">{item.paymentActual || '-'}</td>
+                  <td className="px-3 py-3 text-center">{item.dnNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.partNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.materialDesc}</td>
+                  <td className="px-3 py-3 text-center">{item.uom}</td>
+                  <td className="px-3 py-3 text-center">{item.grQty}</td>
+                  <td className="px-3 py-3 text-center">{item.pricePerUOM}</td>
+                  <td className="px-3 py-3 text-center">{item.totalAmount}</td>
+                  <td className="px-3 py-3 text-center">{item.currency}</td>
+                  <td className="px-3 py-3 text-center">{item.createdBy}</td>
+                  <td className="px-3 py-3 text-center">{item.createdDate}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination */}
+      {/* Pagination */}
+      <div className="mt-6"> 
         <Pagination
           currentPage={currentPage}
           totalRows={filteredData.length}
@@ -349,7 +380,7 @@ const InvoiceCreation = () => {
           onPageChange={setCurrentPage}
         />
       </div>
-
+    </div>
       {showWizard && (
         <InvoiceCreationWizard
           onClose={handleWizardClose}

@@ -238,7 +238,7 @@ const ManageUser: React.FC = () => {
           <div className="relative overflow-hidden shadow-md rounded-lg border border-gray-300">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="bg-purple-200">
+                <thead className="bg-gray-100">
                   <tr>
                     <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border">
                       Username
