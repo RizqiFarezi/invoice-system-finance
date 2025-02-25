@@ -13,28 +13,48 @@ interface BusinessPartner {
 }
 
 interface GrTracking {
-  supplierCode: string;
-  poNumber: string;
-  supplierName: string;
-  grNumber: string;
-  grItem: string;
-  poCategory: string;
-  poItem: string;
-  invoiceNumber: string;
-  paymentPlanDate?: string; // Bisa nullable ('-')
-  actualReceiptDate?: string; // Baru, ada di tbody
-  actualReceiptQty?: string; // Baru, ada di tbody
-  paymentActual?: string; // Bisa nullable ('-')
-  dnNumber: string;
-  partNumber: string;
-  materialDesc: string;
-  uom: string;
-  grQty: number;
-  pricePerUOM: number;
-  totalAmount: number;
+  po_no: string;
+  bp_id: string;
+  bp_name: string;
   currency: string;
-  createdBy: string;
-  createdDate: string;
+  po_type: string;
+  po_reference: string;
+  po_line: string;
+  po_sequence: string;
+  po_receipt_sequence: string;
+  actual_receipt_date: string;
+  actual_receipt_year: string;
+  actual_receipt_period: string;
+  receipt_no: string;
+  receipt_line: string;
+  gr_no: string;
+  packing_slip: string;
+  item_no: string;
+  ics_code: string;
+  ics_part: string;
+  part_no: string;
+  item_desc: string;
+  item_group: string;
+  item_type: string;
+  item_type_desc: string;
+  request_qty: number;
+  actual_receipt_qty: number;
+  approve_qty: number;
+  unit: string;
+  receipt_amount: number;
+  receipt_unit_price: number;
+  is_final_receipt: boolean;
+  is_confirmed: boolean;
+  inv_doc_no: string;
+  inv_doc_date: string;
+  inv_qty: number;
+  inv_amount: number;
+  inv_supplier_no: string;
+  inv_due_date: string;
+  payment_doc: string;
+  payment_doc_date: string;
+  created_at: string;
+  updated_at: string;
 }
 
 
@@ -213,19 +233,19 @@ const GrTracking = () => {
     if (searchSupplier) {
       filtered = filtered.filter(
         (row) =>
-          row.supplierCode.toLowerCase().includes(searchSupplier.toLowerCase()) ||
-          row.supplierName.toLowerCase().includes(searchSupplier.toLowerCase())
+          row.bp_id.toLowerCase().includes(searchSupplier.toLowerCase()) ||
+          row.bp_name.toLowerCase().includes(searchSupplier.toLowerCase())
       );
     }
 
     if (searchQuery) {
       filtered = filtered.filter((row) =>
-        row.poNumber.toLowerCase().includes(searchQuery.toLowerCase())
+        row.po_no.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     if (selectedSupplier) {
-      filtered = filtered.filter(row => row.supplierCode === selectedSupplier);
+      filtered = filtered.filter(row => row.bp_id === selectedSupplier);
     }
 
     setFilteredData(filtered);
@@ -279,7 +299,7 @@ const GrTracking = () => {
                     }
                   : null
               }
-              onChange={(selectedOption) => setSelectedSupplier(selectedOption.value)}
+              onChange={(selectedOption) => selectedOption && setSelectedSupplier(selectedOption.value)}
               placeholder="Select Supplier"
               className="w-full text-xs "
               styles={{
@@ -417,57 +437,95 @@ const GrTracking = () => {
             <thead className="bg-gray-100 uppercase">
               <tr>
                 {/* Keep all existing table headers */}
-                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">PO No</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Name</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA No</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA Item</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">PO Number</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">PO Category</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">PO Item</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Payment Plan Date</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Actual Receipt Date</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Actual Receipt QTY</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Payment Actual</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">DN Number</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Part No/Service Desc</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Material/Service Desc</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">UOM</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">GR QTY</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Price Per UOM</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Total Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">BP ID</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">BP Name</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">Currency</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Created by</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Created Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Type</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Reference</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Line</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Sequence</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Receipt Sequence</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Receipt Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Receipt Year</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Receipt Period</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Receipt No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Receipt Line</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Packing Slip</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Item No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">ICS Code</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">ICS Part</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Part No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Item Description</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Item Group</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Item Type</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Item Type Desc</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Request Qty</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Receipt Qty</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Approve Qty</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Unit</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Receipt Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Unit Price</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Final Receipt</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Confirmed</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Qty</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Supplier No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Due Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Payment Doc</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Payment Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Created At</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Updated At</th>
               </tr>
             </thead>
             <tbody>
               {paginatedData.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-center">{item.supplierCode}</td>
-                  <td className="px-3 py-2 text-center">{item.poNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.supplierName}</td>
-                  <td className="px-3 py-2 text-center">{item.grNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.grItem}</td>
-                  <td className="px-3 py-2 text-center">{item.poNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.poCategory}</td>
-                  <td className="px-3 py-2 text-center">{item.poItem}</td>
-                  <td className="px-3 py-2 text-center">{item.invoiceNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.paymentPlanDate || '-'}</td>
-                  <td className="px-3 py-2 text-center">{item.actualReceiptDate || '-'}</td>
-                  <td className="px-3 py-2 text-center">{item.actualReceiptQty || '-'}</td>
-                  <td className="px-3 py-2 text-center">{item.paymentActual || '-'}</td>
-                  <td className="px-3 py-2 text-center">{item.dnNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.partNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.materialDesc}</td>
-                  <td className="px-3 py-2 text-center">{item.uom}</td>
-                  <td className="px-3 py-2 text-center">{item.grQty}</td>
-                  <td className="px-3 py-2 text-center">{item.pricePerUOM}</td>
-                  <td className="px-3 py-2 text-center">{item.totalAmount}</td>
+                  <td className="px-3 py-2 text-center">{item.po_no}</td>
+                  <td className="px-3 py-2 text-center">{item.bp_id}</td>
+                  <td className="px-3 py-2 text-center">{item.bp_name}</td>
                   <td className="px-3 py-2 text-center">{item.currency}</td>
-                  <td className="px-3 py-2 text-center">{item.createdBy}</td>
-                  <td className="px-3 py-2 text-center">{item.createdDate}</td>
+                  <td className="px-3 py-2 text-center">{item.po_type}</td>
+                  <td className="px-3 py-2 text-center">{item.po_reference}</td>
+                  <td className="px-3 py-2 text-center">{item.po_line}</td>
+                  <td className="px-3 py-2 text-center">{item.po_sequence}</td>
+                  <td className="px-3 py-2 text-center">{item.po_receipt_sequence}</td>
+                  <td className="px-3 py-2 text-center">{item.actual_receipt_date}</td>
+                  <td className="px-3 py-2 text-center">{item.actual_receipt_year}</td>
+                  <td className="px-3 py-2 text-center">{item.actual_receipt_period}</td>
+                  <td className="px-3 py-2 text-center">{item.receipt_no}</td>
+                  <td className="px-3 py-2 text-center">{item.receipt_line}</td>
+                  <td className="px-3 py-2 text-center">{item.gr_no}</td>
+                  <td className="px-3 py-2 text-center">{item.packing_slip}</td>
+                  <td className="px-3 py-2 text-center">{item.item_no}</td>
+                  <td className="px-3 py-2 text-center">{item.ics_code}</td>
+                  <td className="px-3 py-2 text-center">{item.ics_part}</td>
+                  <td className="px-3 py-2 text-center">{item.part_no}</td>
+                  <td className="px-3 py-2 text-center">{item.item_desc}</td>
+                  <td className="px-3 py-2 text-center">{item.item_group}</td>
+                  <td className="px-3 py-2 text-center">{item.item_type}</td>
+                  <td className="px-3 py-2 text-center">{item.item_type_desc}</td>
+                  <td className="px-3 py-2 text-center">{item.request_qty}</td>
+                  <td className="px-3 py-2 text-center">{item.actual_receipt_qty}</td>
+                  <td className="px-3 py-2 text-center">{item.approve_qty}</td>
+                  <td className="px-3 py-2 text-center">{item.unit}</td>
+                  <td className="px-3 py-2 text-center">{item.receipt_amount}</td>
+                  <td className="px-3 py-2 text-center">{item.receipt_unit_price}</td>
+                  <td className="px-3 py-2 text-center">{item.is_final_receipt ? 'Yes' : 'No'}</td>
+                  <td className="px-3 py-2 text-center">{item.is_confirmed ? 'Yes' : 'No'}</td>
+                  <td className="px-3 py-2 text-center">{item.inv_doc_no}</td>
+                  <td className="px-3 py-2 text-center">{item.inv_doc_date}</td>
+                  <td className="px-3 py-2 text-center">{item.inv_qty}</td>
+                  <td className="px-3 py-2 text-center">{item.inv_amount}</td>
+                  <td className="px-3 py-2 text-center">{item.inv_supplier_no}</td>
+                  <td className="px-3 py-2 text-center">{item.inv_due_date}</td>
+                  <td className="px-3 py-2 text-center">{item.payment_doc}</td>
+                  <td className="px-3 py-2 text-center">{item.payment_doc_date}</td>
+                  <td className="px-3 py-2 text-center">{item.created_at}</td>
+                  <td className="px-3 py-2 text-center">{item.updated_at}</td>
                 </tr>
               ))}
               <tr>
