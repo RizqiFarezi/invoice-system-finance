@@ -212,30 +212,30 @@ const InvoiceCreation = () => {
 
       {/* Section for GR/SA Outstanding */}
       <h3 className="text-xl font-semibold text-gray-700 mb-2">GR / SA Outstanding</h3>
-<div className="bg-white p-6 flex flex-wrap md:flex-nowrap justify-between gap-4">
-  {/* Table Section */}
-  <div className="overflow-x-auto shadow-md border rounded-lg w-full md:w-2/3">
-    <table className="w-full text-md text-left">
-      <thead className="bg-gray-50">
-        <tr>
-          <th className="px-4 py-3 text-gray-700 text-center border">Total Record(s)</th>
-          <th className="px-4 py-3 text-gray-700 text-center border">Currency</th>
-          <th className="px-4 py-3 text-gray-700 text-center border">Total Amount</th>
-          <th className="px-4 py-3 text-gray-700 text-center border">Message</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr className="border-b hover:bg-gray-50">
-          <td className="px-3 py-2 text-center">{grSaList.length}</td>
-          <td className="px-3 py-2 text-center">{grSaList[0]?.currency || '-'}</td>
-          <td className="px-3 py-2 text-center">
-            {grSaList.reduce((sum, item) => sum + (item.totalAmount || 0), 0)}
-          </td>
-          <td className="px-3 py-2 text-center">Status message here</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+      <div className="bg-white p-6 flex flex-wrap md:flex-nowrap justify-between gap-4">
+        {/* Table Section */}
+        <div className="overflow-x-auto shadow-md border rounded-lg w-full md:w-2/3">
+          <table className="w-full text-md text-left">
+            <thead className="bg-purple-200">
+              <tr>
+                <th className="px-4 py-3 text-gray-700 text-center border">Total Record(s)</th>
+                <th className="px-4 py-3 text-gray-700 text-center border">Currency</th>
+                <th className="px-4 py-3 text-gray-700 text-center border">Total Amount</th>
+                <th className="px-4 py-3 text-gray-700 text-center border">Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b hover:bg-gray-50">
+                <td className="px-3 py-2 text-center">{grSaList.length}</td>
+                <td className="px-3 py-2 text-center">{grSaList[0]?.currency || '-'}</td>
+                <td className="px-3 py-2 text-center">
+                  {grSaList.reduce((sum, item) => sum + (item.totalAmount || 0), 0)}
+                </td>
+                <td className="px-3 py-2 text-center">Status message here</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         {/* Input Section */}
         <div className="flex flex-col gap-4 w-full md:w-1/3">
@@ -286,7 +286,7 @@ const InvoiceCreation = () => {
 
         <div className="overflow-x-auto shadow-md border rounded-lg">
           <table className="w-full text-sm text-center">
-            <thead className="bg-gray-50 uppercase">
+            <thead className="bg-gray-100 uppercase">
               <tr>
                 <th className="px-3 py-2 text-center border">
                   <input
@@ -322,11 +322,11 @@ const InvoiceCreation = () => {
                       className="cursor-pointer"
                     />
                   </td>
-                  <td className="px-3 py-2 text-xs text-gray-600 text-center">{item.dnNumber}</td>
-                  <td className="px-3 py-2 text-xs text-gray-600 text-center">{item.grSaNumber}</td>
-                  <td className="px-3 py-2 text-xs text-gray-600 text-center">{item.poNumber}</td>
-                  <td className="px-3 py-2 text-xs text-gray-600 text-center">{item.poCategory}</td>
-                  <td className="px-3 py-2 text-xs text-gray-600 text-center">{item.poDate}</td>
+                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.dnNumber}</td>
+                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.grSaNumber}</td>
+                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.poNumber}</td>
+                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.poCategory}</td>
+                  <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.poDate}</td>
                   <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.currency}</td>
                   <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.totalAmount}</td>
                   <td className="px-3 py-2 text-sm text-gray-600 text-center">{item.invoiceNumber}</td>

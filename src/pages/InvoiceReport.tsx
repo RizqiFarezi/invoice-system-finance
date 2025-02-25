@@ -284,7 +284,7 @@ const InvoiceReport = () => {
           }}
         />
       </div>
-        </div>
+      </div>
 
         <div className='flex space-x-4'>
         <div className="flex w-1/3 items-center gap-2">
@@ -394,69 +394,69 @@ const InvoiceReport = () => {
         </div>
 
         <div className="overflow-x-auto shadow-md border rounded-lg">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 uppercase">
-              <tr>
-                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Date</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Name</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Currency</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Total Invoice Amount</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Amount Before Tax</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Status</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Progress Status</th>
-                <th className="px-8 py-2 text-gray-700 text-center border" colSpan={2}>Payment Date</th>
-                <th className="px-8 py-2 text-gray-700 text-center border">Tax Number</th>
-                <th className="px-8 py-2 text-text-gray-700 text-center border">Tax Amount</th>
-              </tr>
-              <tr className="bg-gray-50 border">
-                <th colSpan={10}></th>
-                <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Plan</th>
-                <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Actual</th>
-                <th colSpan={2}></th>
-              </tr>
-            </thead>
+  <table className="w-full text-sm text-left">
+    <thead className="bg-gray-50 uppercase">
+      <tr>
+        <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Invoice Date</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Supplier Name</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Currency</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Total Invoice Amount</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Amount Before Tax</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Invoice Status</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Progress Status</th>
+        <th className="px-8 py-2 text-gray-700 text-center border" colSpan={2}>Payment Date</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Tax Number</th>
+        <th className="px-8 py-2 text-gray-700 text-center border">Tax Amount</th>
+      </tr>
+      <tr className="bg-gray-50 border">
+        <th colSpan={9}></th>
+        <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Plan</th>
+        <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Actual</th>
+        <th colSpan={2}></th>
+      </tr>
+    </thead>
 
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
-                    Loading...
+        <tbody>
+            {isLoading ? (
+              <tr>
+                <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
+                  Loading...
+                </td>
+              </tr>
+            ) : paginatedData.length > 0 ? (
+              paginatedData.map((invoice, index) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="px-3 py-2 text-center">
+                    <input 
+                      type="checkbox" 
+                      onChange={() => handleRecordSelection(invoice)}
+                    />
                   </td>
+                  <td className="px-3 py-2 text-center">{invoice.inv_no}</td>
+                  <td className="px-3 py-2 text-center">{invoice.doc_date}</td>
+                  <td className="px-3 py-2 text-center">{invoice.bp_code}</td>
+                  <td className="px-3 py-2 text-center">{invoice.bp_name}</td>
+                  <td className="px-3 py-2 text-center">{invoice.currency}</td>
+                  <td className="px-3 py-2 text-center">{invoice.total_invoice_amount.toLocaleString()}</td>
+                  <td className="px-3 py-2 text-center">{invoice.amount_before_tax.toLocaleString()}</td>
+                  <td className="px-3 py-2 text-center">{invoice.invoice_status}</td>
+                  <td className="px-3 py-2 text-center">{invoice.progress_status}</td>
+                  <td className="px-3 py-2 text-center">{invoice.payment_plan_date}</td> {/* Payment Plan */}
+                  <td className="px-3 py-2 text-center">{invoice.payment_actual_date}</td> {/* Payment Actual */}
+                  <td className="px-3 py-2 text-center">{invoice.tax_number}</td>
+                  <td className="px-3 py-2 text-center">{invoice.tax_amount.toLocaleString()}</td>
                 </tr>
-              ) : paginatedData.length > 0 ? (
-                paginatedData.map((invoice, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-50">
-                    <td className="px-3 py-2 text-center">
-                      <input 
-                        type="checkbox" 
-                        onChange={() => handleRecordSelection(invoice)}
-                      />
-                    </td>
-                    <td className="px-3 py-2 text-center">{invoice.inv_no}</td>
-                    <td className="px-3 py-2 text-center">{invoice.doc_date}</td>
-                    <td className="px-3 py-2 text-center">{invoice.bp_code}</td>
-                    <td className="px-3 py-2 text-center">{invoice.bp_name}</td>
-                    <td className="px-3 py-2 text-center">{invoice.currency}</td>
-                    <td className="px-3 py-2 text-center">{invoice.total_invoice_amount.toLocaleString()}</td>
-                    <td className="px-3 py-2 text-center">{invoice.amount_before_tax.toLocaleString()}</td>
-                    <td className="px-3 py-2 text-center">{invoice.invoice_status}</td>
-                    <td className="px-3 py-2 text-center">{invoice.progress_status}</td>
-                    <td className="px-3 py-2 text-center">{invoice.payment_plan_date}</td>
-                    <td className="px-3 py-2 text-center">{invoice.payment_actual_date}</td>
-                    <td className="px-3 py-2 text-center">{invoice.tax_number}</td>
-                    <td className="px-3 py-2 text-center">{invoice.tax_amount.toLocaleString()}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
-                    No data available
-                  </td>
-                </tr>
-              )}
-            </tbody>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
+                  No data available.
+                </td>
+              </tr>
+            )}
+          </tbody>
           </table>
         </div>
 

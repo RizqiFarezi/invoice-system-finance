@@ -238,22 +238,22 @@ const ManageUser: React.FC = () => {
           <div className="relative overflow-hidden shadow-md rounded-lg border border-gray-300">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50">
+                <thead className="bg-purple-200">
                   <tr>
-                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w[20%]">
+                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border">
                       Username
                     </th>
-                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w[10%]">
+                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border">
                       Supplier Code
                     </th>
-                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w[25%]">
+                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border">
                       Name
                     </th>
-                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[15%]">
+                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border">
                       Role
                     </th>
                     <th
-                      className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[10%] cursor-pointer"
+                      className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border cursor-pointer"
                       onClick={() => handleSort('Status')}
                     >
                       <span className="flex items-center justify-center">
@@ -269,10 +269,10 @@ const ManageUser: React.FC = () => {
                         Status
                       </span>
                     </th>
-                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[10%]">
+                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border">
                       Action
                     </th>
-                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[10%]">
+                    <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border">
                       Edit User
                     </th>
                   </tr>

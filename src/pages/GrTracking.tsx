@@ -420,7 +420,7 @@ const GrTracking = () => {
         </div>
         <div className="overflow-x-auto shadow-md border rounded-lg mb-6">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 uppercase">
+            <thead className="bg-gray-100 uppercase">
               <tr>
                 {/* Keep all existing table headers */}
                 <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>

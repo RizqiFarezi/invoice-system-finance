@@ -168,7 +168,7 @@ const ListProgress: React.FC = () => {
       {/* Table Section */}
       <div className="overflow-x-auto shadow-md rounded-lg border">
         <table className="min-w-full divide-y divide-gray-200 text-center mx-auto">
-          <thead className="bg-gray-50 uppercase">
+          <thead className="bg-purple-200 uppercase">
             <tr>
               <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Invoice Number</th>
               <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Supplier ID</th>
