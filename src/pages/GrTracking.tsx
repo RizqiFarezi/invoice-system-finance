@@ -4,6 +4,7 @@ import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import SearchBar from '../components/Table/SearchBar';
 import Pagination from '../components/Table/Pagination';
 import { API_Inv_Line_Admin, API_List_Partner_Admin } from '../api/api';
+import Select from "react-select";
 
 interface BusinessPartner {
   bp_code: string;
@@ -255,32 +256,51 @@ const GrTracking = () => {
       
       <div className="space-y-4">
         <form className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4">
           <label className="w-1/4 text-sm font-medium text-gray-700">Supplier Code</label>
-            {userRole === '3' ? (
-              // Read-only input for supplier role
-              <input
-                type="text"
-                className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs bg-gray-100"
-                value={`${userBpCode} | ${businessPartners[0]?.bp_name || ''}`}
-                readOnly
+          {userRole === "3" ? (
+            // Read-only input for supplier role
+            <input
+              type="text"
+              className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs bg-gray-100"
+              value={`${userBpCode} | ${businessPartners[0]?.bp_name || ""}`}
+              readOnly
+            />
+          ) : (
+            // React-Select untuk pemilihan supplier
+            <div className="w-2/3">
+              <Select
+                options={businessPartners.map((partner) => ({
+                  value: partner.bp_code,
+                  label: `${partner.bp_code} | ${partner.bp_name}`,
+                }))}
+                value={
+                  selectedSupplier
+                    ? {
+                        value: selectedSupplier,
+                        label:
+                          businessPartners.find((p) => p.bp_code === selectedSupplier)?.bp_name ||
+                          "Select Supplier",
+                      }
+                    : null
+                }
+                onChange={(selectedOption) => setSelectedSupplier(selectedOption.value)}
+                placeholder="Select Supplier"
+                className="text-xs"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    borderColor: "#E5E7EB", // Sama dengan border-gray-200
+                    padding: "1px", // Sama dengan p-2
+                    borderRadius: "6px", // Sama dengan rounded-md
+                    fontSize: "13px", // Sama dengan text-xs
+                  }),
+                }}
               />
-            ) : (
-              // Regular select for other roles
-              <select
-                className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-                value={selectedSupplier}
-                onChange={(e) => setSelectedSupplier(e.target.value)}
-              >
-                <option value="">Select Supplier</option>
-                {businessPartners.map((partner) => (
-                  <option key={partner.bp_code} value={partner.bp_code}>
-                    {partner.bp_code} | {partner.bp_name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
+
           <div className="flex items-center gap-4">
             <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Number</label>
             <input
@@ -376,11 +396,14 @@ const GrTracking = () => {
         </form>
       </div>
 
-      <div className="my-6 flex flex-col md:flex-row md:items-center md:justify-between gap-100">
-        <div className="flex gap-4 ml-auto">
-          <button className="bg-purple-900 text-xs text-white px-8 py-2 rounded">Search</button>
+      <div className="my-6 flex flex-col md:flex-row md:items-center md:justify-between">
+        <div></div> {/* Bagian kiri dibiarkan kosong agar tombol tetap di kanan */}
+        <div className="flex justify-end gap-4 mr-4">
+          <button className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-700">
+            Search
+          </button>
           <button
-            className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
+            className="bg-gray-200 text-sm text-black px-8 py-2 rounded hover:bg-gray-300"
             onClick={handleClear}
           >
             Clear
@@ -395,36 +418,36 @@ const GrTracking = () => {
             onSearchChange={setSearchSupplier}
           />
         </div>
-        <div className="overflow-x-auto shadow-md border rounded-lg">
+        <div className="overflow-x-auto shadow-md border rounded-lg mb-6">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-100">
+            <thead className="bg-gray-50 uppercase">
               <tr>
                 {/* Keep all existing table headers */}
-                <th className="px-3 py-3.5 text-center">Supplier Code</th>
-                <th className="px-3 py-3.5 text-center">Supplier Name</th>
-                <th className="px-3 py-3.5 text-center">GR/SA Number</th>
-                <th className="px-3 py-3.5 text-center">GR/SA Date</th>
-                <th className="px-3 py-3.5 text-center">GR/SA Item</th>
-                <th className="px-3 py-3.5 text-center">PO Number</th>
-                <th className="px-3 py-3.5 text-center">PO Category</th>
-                <th className="px-3 py-3.5 text-center">PO Item</th>
-                <th className="px-3 py-3.5 text-center">Invoice Number</th>
-                <th className="px-3 py-3.5 text-center">Tax Number</th>
-                <th className="px-3 py-3.5 text-center">Tax Date</th>
-                <th className="px-3 py-3.5 text-center">Payment Plan Date</th>
-                <th className="px-3 py-3.5 text-center">Payment Actual</th>
-                <th className="px-3 py-3.5 text-center">DN Number</th>
-                <th className="px-3 py-3.5 text-center">Part No/Service Desc</th>
-                <th className="px-3 py-3.5 text-center">Material/Service Desc</th>
-                <th className="px-3 py-3.5 text-center">UOM</th>
-                <th className="px-3 py-3.5 text-center">GR QTY</th>
-                <th className="px-3 py-3.5 text-center">Price Per UOM</th>
-                <th className="px-3 py-3.5 text-center">Total Amount</th>
-                <th className="px-3 py-3.5 text-center">Vat Amount</th>
-                <th className="px-3 py-3.5 text-center">PPh22 Amount</th>
-                <th className="px-3 py-3.5 text-center">Currency</th>
-                <th className="px-3 py-3.5 text-center">Created by</th>
-                <th className="px-3 py-3.5 text-center">Created Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Name</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA Item</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Category</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Item</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Tax Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Tax Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Payment Plan Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Payment Actual</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">DN Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Part No/Service Desc</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Material/Service Desc</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">UOM</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR QTY</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Price Per UOM</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Total Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Vat Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PPh22 Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Currency</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Created by</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Created Date</th>
               </tr>
             </thead>
             <tbody>
@@ -456,6 +479,11 @@ const GrTracking = () => {
                   <td className="px-3 py-2 text-center">{item.createdDate}</td>
                 </tr>
               ))}
+              <tr>
+                <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
+                  No data available
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

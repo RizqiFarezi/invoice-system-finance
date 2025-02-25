@@ -151,7 +151,7 @@ const ListProgress: React.FC = () => {
           </div>
           <button
             onClick={handleRefresh}
-            className="bg-purple-800 text-sm text-white px-6 py-2 rounded-lg hover:bg-blue-700 mt-1"
+            className="bg-purple-900 text-sm text-white px-6 py-2 rounded hover:bg-purple-700 "
           >
             Refresh
           </button>
@@ -168,16 +168,16 @@ const ListProgress: React.FC = () => {
       {/* Table Section */}
       <div className="overflow-x-auto shadow-md rounded-lg border">
         <table className="min-w-full divide-y divide-gray-200 text-center mx-auto">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 uppercase">
             <tr>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600">Invoice Number</th>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600">Supplier ID</th>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600">Supplier Name</th>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600">Doc Date</th>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600">PO Number</th>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600">Total Amount</th>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600">Process Status</th>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600">Payment Plan Date</th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Invoice Number</th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Supplier ID</th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Supplier Name</th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Doc Date</th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">PO Number</th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Total Amount</th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Process Status</th>
+              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Payment Plan Date</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">

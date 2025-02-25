@@ -58,7 +58,7 @@ const DashboardAdminAccounting: React.FC = () => {
   }, []);
 
   return (
-    <div className="space-y-6">
+<div className="flex flex-col gap-6">
       {/* Toast Container for error/success messages */}
       <ToastContainer position="top-right" />
 
@@ -115,9 +115,9 @@ const DashboardAdminAccounting: React.FC = () => {
       </div>
 
       {/* List Progress for Invoice */}
-      <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-        <ListProgress />
-      </div>
+        <div className="bg-white p-4 md:p-4 rounded-lg shadow">
+          <ListProgress />
+        </div>
     </div>
   );
 };

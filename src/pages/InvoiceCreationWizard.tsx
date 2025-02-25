@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { X, Plus } from 'lucide-react';
 import PrintReceipt from './PrintReceipt';
+import LogoIcon from '../images/logo-sanoh.png';
 
 interface InvoiceCreationWizardProps {
   onClose: () => void;
@@ -8,17 +9,6 @@ interface InvoiceCreationWizardProps {
 }
 
 const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, onFinish }) => {
-  // Detail Information state
-  const [poCategory, setPoCategory] = useState('GOODS');
-  const [transactionType, setTransactionType] = useState('NOW');
-  const [currency, setCurrency] = useState('IDR');
-  const [totalGR, setTotalGR] = useState('11,250,000.00');
-  const [paymentTo, setPaymentTo] = useState('PT. DELA CEMARA INDAH');
-  const [address, setAddress] = useState('JL. Mangga Besar Raya 183 LT. II, Jakarta...');
-  const [personInCharge, setPersonInCharge] = useState('--------- ----');
-  const [email, setEmail] = useState('yames.ui@toyota.co.id');
-  const [phoneNumber, setPhoneNumber] = useState('--------- ----');
-
   // Create Invoice state
   const [invoiceNumber, setInvoiceNumber] = useState('SANOH 3.12.6');
   const [invoiceDate, setInvoiceDate] = useState('2025-01-10');
@@ -59,120 +49,9 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
   };
 
   const renderMainForm = () => (
-    <div className="space-y-8">
-      {/* Detail Information Section */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-medium text-gray-900">Detail Information</h2>
-        <div className="grid grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-gray-700">PO Category</span>
-            </div>
-            <div>
-              <input
-                type="text"
-                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={poCategory}
-                onChange={(e) => setPoCategory(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-gray-700">Transaction Type</span>
-            </div>
-            <div>
-              <select
-                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={transactionType}
-                onChange={(e) => setTransactionType(e.target.value)}
-              >
-                <option value="NOW">NOW</option>
-                <option value="LATER">LATER</option>
-              </select>
-            </div>
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-gray-700">Currency</span>
-            </div>
-            <div>
-              <input
-                type="text"
-                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-gray-700">Total GR / SA</span>
-            </div>
-            <div>
-              <input
-                type="text"
-                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={totalGR}
-                onChange={(e) => setTotalGR(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-gray-700">Payment to</span>
-            </div>
-            <div>
-              <input
-                type="text"
-                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={paymentTo}
-                onChange={(e) => setPaymentTo(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-gray-700">Address</span>
-            </div>
-            <div>
-              <input
-                type="text"
-                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-gray-700">Person in Charge</span>
-            </div>
-            <div>
-              <input
-                type="text"
-                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={personInCharge}
-                onChange={(e) => setPersonInCharge(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-gray-700">Email</span>
-            </div>
-            <div>
-              <input
-                type="email"
-                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-gray-700">Phone Number</span>
-            </div>
-            <div>
-              <input
-                type="tel"
-                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="space-y-4">
       {/* Create Invoice Section */}
-      <div className="space-y-4 pt-6 border-t border-gray-200">
+      <div className="space-y-4 pt-2 border-t border-gray-200">
         <h2 className="text-lg font-medium text-gray-900">Create Invoice</h2>
         <div className="grid grid-cols-2 gap-8">
           <div className="space-y-4">
@@ -319,7 +198,7 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <button
                     onClick={() => handlePlusClick(index)}
-                    className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
+                    className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-purple-800 hover:bg-purple-600 transition-colors"
                   >
                     <Plus size={18} className="text-white font-bold stroke-[2.5]" />
                   </button>
@@ -331,7 +210,7 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
                   />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
-                  <span className="text-sm text-red-500 font-medium">{doc.type}</span>
+                  <span className="text-sm text-purple-800 font-medium">{doc.type}</span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center justify-center gap-2">
@@ -372,12 +251,12 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
   );
 
   const renderTermsAndConditions = () => (
-    <div className="fixed inset-0 flex items-center justify-center z-[60]">
+    <div className="fixed inset-0 flex items-center justify-center z-[9999]">
       <div className="bg-white rounded-lg w-full max-w-2xl p-6 shadow-lg">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-gray-900">Terms and Conditions</h2>
+        <h2 className="text-lg font-medium text-gray-900">Attach and Submit Document</h2>
           <button onClick={() => setShowTermsModal(false)} className="text-gray-400 hover:text-gray-500 transition-colors">
-            <X size={20} />
+            <X size={16} />
           </button>
         </div>
         <div className="space-y-4">
@@ -439,61 +318,86 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ onClose, 
       />
     );
   }
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
-      <div className="bg-white rounded-lg w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b">
-          <div className="flex justify-between items-center">
-            <h1 className="text-xl font-medium text-gray-900">Invoice Preview</h1>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-500 transition-colors">
-              <X size={20} />
-            </button>
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+        <div className="bg-white rounded-lg w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+         {/* Header */}
+          <div className="p-6 border-b flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-900">Invoice Preview</h2>
+            <div className="flex items-center gap-4">
+              {/* Logo Sanoh */}
+              <img src={LogoIcon} alt="Sanoh Logo" className="h-8" />
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-500 transition-colors">
+                <X size={18} />
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="p-6">
-          <div className="bg-red-50 p-6 rounded-lg">
-            {renderCurrentStep()}
-            <div className="mt-6 flex justify-end gap-2">
-              {currentStep !== 3 && (
-                <>
+  
+        {/* Konten utama */}
+        <div className="p-6 bg-purple-100 rounded-lg">
+          {currentStep < 3 ? (
+            <>
+              {renderCurrentStep()}
+              <div className="mt-6 flex justify-end gap-2">
+                {/* Tombol Previous, hanya muncul jika bukan di step pertama */}
+                {currentStep > 1 && (
                   <button
-                    onClick={() => setCurrentStep(currentStep + 1)}
-                    disabled={
-                      currentStep === 2 &&
-                      (documents.some((doc) => !doc.fileName) || !disclaimerAccepted)
-                    }
-                    className={`px-6 py-2 rounded-md transition-colors ${
-                      currentStep === 2 &&
-                      (documents.some((doc) => !doc.fileName) || !disclaimerAccepted)
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-blue-900 hover:bg-blue-800 text-white'
-                    }`}
+                    onClick={() => setCurrentStep(currentStep - 1)}
+                    className="bg-gray-600 hover:bg-gray-500 text-white px-6 py-2 rounded-md transition-colors"
                   >
-                    Next
+                    Previous
                   </button>
+                )}
+                <button
+                  onClick={() => setCurrentStep(currentStep + 1)}
+                  disabled={
+                    currentStep === 2 &&
+                    (documents.some((doc) => !doc.fileName) || !disclaimerAccepted)
+                  }
+                  className={`px-6 py-2 rounded-md transition-colors ${
+                    currentStep === 2 &&
+                    (documents.some((doc) => !doc.fileName) || !disclaimerAccepted)
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-900 hover:bg-blue-800 text-white'
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          ) : (
+              // Step 3: Terms & Conditions
+              <div>
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Terms & Condition</h2>
+                <ul className="list-decimal list-inside space-y-2 text-gray-700">
+                  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
+                  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</li>
+                </ul>
+
+  
+                {/* Tombol "I Agree" mr-100 */}
+                <div className="mt-2 mb-2 flex justify-end gap-2"> 
                   <button
                     onClick={onClose}
-                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-md transition-colors"
+                    className="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2 rounded-md transition-colors"
                   >
-                    Cancel
+                    I Agree 
                   </button>
-                </>
-              )}
-              {currentStep === 3 && (
-                <button
-                  onClick={onClose}
-                  className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-md transition-colors"
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-      {showTermsModal && renderTermsAndConditions()}
-    </div>
+    </>
   );
 };
 

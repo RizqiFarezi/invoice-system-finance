@@ -4,6 +4,7 @@ import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import SearchBar from '../components/Table/SearchBar';
 import Pagination from '../components/Table/Pagination';
 import { API_Inv_Header_Admin, API_List_Partner_Admin } from '../api/api';
+import Select from "react-select";
 
 interface Invoice {
   inv_no: string;
@@ -254,131 +255,137 @@ const InvoiceReport = () => {
   );
 
   return (
-    <div className="space-y-4">
-      <Breadcrumb pageName="Invoice Report" />
-      <form className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="flex gap-4 w-full">
-            {userRole === '3' ? (
-              // Read-only input for supplier role
-              <input
-                type="text"
-                className="w-full border border-gray-200 p-2 rounded-md text-xs bg-gray-100"
-                value={`${userBpCode} | ${businessPartners[0]?.bp_name || ''}`}
-                readOnly
-              />
-            ) : (
-              // Regular select for other roles
-              <select
-                className="w-full border border-gray-200 p-2 rounded-md text-xs"
-                value={searchSupplier}
-                onChange={(e) => setSearchSupplier(e.target.value)}
-              >
-                <option value="">Select Supplier</option>
-                {businessPartners.map((partner) => (
-                  <option key={partner.bp_code} value={partner.bp_code}>
-                    {partner.bp_code} | {partner.bp_name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+    <div className="space-y-6">
+      <Breadcrumb pageName="Invoice Creation" />
+      <ToastContainer />
+      <form className="space-y-4">
+
+        <div className='flex space-x-4'>
+        <div className="w-1/3 items-center">
+        <Select
+          options={[
+            { value: "", label: "Select Supplier" },
+            { value: "Supplier A", label: "Supplier A" },
+            { value: "Supplier B", label: "Supplier B" },
+            { value: "Supplier C", label: "Supplier C" },
+          ]}
+          value={{ value: searchSupplier, label: searchSupplier || "Select Supplier" }}
+          onChange={(selectedOption) => setSearchSupplier(selectedOption.value)}
+          className="w-full text-xs"
+          styles={{
+            control: (base) => ({
+              ...base,
+              borderColor: "#E5E7EB", // Sama dengan border-gray-200
+              padding: "1px", // Sama dengan p-2
+              borderRadius: "6px", // Sama dengan rounded-md
+              fontSize: "14px", // Sama dengan text-xs
+              
+            }),
+          }}
+        />
+      </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Creation Date</label>
-          <input
-            type="date"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            value={invoiceNumber}
-            onChange={(e) => setInvoiceNumber(e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
-          <input
-            type="date"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            value={invoiceNumber}
-            onChange={(e) => setInvoiceNumber(e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center gap-4">
+        <div className='flex space-x-4'>
+        <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
           <input
             type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="------------  ----"
+            className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+            placeholder="----  ---------"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Verification Date</label>
-          <input
-            type="date"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            value={invoiceNumber}
-            onChange={(e) => setInvoiceNumber(e.target.value)}
-          />
+          <div className="flex w-1/3 items-center gap-2">
+            <label className="w-1/4 text-sm font-medium text-gray-700">Verification Date</label>
+            <input
+              type="date"
+              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              value={invoiceNumber}
+              onChange={(e) => setInvoiceNumber(e.target.value)}
+            />
+          </div>
+
+          <div className="flex w-1/3 items-center gap-2">
+            <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Status</label>
+            <input
+              type="text"
+              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              placeholder="----  ----------"
+              value={invoiceNumber}
+              onChange={(e) => setInvoiceNumber(e.target.value)}
+            />
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Status</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="------------  ----"
-            value={poNumber}
-            onChange={(e) => setPoNumber(e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Payment Planning Date</label>
-          <input
-            type="date"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            value={invoiceNumber}
-            onChange={(e) => setInvoiceNumber(e.target.value)}
-          />
+        <div className='flex space-x-4'>
+          <div className="flex w-1/3 items-center gap-2">
+            <label className="w-1/4 text-sm font-medium text-gray-700">Payment Planning Date</label>
+            <input
+              type="date"
+              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              value={invoiceNumber}
+              onChange={(e) => setInvoiceNumber(e.target.value)}
+            />
+          </div>
+          <div className="flex w-1/3 items-center gap-2">
+            <label className="w-1/4 text-sm font-medium text-gray-700">Creation Date</label>
+            <input
+              type="date"
+              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              value={invoiceNumber}
+              onChange={(e) => setInvoiceNumber(e.target.value)}
+            />
+          </div>
+          <div className="flex w-1/3 items-center gap-2">
+            <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
+            <input
+              type="date"
+              className="input w-3/4 border border-gray-200 p-2 rounded-md text-xs"
+              value={invoiceNumber}
+              onChange={(e) => setInvoiceNumber(e.target.value)}
+            />
+          </div>
+       
         </div>
       </form>
 
-      <div className="flex justify-end items-center gap-4 mt-6 mb-2">          
-        <button className="bg-purple-800 text-xs text-white px-8 py-2 rounded">Search</button>
+      <div className="flex justify-end items-center gap-4 ">
+        <button className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-800">Search</button>
         <button
-          className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
-          onClick={handleClear}
+          className="bg-gray-200 text-sm text-black px-8 py-2 rounded border border-gray-200 hover:bg-gray-100"
+          onClick={() => {
+            setSearchSupplier('');
+            setSearchQuery('');
+          }}
         >
           Clear
         </button>
       </div>
 
-      <h3 className="text-xl font-medium text-gray-700">GR / SA Outstanding</h3>
+      <h3 className="text-xl font-semibold text-gray-700">GR / SA Outstanding</h3>
       <div className="bg-white p-6 space-y-6 mt-8">
         <div className="flex justify-between mb-8">
           <div>
-            <button className="bg-red-600 text-white px-6 py-2 rounded">Cancel Invoice</button>
+            <button className="bg-red-600 text-sm text-white px-6 py-2 rounded hover:bg-red-500">Cancel Invoice</button>
           </div>
           <div>
             <button
-              className="bg-purple-600 text-white px-6 py-2 rounded"
+              className="bg-purple-900 text-sm text-white px-6 py-2 rounded hover:bg-purple-700"
               onClick={handleInvoiceCreation}
             >
               Download Attachement
             </button>
             <button
-              className="bg-green-600 text-white px-6 py-2 rounded ml-4"
+              className="bg-green-600 text-sm text-white px-6 py-2 rounded hover:bg-green-500 ml-4"
               onClick={handleCancelInvoice}
             >
               Verify
             </button>
             <button
-              className="bg-blue-900 text-white px-6 py-2 rounded ml-4"
+              className="bg-blue-900 text-sm text-white px-6 py-2 rounded hover:bg-blue-800 ml-4"
               onClick={handleCancelInvoice}
             >
               Post Invoice
@@ -388,26 +395,25 @@ const InvoiceReport = () => {
 
         <div className="overflow-x-auto shadow-md border rounded-lg">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 uppercase">
               <tr>
-                <th className="px-3 py-2 text-center"></th>
-                <th className="px-3 py-2 text-center">Invoice Number</th>
-                <th className="px-3 py-2 text-center">Invoice Date</th>
-                <th className="px-3 py-2 text-center">Supplier Code</th>
-                <th className="px-3 py-2 text-center">Supplier Name</th>
-                <th className="px-3 py-2 text-center">Currency</th>
-                <th className="px-3 py-2 text-center">Total Invoice Amount</th>
-                <th className="px-3 py-2 text-center">Amount Before Tax</th>
-                <th className="px-3 py-2 text-center">Invoice Status</th>
-                <th className="px-3 py-2 text-center">Progress Status</th>
-                <th className="px-3 py-2 text-center" colSpan={2}>Payment Date</th>
-                <th className="px-3 py-2 text-center">Tax Number</th>
-                <th className="px-3 py-2 text-center">Tax Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Name</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Currency</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Total Invoice Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Amount Before Tax</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Status</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Progress Status</th>
+                <th className="px-8 py-2 text-gray-700 text-center border" colSpan={2}>Payment Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Tax Number</th>
+                <th className="px-8 py-2 text-text-gray-700 text-center border">Tax Amount</th>
               </tr>
-              <tr className="bg-gray-50">
+              <tr className="bg-gray-50 border">
                 <th colSpan={10}></th>
-                <th className="px-3 py-2 text-center">Plan</th>
-                <th className="px-3 py-2 text-center">Actual</th>
+                <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Plan</th>
+                <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Actual</th>
                 <th colSpan={2}></th>
               </tr>
             </thead>

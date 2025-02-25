@@ -48,7 +48,7 @@ const Pagination = ({ totalRows, rowsPerPage, currentPage, onPageChange }: Pagin
 
       <div className="flex gap-2 items-center pagination">
         <button
-          className="px-3 py-3 text-white bg-gray-200 rounded-md hover:bg-purple-300"
+          className="px-3 py-3 text-white bg-gray-200 rounded-md hover:bg-purple-100"
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
         >
@@ -61,7 +61,7 @@ const Pagination = ({ totalRows, rowsPerPage, currentPage, onPageChange }: Pagin
           <button
             key={index}
             className={`px-4 py-2 ${
-              number === currentPage ? 'bg-purple-800 text-white' : 'bg-gray-200 text-gray-900'
+              number === currentPage ? 'bg-purple-900 text-white' : 'bg-gray-200 text-gray-900'
             } rounded-md hover:bg-purple-500 hover:text-white ${
               number === '...' ? 'cursor-default' : ''
             }`}
@@ -73,7 +73,7 @@ const Pagination = ({ totalRows, rowsPerPage, currentPage, onPageChange }: Pagin
         ))}
 
         <button
-          className="px-3 py-3 text-white bg-gray-200 rounded-md hover:bg-purple-300"
+          className="px-3 py-3 text-white bg-gray-200 rounded-md hover:bg-purple-100"
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
         >
