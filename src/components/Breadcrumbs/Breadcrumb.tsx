@@ -42,12 +42,12 @@ const Breadcrumb = ({ pageName, isSubMenu = false, parentMenu }: BreadcrumbProps
               </li>
               {isSubMenu && parentMenu && (
               <li>
-                <Link className="font-medium text-purple-600" to={parentMenu.link}>
+                <Link className="font-medium text-violet-600" to={parentMenu.link}>
                 {parentMenu.name} /
                 </Link>
               </li>
               )}
-              <li className="font-medium text-purple-800 text-primary">{pageName}</li>
+              <li className="font-medium text-violet-800 text-primary">{pageName}</li>
             </ol>
           </nav>
         </div>

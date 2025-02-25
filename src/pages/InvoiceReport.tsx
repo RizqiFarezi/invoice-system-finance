@@ -291,7 +291,7 @@ const InvoiceReport = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
           <input
             type="text"
-            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-violet-300 p-2 rounded-md text-xs"
             placeholder="----  ---------"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -302,7 +302,7 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Verification Date</label>
             <input
               type="date"
-              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-violet-300 p-2 rounded-md text-xs"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
             />
@@ -312,7 +312,7 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Status</label>
             <input
               type="text"
-              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-violet-300 p-2 rounded-md text-xs"
               placeholder="----  ----------"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -325,7 +325,7 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Payment Planning Date</label>
             <input
               type="date"
-              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-violet-300 p-2 rounded-md text-xs"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
             />
@@ -334,7 +334,7 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Creation Date</label>
             <input
               type="date"
-              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-violet-300 p-2 rounded-md text-xs"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
             />
@@ -343,7 +343,7 @@ const InvoiceReport = () => {
             <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
             <input
               type="date"
-              className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+              className="input w-3/4 border border-violet-300 p-2 rounded-md text-xs"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
             />
@@ -352,9 +352,9 @@ const InvoiceReport = () => {
       </form>
 
       <div className="flex justify-end items-center gap-4 ">
-        <button className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-800">Search</button>
+        <button className="bg-fuchsia-950 text-sm text-white px-8 py-2 rounded hover:bg-fuchsia-800">Search</button>
         <button
-          className="bg-white text-sm text-black px-8 py-2 rounded border border-purple-800 hover:bg-gray-100"
+          className="bg-white text-sm text-black px-8 py-2 rounded border border-violet-800 hover:bg-gray-100"
           onClick={() => {
             setSearchSupplier('');
             setSearchQuery('');
@@ -364,7 +364,7 @@ const InvoiceReport = () => {
         </button>
       </div>
 
-      <h3 className="text-xl font-semibold text-gray-700">GR / SA Outstanding</h3>
+      <h3 className="text-xl font-semibold text-gray-700">GR / SA List</h3>
       <div className="bg-white p-6 space-y-6 mt-8">
         <div className="flex justify-between mb-8">
           <div>
@@ -372,7 +372,7 @@ const InvoiceReport = () => {
           </div>
           <div>
             <button
-              className="bg-purple-900 text-sm text-white px-6 py-2 rounded hover:bg-purple-700"
+              className="bg-fuchsia-900 text-sm text-white px-6 py-2 rounded hover:bg-fuchsia-800"
               onClick={handleInvoiceCreation}
             >
               Download Attachement

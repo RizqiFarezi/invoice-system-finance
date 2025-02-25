@@ -204,8 +204,8 @@ const ManageUser: React.FC = () => {
       <div className="bg-white">
         <div className="p-2 md:p-4 lg:p-6 space-y-6">
           {/* Header Section */}
-          <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-            <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-1/2">
+          <div className="flex flex-col space-y-6 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+            <div className="flex flex-col space-y-1 sm:flex-row gap-4 w-full lg:w-1/2">
               <Button
                 title="Add User"
                 onClick={() => navigate('/add-user')}
@@ -325,7 +325,7 @@ const ManageUser: React.FC = () => {
                         <td className="px-3 py-3 text-center whitespace-nowrap">
                           {row.isLoading ? (
                             <div className="flex justify-center">
-                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-900"></div>
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-fuchsia-900"></div>
                             </div>
                           ) : (
                             <button
@@ -346,7 +346,7 @@ const ManageUser: React.FC = () => {
                               className="hover:opacity-80 transition-opacity"
                             >
                               {row.Status === 'Active' ? (
-                                <FaToggleOn className="text-2xl text-purple-900" />
+                                <FaToggleOn className="text-2xl text-fuchsia-900" />
                               ) : (
                                 <FaToggleOff className="text-2xl text-gray-500" />
                               )}
@@ -358,7 +358,7 @@ const ManageUser: React.FC = () => {
                             onClick={() => handleEditPage(row.UserID)}
                             className="hover:opacity-80 transition-opacity"
                           >
-                            <FaUserEdit className="text-xl text-lg text-purple-900" />
+                            <FaUserEdit className="text-xl text-lg text-fuchsia-900" />
                           </button>
                         </td>
                       </tr>

@@ -44,42 +44,60 @@ const InvoiceCreation = () => {
 
   const grSaList: GrSaRecord[] = [
     {
-      dnNumber: 'DN001',
-      grSaNumber: 'GRSA001',
+      supplierCode: 'SUP001',
+      supplierName: 'Supplier A',
       poNumber: 'PO001',
+      grNumber: 'GR001',
+      grItem: 'GR-Item-001',
       poCategory: 'Category A',
-      poDate: '2025-02-01',
-      currency: 'USD',
-      totalAmount: 500,
+      poItem: 'PO-Item-001',
       invoiceNumber: 'INV001',
-      supplier: 'Supplier A',
+      paymentPlanDate: '2025-03-01',
+      actualReceiptDate: '2025-02-05',
+      actualReceiptQty: '100',
+      paymentActual: '-',
+      dnNumber: 'DN001',
+      partNumber: 'PN001',
+      materialDesc: 'Material A',
+      uom: 'PCS',
+      grQty: 100,
+      pricePerUOM: 5,
+      totalAmount: 500,
+      currency: 'USD',
       createdBy: 'Admin',
       createdDate: '2025-02-01',
-      updatedBy: 'Admin',
-      updatedDate: '2025-02-01',
     },
     {
-      dnNumber: 'DN002',
-      grSaNumber: 'GRSA002',
+      supplierCode: 'SUP002',
+      supplierName: 'Supplier B',
       poNumber: 'PO002',
+      grNumber: 'GR002',
+      grItem: 'GR-Item-002',
       poCategory: 'Category B',
-      poDate: '2025-02-10',
-      currency: 'EUR',
-      totalAmount: 250,
+      poItem: 'PO-Item-002',
       invoiceNumber: 'INV002',
-      supplier: 'Supplier B',
+      paymentPlanDate: '2025-03-10',
+      actualReceiptDate: '2025-02-15',
+      actualReceiptQty: '50',
+      paymentActual: '2025-03-12',
+      dnNumber: 'DN002',
+      partNumber: 'PN002',
+      materialDesc: 'Material B',
+      uom: 'KG',
+      grQty: 50,
+      pricePerUOM: 5,
+      totalAmount: 250,
+      currency: 'EUR',
       createdBy: 'Admin',
       createdDate: '2025-02-10',
-      updatedBy: 'Admin',
-      updatedDate: '2025-02-10',
     },
-  ];
+  ];  
 
   const handleRecordSelection = (record: GrSaRecord) => {
     setSelectedRecords((prev) => {
-      const found = prev.find((r) => r.grSaNumber === record.grSaNumber);
+      const found = prev.find((r) => r.grNumber === record.grNumber);
       if (found) {
-        return prev.filter((r) => r.grSaNumber !== record.grSaNumber);
+        return prev.filter((r) => r.grNumber !== record.grNumber);
       }
       return [...prev, record];
     });
@@ -115,6 +133,16 @@ const InvoiceCreation = () => {
     toast.success('Invoice process completed!');
   };
 
+  const supplierOptions = [
+    { value: "Supplier A", label: "Supplier A" },
+    { value: "Supplier B", label: "Supplier B" },
+  ];
+  
+  const selectedOption = supplierOptions.find(opt => opt.value === searchSupplier) || {
+    value: searchSupplier,
+    label: searchSupplier || "Select Supplier",
+  };
+
   function setSearchQuery(_p0: string) {
     throw new Error('Function not implemented.');
   }
@@ -128,14 +156,9 @@ const InvoiceCreation = () => {
         <div className='flex space-x-4'>
         <div className="w-1/3 items-center">
         <Select
-          options={[
-            { value: "", label: "Select Supplier" },
-            { value: "Supplier A", label: "Supplier A" },
-            { value: "Supplier B", label: "Supplier B" },
-            { value: "Supplier C", label: "Supplier C" },
-          ]}
-          value={{ value: searchSupplier, label: searchSupplier || "Select Supplier" }}
-          onChange={(selectedOption) => setSearchSupplier(selectedOption.value)}
+        options={supplierOptions}
+        value={supplierOptions.find(opt => opt.value === searchSupplier) || { value: searchSupplier, label: searchSupplier || "Select Supplier" }}
+        onChange={(selectedOption) => setSearchSupplier(selectedOption?.value || "")}
           className="w-full text-xs"
           styles={{
             control: (base) => ({
@@ -154,7 +177,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">PO Date</label>
           <input
             type="date"
-            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
@@ -164,7 +187,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
           <input
             type="date"
-            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
@@ -176,7 +199,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
           <input
             type="text"
-            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
             placeholder="----  ---------"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -187,7 +210,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">PO Number</label>
           <input
             type="text"
-            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
             placeholder="----  ---------"
             value={poNumber}
             onChange={(e) => setPoNumber(e.target.value)}
@@ -198,7 +221,7 @@ const InvoiceCreation = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
           <input
             type="date"
-            className="input w-3/4 border border-purple-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
@@ -207,7 +230,7 @@ const InvoiceCreation = () => {
       </form>
 
       <div className="flex justify-end items-center gap-4 ">
-        <button className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-800">Search</button>
+        <button className="bg-fuchsia-950 text-sm text-white px-8 py-2 rounded hover:bg-fuchsia-800">Search</button>
         <button
           className="bg-white text-sm text-black px-8 py-2 rounded border border-purple-800 hover:bg-gray-100"
           onClick={() => {
@@ -225,7 +248,7 @@ const InvoiceCreation = () => {
         {/* Table Section */}
         <div className="overflow-x-auto shadow-md border rounded-lg w-full md:w-2/3">
           <table className="w-full text-md text-left">
-            <thead className="bg-purple-300">
+            <thead className="bg-gray-200">
               <tr>
                 <th className="px-4 py-3 text-md text-gray-800 text-center border">Total Record(s)</th>
                 <th className="px-4 py-3 text-md text-gray-800 text-center border">Currency</th>
@@ -270,12 +293,12 @@ const InvoiceCreation = () => {
       </div>
 
       {/* Separate Section for GR/SA List */}
-      <h3 className="text-xl font-semibold text-gray-700">GR / SA Outstanding</h3>
+      <h3 className="text-xl font-semibold text-gray-700">GR / SA List</h3>
       <div className="bg-white p-6 space-y-6 mt-8">
         <div className="flex justify-between mb-8">
           <div>
-            <button className="bg-purple-900 text-sm text-white px-6 py-2 rounded hover:bg-purple-800">Invoice Upload</button>
-            <button className="bg-purple-900 text-sm text-white px-6 py-2 rounded hover:bg-purple-800 ml-4">Download GR/SA</button>
+            <button className="bg-fuchsia-900 text-sm text-white px-6 py-2 rounded hover:bg-fuchsia-800">Invoice Upload</button>
+            <button className="bg-fuchsia-900 text-sm text-white px-6 py-2 rounded hover:bg-fuchsia-800 ml-4">Download GR/SA</button>
           </div>
           <div>
             <button

@@ -323,7 +323,7 @@ const EditUser = () => {
             <Button 
               type="submit"
               title="Save Changes"
-              className="w-full justify-center bg-blue-900 hover:bg-opacity-90 text-white"
+              className="w-full justify-center bg-fuchsia-900 hover:bg-opacity-90 text-white"
             />
           </div>
         </form>
