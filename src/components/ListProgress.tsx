@@ -6,13 +6,31 @@ import { API_Inv_Header_Admin } from '../api/api';
 
 interface Invoice {
   inv_no: string;
-  bp_code: string;
-  bp_name: string;
-  doc_date: string;
-  po_number: string;
-  total_amount: number;
-  process_status: "In Process" | "Rejected" | "Paid" | "Ready to Payment" | "New";
-  payment_plan_date: string;
+  receipt_number: string | null;
+  receipt_path: string | null;
+  bp_code: string | null;
+  inv_date: string | null;
+  plan_date: string | null;
+  actual_date: string | null;
+  inv_faktur: string | null;
+  inv_faktur_date: string | null;
+  inv_supplier: string | null;
+  total_dpp: number | null;
+  ppn_id: number | null;
+  tax_base_amount: number | null;
+  tax_amount: number | null;
+  pph_id: number | null;
+  pph_base_amount: number | null;
+  pph_amount: number | null;
+  created_by: string | null;
+  updated_by: string | null;
+  total_amount: number | null;
+  status: string | null;
+  reason: string | null;
+  created_at: string;
+  updated_at: string;
+  // Additional fields used in ListProgress
+  process_status?: "In Process" | "Rejected" | "Paid" | "Ready to Payment" | "New";
 }
 
 const ListProgress: React.FC = () => {
@@ -57,9 +75,16 @@ const ListProgress: React.FC = () => {
           invoiceList = result;
         }
 
-        if (invoiceList.length > 0) {
-          setData(invoiceList);
-          setFilteredData(invoiceList);
+        // Map status to process_status if needed
+        const mappedInvoices = invoiceList.map((invoice: any) => ({
+          ...invoice,
+          process_status: invoice.process_status || invoice.status || "New",
+          po_number: invoice.po_number || "N/A"
+        }));
+
+        if (mappedInvoices.length > 0) {
+          setData(mappedInvoices);
+          setFilteredData(mappedInvoices);
         } else {
           toast.warn('No invoice data found');
         }
@@ -89,20 +114,10 @@ const ListProgress: React.FC = () => {
 
     if (fromDate && toDate) {
       filtered = filtered.filter(
-        (item) => item.doc_date >= fromDate && item.doc_date <= toDate
-      );
-    }
-
-    if (searchQuery) {
-      filtered = filtered.filter((row) =>
-        row.po_number.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    if (searchSupplier) {
-      filtered = filtered.filter((row) =>
-        row.bp_name.toLowerCase().includes(searchSupplier.toLowerCase()) ||
-        row.bp_code.toLowerCase().includes(searchSupplier.toLowerCase())
+        (item) => {
+          const docDate = item.inv_date || "";
+          return docDate >= fromDate && docDate <= toDate;
+        }
       );
     }
 
@@ -172,9 +187,7 @@ const ListProgress: React.FC = () => {
             <tr>
               <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Invoice Number</th>
               <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Supplier ID</th>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Supplier Name</th>
               <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Doc Date</th>
-              <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">PO Number</th>
               <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Total Amount</th>
               <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Process Status</th>
               <th className="px-6 py-3 text-sm font-semibold text-gray-600 border">Payment Plan Date</th>
@@ -191,29 +204,27 @@ const ListProgress: React.FC = () => {
               paginatedData.map((invoice) => (
                 <tr key={invoice.inv_no} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm text-gray-800">{invoice.inv_no}</td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{invoice.bp_code}</td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{invoice.bp_name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{invoice.doc_date}</td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{invoice.po_number}</td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{invoice.total_amount.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{invoice.bp_code || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{invoice.inv_date || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{(invoice.total_amount || 0).toLocaleString()}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <span
                       className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-white text-xs font-medium ${
-                        invoice.process_status === "In Process"
+                        (invoice.process_status === "In Process" || invoice.status === "In Process")
                         ? "bg-yellow-200"
-                        : invoice.process_status === "Rejected"
+                        : (invoice.process_status === "Rejected" || invoice.status === "Rejected")
                         ? "bg-red-500"
-                        : invoice.process_status === "Paid"
+                        : (invoice.process_status === "Paid" || invoice.status === "Paid")
                         ? "bg-blue-900"
-                        : invoice.process_status === "Ready to Payment"
+                        : (invoice.process_status === "Ready to Payment" || invoice.status === "Ready to Payment")
                         ? "bg-green-400"
                         : "bg-blue-400"
                       }`}
                     >
-                      {invoice.process_status}
+                      {invoice.process_status || invoice.status || "New"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{invoice.payment_plan_date}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{invoice.plan_date || "-"}</td>
                 </tr>
               ))
             ) : (
