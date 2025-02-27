@@ -8,18 +8,30 @@ import Select from "react-select";
 
 interface Invoice {
   inv_no: string;
-  doc_date: string;
-  bp_code: string;
-  bp_name: string;
-  currency: string;
-  total_invoice_amount: number;
-  amount_before_tax: number;
-  invoice_status: string;
-  progress_status: string;
-  payment_plan_date: string;
-  payment_actual_date: string;
-  tax_number: string;
-  tax_amount: number;
+  receipt_number: string | null;
+  receipt_path: string | null;
+  bp_code: string | null;
+  bp_name?: string; // For display purposes
+  inv_date: string | null;
+  plan_date: string | null;
+  actual_date: string | null;
+  inv_faktur: string | null;
+  inv_faktur_date: string | null;
+  inv_supplier: string | null;
+  total_dpp: number | null;
+  ppn_id: number | null;
+  tax_base_amount: number | null;
+  tax_amount: number | null;
+  pph_id: number | null;
+  pph_base_amount: number | null;
+  pph_amount: number | null;
+  created_by: string | null;
+  updated_by: string | null;
+  total_amount: number | null;
+  status: string | null;
+  reason: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 interface BusinessPartner {
@@ -206,8 +218,8 @@ const InvoiceReport = () => {
     if (searchSupplier) {
       filtered = filtered.filter(
         (row) =>
-          row.bp_code.toLowerCase().includes(searchSupplier.toLowerCase()) ||
-          row.bp_name.toLowerCase().includes(searchSupplier.toLowerCase())
+          (row.bp_code && row.bp_code.toLowerCase().includes(searchSupplier.toLowerCase())) ||
+          (row.bp_name && row.bp_name.toLowerCase().includes(searchSupplier.toLowerCase()))
       );
     }
 
@@ -228,7 +240,7 @@ const InvoiceReport = () => {
 
   const handleRecordSelection = (record: Invoice) => {
     setSelectedRecords((prev) => prev + 1);
-    setTotalAmount((prev) => prev + record.total_invoice_amount);
+    setTotalAmount((prev) => prev + (record.total_amount || 0));
   };
 
   const handleInvoiceCreation = () => {
@@ -254,6 +266,17 @@ const InvoiceReport = () => {
     currentPage * rowsPerPage
   );
 
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return '-';
+    
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString();
+    } catch (error) {
+      return dateString;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Breadcrumb pageName="Invoice Report" />
@@ -261,42 +284,58 @@ const InvoiceReport = () => {
       <form className="space-y-4">
 
         <div className='flex space-x-4'>
-        <div className="w-1/3 items-center">
-        <Select
-          options={[
-            { value: "", label: "Select Supplier" },
-            { value: "Supplier A", label: "Supplier A" },
-            { value: "Supplier B", label: "Supplier B" },
-            { value: "Supplier C", label: "Supplier C" },
-          ]}
-          value={{ value: searchSupplier, label: searchSupplier || "Select Supplier" }}
-          onChange={(selectedOption) => setSearchSupplier(selectedOption.value)}
-          className="w-full text-xs"
-          styles={{
-            control: (base) => ({
-              ...base,
-              borderColor: "#D7BFDC", // Sama dengan border-gray-200
-              padding: "1px", // Sama dengan p-2
-              borderRadius: "6px", // Sama dengan rounded-md
-              fontSize: "14px", // Sama dengan text-xs
-              
-            }),
-          }}
-        />
-      </div>
-      </div>
+          <div className="w-1/3 items-center">
+            {userRole === "3" ? (
+              <input
+                type="text"
+                className="input w-full border border-violet-300 p-2 rounded-md text-xs bg-gray-100"
+                value={`${userBpCode} | ${businessPartners[0]?.bp_name || ""}`}
+                readOnly
+              />
+            ) : (
+              <Select
+                options={businessPartners.map((partner) => ({
+                  value: partner.bp_code,
+                  label: `${partner.bp_code} | ${partner.bp_name}`,
+                }))}
+                value={
+                  searchSupplier
+                    ? {
+                        value: searchSupplier,
+                        label:
+                          businessPartners.find((p) => p.bp_code === searchSupplier)?.bp_name ||
+                          searchSupplier,
+                      }
+                    : null
+                }
+                onChange={(selectedOption) => selectedOption && setSearchSupplier(selectedOption.value)}
+                placeholder="Select Supplier"
+                className="w-full text-xs"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    borderColor: "#D7BFDC",
+                    padding: "1px",
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                  }),
+                }}
+              />
+            )}
+          </div>
+        </div>
 
         <div className='flex space-x-4'>
-        <div className="flex w-1/3 items-center gap-2">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
-          <input
-            type="text"
-            className="input w-3/4 border border-violet-300 p-2 rounded-md text-xs"
-            placeholder="----  ---------"
-            value={invoiceNumber}
-            onChange={(e) => setInvoiceNumber(e.target.value)}
-          />
-        </div>
+          <div className="flex w-1/3 items-center gap-2">
+            <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
+            <input
+              type="text"
+              className="input w-3/4 border border-violet-300 p-2 rounded-md text-xs"
+              placeholder="----  ---------"
+              value={invoiceNumber}
+              onChange={(e) => setInvoiceNumber(e.target.value)}
+            />
+          </div>
 
           <div className="flex w-1/3 items-center gap-2">
             <label className="w-1/4 text-sm font-medium text-gray-700">Verification Date</label>
@@ -355,16 +394,13 @@ const InvoiceReport = () => {
         <button className="bg-fuchsia-950 text-sm text-white px-8 py-2 rounded hover:bg-fuchsia-800">Search</button>
         <button
           className="bg-white text-sm text-black px-8 py-2 rounded border border-violet-800 hover:bg-gray-100"
-          onClick={() => {
-            setSearchSupplier('');
-            setSearchQuery('');
-          }}
+          onClick={handleClear}
         >
           Clear
         </button>
       </div>
 
-      <h3 className="text-xl font-semibold text-gray-700">GR / SA List</h3>
+      <h3 className="text-xl font-semibold text-gray-700">Invoice List</h3>
       <div className="bg-white p-6 space-y-6 mt-8">
         <div className="flex justify-between mb-8">
           <div>
@@ -375,7 +411,7 @@ const InvoiceReport = () => {
               className="bg-fuchsia-900 text-sm text-white px-6 py-2 rounded hover:bg-fuchsia-800"
               onClick={handleInvoiceCreation}
             >
-              Download Attachement
+              Download Attachment
             </button>
             <button
               className="bg-green-600 text-sm text-white px-6 py-2 rounded hover:bg-green-500 ml-4"
@@ -393,63 +429,76 @@ const InvoiceReport = () => {
         </div>
 
         <div className="overflow-x-auto shadow-md border rounded-lg">
-        <table className="w-full text-sm text-left">
-        <thead className="bg-gray-100 uppercase">
-          <tr>
-            <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
-            <th className="px-8 py-2 text-gray-700 text-center border">Invoice Date</th>
-            <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
-            <th className="px-8 py-2 text-gray-700 text-center border">Total Invoice Amount</th>
-            <th className="px-8 py-2 text-gray-700 text-center border">Amount Before Tax</th>
-            <th className="px-8 py-2 text-gray-700 text-center border">Invoice Status</th>
-            <th className="px-8 py-2 text-gray-700 text-center border" colSpan={2}>Payment Date</th>
-            <th className="px-8 py-2 text-gray-700 text-center border">Tax Number</th>
-            <th className="px-8 py-2 text-gray-700 text-center border">Tax Amount</th>
-          </tr>
-          <tr className="bg-gray-100 border">
-            <th colSpan={6}></th>
-            <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Plan</th>
-            <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Actual</th>
-            <th colSpan={2}></th>
-          </tr>
-        </thead>
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-100 uppercase">
+              <tr>
+                <th className="px-3 py-2 text-gray-700 text-center border"></th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Invoice No</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Receipt No</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Supplier Code</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Supplier Name</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Invoice Date</th>
+                <th className="px-3 py-2 text-gray-700 text-center border" colSpan={2}>Payment Date</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Tax Number</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Tax Date</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Total DPP</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Tax Base Amount</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Tax Amount</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">PPh Base Amount</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">PPh Amount</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Total Amount</th>
+                <th className="px-3 py-2 text-gray-700 text-center border">Status</th>
+              </tr>
+              <tr className="bg-gray-100 border">
+                <th colSpan={6}></th>
+                <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Plan</th>
+                <th className="px-3 py-2 text-md text-gray-600 normal-case text-center border">Actual</th>
+                <th colSpan={9}></th>
+              </tr>
+            </thead>
 
-        <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={11} className="px-6 py-4 text-center text-gray-500">
-                  Loading...
-                </td>
-              </tr>
-            ) : paginatedData.length > 0 ? (
-              paginatedData.map((invoice, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-center">
-                    <input 
-                      type="checkbox" 
-                      onChange={() => handleRecordSelection(invoice)}
-                    />
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={17} className="px-6 py-4 text-center text-gray-500">
+                    Loading...
                   </td>
-                  <td className="px-3 py-2 text-center">{invoice.inv_no}</td>
-                  <td className="px-3 py-2 text-center">{invoice.doc_date}</td>
-                  <td className="px-3 py-2 text-center">{invoice.bp_code}</td>
-                  <td className="px-3 py-2 text-center">{invoice.total_invoice_amount.toLocaleString()}</td>
-                  <td className="px-3 py-2 text-center">{invoice.amount_before_tax.toLocaleString()}</td>
-                  <td className="px-3 py-2 text-center">{invoice.invoice_status}</td>
-                  <td className="px-3 py-2 text-center">{invoice.payment_plan_date}</td> {/* Payment Plan */}
-                  <td className="px-3 py-2 text-center">{invoice.payment_actual_date}</td> {/* Payment Actual */}
-                  <td className="px-3 py-2 text-center">{invoice.tax_number}</td>
-                  <td className="px-3 py-2 text-center">{invoice.tax_amount.toLocaleString()}</td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
-                  No data available.
-                </td>
-              </tr>
-            )}
-          </tbody>
+              ) : paginatedData.length > 0 ? (
+                paginatedData.map((invoice, index) => (
+                  <tr key={index} className="border-b hover:bg-gray-50">
+                    <td className="px-3 py-2 text-center">
+                      <input 
+                        type="checkbox" 
+                        onChange={() => handleRecordSelection(invoice)}
+                      />
+                    </td>
+                    <td className="px-3 py-2 text-center">{invoice.inv_no}</td>
+                    <td className="px-3 py-2 text-center">{invoice.receipt_number || '-'}</td>
+                    <td className="px-3 py-2 text-center">{invoice.bp_code || '-'}</td>
+                    <td className="px-3 py-2 text-center">{invoice.bp_name || '-'}</td>
+                    <td className="px-3 py-2 text-center">{formatDate(invoice.inv_date)}</td>
+                    <td className="px-3 py-2 text-center">{formatDate(invoice.plan_date)}</td>
+                    <td className="px-3 py-2 text-center">{formatDate(invoice.actual_date)}</td>
+                    <td className="px-3 py-2 text-center">{invoice.inv_faktur || '-'}</td>
+                    <td className="px-3 py-2 text-center">{formatDate(invoice.inv_faktur_date)}</td>
+                    <td className="px-3 py-2 text-center">{invoice.total_dpp?.toLocaleString() || '-'}</td>
+                    <td className="px-3 py-2 text-center">{invoice.tax_base_amount?.toLocaleString() || '-'}</td>
+                    <td className="px-3 py-2 text-center">{invoice.tax_amount?.toLocaleString() || '-'}</td>
+                    <td className="px-3 py-2 text-center">{invoice.pph_base_amount?.toLocaleString() || '-'}</td>
+                    <td className="px-3 py-2 text-center">{invoice.pph_amount?.toLocaleString() || '-'}</td>
+                    <td className="px-3 py-2 text-center">{invoice.total_amount?.toLocaleString() || '-'}</td>
+                    <td className="px-3 py-2 text-center">{invoice.status || '-'}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={17} className="px-6 py-4 text-center text-gray-500">
+                    No data available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
 
