@@ -40,7 +40,7 @@ const DashboardSuperAdmin: React.FC = () => {
         if (result.success) {
           const data = result.data;
           setDashboardData({
-            user_online: data.active_tokens?.toString() || '-',
+            user_online: data.online_users?.toString() || '-',
             total_user: data.total_users?.toString() || '-',
             user_active: data.active_users?.toString() || '-',
             user_deactive: data.deactive_users?.toString() || '-',

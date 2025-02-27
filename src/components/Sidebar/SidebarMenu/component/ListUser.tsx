@@ -18,8 +18,8 @@ const ListUser = () => {
                 className={
                     `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out ${
                         isUserManagementActive
-                        ? 'bg-red-700 text-white'
-                        : 'text-black-2 dark:text-bodydark2 hover:bg-red-500 hover:text-white dark:hover:bg-meta-4'
+                        ? 'bg-violet-900 text-white'
+                        : 'text-black-2 dark:text-bodydark2 hover:bg-violet-300 hover:text-white dark:hover:bg-meta-4'
                     }`
                 }
             >

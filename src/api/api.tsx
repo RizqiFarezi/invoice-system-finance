@@ -37,6 +37,7 @@ export const API_Inv_Header_Admin = () => API + getRolePath() + `/inv-header`;
 export const API_Inv_Header_By_Bp_Code_Admin = () => API + getRolePath() + `/inv-header/bp-code/`;
 export const API_Create_Inv_Header_Admin = () => API + getRolePath() + `/inv-header/store`;
 export const API_Update_Inv_Header_Admin = () => API + getRolePath() + `/inv-header/`;
+export const API_Update_In_Process_Admin = () => API + getRolePath() + `/inv-header/`;
 
 // Invoice Lines Admin
 export const API_Inv_Line_Admin = () => API + getRolePath() + `/inv-line`;
@@ -64,3 +65,7 @@ export const API_Create_Inv_Header_Supplier = () => API + getRolePath() + `/inv-
 // Invoice Lines Supplier
 export const API_Inv_Line_Supplier = () => API + getRolePath() + `/inv-line`;
 export const API_Inv_Line_By_Inv_No_Supplier = () => API + getRolePath() + `/inv-line/`;
+
+// Get Pph And Ppn
+export const API_Pph = () => API + getRolePath() + `/pph`;
+export const API_Ppn = () => API + getRolePath() + `/ppn`;

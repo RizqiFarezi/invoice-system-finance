@@ -6,7 +6,7 @@ import Footer from './Footer/Footer';
 import { useAuth } from '../pages/Authentication/AuthContext';  // Import the useAuth hook
 
 const DefaultLayout: React.FC = () => {
-  const { userRole, isAuthenticated, isLoading: authLoading } = useAuth();  // Use AuthContext to get the userRole and isAuthenticated
+  const { userRole, isLoading: authLoading } = useAuth();  // Use AuthContext to get the userRole and isAuthenticated
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Wait until authentication context is ready
@@ -21,13 +21,8 @@ const DefaultLayout: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  // If the user is not authenticated, don't render the layout
-  if (!isAuthenticated) {
-    return <div>You are not authenticated.</div>;
-  }
-
   return (
-    <div className="flex h-screen overflow-hidden bg-red-50"> {/* Added bg-red-50 */}
+    <div className="flex h-screen overflow-hidden bg-violet-50"> {/* Added bg-red-50 */}
       {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} role={userRole || ''} /> {/* Ensure role is a string */}
       

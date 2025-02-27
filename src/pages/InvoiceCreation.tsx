@@ -1,350 +1,415 @@
-import React, { useState } from 'react';
-import { ToastContainer } from 'react-toastify'; // Ensure react-toastify is installed
-import Breadcrumb from '../components/Breadcrumbs/Breadcrumb'; // Check path if necessary
-import SearchBar from '../components/Table/SearchBar';
+import { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import Pagination from '../components/Table/Pagination';
+import InvoiceCreationWizard from './InvoiceCreationWizard';
+import Select from "react-select";
+
 interface GrSaRecord {
-  transactionType: string;
-  dnNumber: string;
-  grSaNumber: string;
-  poNumber: string;
-  poCategory: string;
-  poDate: string;
-  currency: string;
-  totalAmount: number;
-  invoiceNumber: string;
-  supplier: string;
-  createdBy: string;
-  createdDate: string;
-  updatedBy: string;
-  updatedDate: string;
-}
-interface SearchBarProps {
-  placeholder: string;
-  onSearchChange: (value: string) => void;
-}
+    supplierCode: string;
+    poNumber: string;
+    supplierName: string;
+    grNumber: string;
+    grItem: string;
+    poCategory: string;
+    poItem: string;
+    invoiceNumber: string;
+    paymentPlanDate?: string; // Bisa nullable ('-')
+    actualReceiptDate?: string; // Baru, ada di tbody
+    actualReceiptQty?: string; // Baru, ada di tbody
+    paymentActual?: string; // Bisa nullable ('-')
+    dnNumber: string;
+    partNumber: string;
+    materialDesc: string;
+    uom: string;
+    grQty: number;
+    pricePerUOM: number;
+    totalAmount: number;
+    currency: string;
+    createdBy: string;
+    createdDate: string;
+  }
 
 const InvoiceCreation = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
-  const [invoiceNumber, setInvoiceNumber] = useState<string>('');
-  const [transactionTypes, setTransactionTypes] = useState<string[]>([]);
-  const [poDate, setPoDate] = useState<string>('');
-  const [poNumber, setPoNumber] = useState<string>('');
-  const [grSaDate, setGrSaDate] = useState<string>('');
-  const [selectedRecords, setSelectedRecords] = useState([]);
-  const [totalAmount, setTotalAmount] = useState<number>(0);
-  const [searchSupplier, setSearchSupplier] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [filteredData, setFilteredData] = useState<GrsaRecord[]>([]);
+  const [showWizard, setShowWizard] = useState(false);
+  const [selectedRecords, setSelectedRecords] = useState<GrSaRecord[]>([]);
+  const [searchSupplier, setSearchSupplier] = useState('');
+  const [grSaDate, setGrSaDate] = useState('');
+  const [invoiceNumber, setInvoiceNumber] = useState('');
+  const [poNumber, setPoNumber] = useState('');
+  const [filteredData] = useState<GrSaRecord[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(10);
 
   const grSaList: GrSaRecord[] = [
     {
-      transactionType: 'Purchase',
-      dnNumber: 'DN001',
-      grSaNumber: 'GRSA001',
+      supplierCode: 'SUP001',
+      supplierName: 'Supplier A',
       poNumber: 'PO001',
+      grNumber: 'GR001',
+      grItem: 'GR-Item-001',
       poCategory: 'Category A',
-      poDate: '2025-02-01',
-      currency: 'USD',
-      totalAmount: 500,
+      poItem: 'PO-Item-001',
       invoiceNumber: 'INV001',
-      supplier: 'Supplier A',
+      paymentPlanDate: '2025-03-01',
+      actualReceiptDate: '2025-02-05',
+      actualReceiptQty: '100',
+      paymentActual: '-',
+      dnNumber: 'DN001',
+      partNumber: 'PN001',
+      materialDesc: 'Material A',
+      uom: 'PCS',
+      grQty: 100,
+      pricePerUOM: 5,
+      totalAmount: 500,
+      currency: 'USD',
       createdBy: 'Admin',
       createdDate: '2025-02-01',
-      updatedBy: 'Admin',
-      updatedDate: '2025-02-01',
     },
     {
-      transactionType: 'Return',
-      dnNumber: 'DN002',
-      grSaNumber: 'GRSA002',
+      supplierCode: 'SUP002',
+      supplierName: 'Supplier B',
       poNumber: 'PO002',
+      grNumber: 'GR002',
+      grItem: 'GR-Item-002',
       poCategory: 'Category B',
-      poDate: '2025-02-10',
-      currency: 'EUR',
-      totalAmount: 250,
+      poItem: 'PO-Item-002',
       invoiceNumber: 'INV002',
-      supplier: 'Supplier B',
+      paymentPlanDate: '2025-03-10',
+      actualReceiptDate: '2025-02-15',
+      actualReceiptQty: '50',
+      paymentActual: '2025-03-12',
+      dnNumber: 'DN002',
+      partNumber: 'PN002',
+      materialDesc: 'Material B',
+      uom: 'KG',
+      grQty: 50,
+      pricePerUOM: 5,
+      totalAmount: 250,
+      currency: 'EUR',
       createdBy: 'Admin',
       createdDate: '2025-02-10',
-      updatedBy: 'Admin',
-      updatedDate: '2025-02-10',
     },
-  ];
+  ];  
 
-  const handleSupplierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
-    setSelectedSuppliers(selectedOptions);
-  };
-
-  const handleTransactionTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const options = event.target.selectedOptions;
-    const values = Array.from(options, (option) => option.value);
-    setTransactionTypes(values);
-  };
   const handleRecordSelection = (record: GrSaRecord) => {
-    setSelectedRecords((prev) => [...prev, record]);
-    setTotalAmount((prev) => prev + record.totalAmount);
+    setSelectedRecords((prev) => {
+      const found = prev.find((r) => r.grNumber === record.grNumber);
+      if (found) {
+        return prev.filter((r) => r.grNumber !== record.grNumber);
+      }
+      return [...prev, record];
+    });
   };
-  
+
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    if (!selectAll) {
+      setSelectedRecords(grSaList);
+    } else {
+      setSelectedRecords([]);
+    }
+  };
+
   const handleInvoiceCreation = () => {
-    // Logic for invoice creation
-    alert('Invoice Created');
+    if (selectedRecords.length === 0) {
+      toast.error('Please select at least one record before continuing.');
+      return;
+    }
+    setShowWizard(true);
   };
 
   const handleCancelInvoice = () => {
-    // Logic for canceling invoice
-    alert('Invoice Cancelled');
+    toast.error('Invoice Cancelled');
   };
 
-  const SearchBar: React.FC<SearchBarProps> = ({ placeholder, onSearchChange }) => {
-    return (
-      <input
-        type="text"
-        className="w-full border border-gray-200 p-2 rounded-md text-xs"
-        placeholder={placeholder}
-        onChange={(e) => onSearchChange(e.target.value)}
-      />
-    );
+  const handleWizardClose = () => {
+    setShowWizard(false);
   };
 
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-);
-const handlePageChange = (page: number) => {
-  setCurrentPage(page);
-  localStorage.setItem('dn_current_page', String(page)); // Save page number to localStorage
-};
+  const handleWizardFinish = () => {
+    setShowWizard(false);
+    toast.success('Invoice process completed!');
+  };
+
+  const supplierOptions = [
+    { value: "Supplier A", label: "Supplier A" },
+    { value: "Supplier B", label: "Supplier B" },
+  ];
+  
+  const selectedOption = supplierOptions.find(opt => opt.value === searchSupplier) || {
+    value: searchSupplier,
+    label: searchSupplier || "Select Supplier",
+  };
+
+  function setSearchQuery(_p0: string) {
+    throw new Error('Function not implemented.');
+  }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Breadcrumb pageName="Invoice Creation" />
       <ToastContainer />
-      <form className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          {/* Select Supplier */}
-          <div className="flex gap-4 w-full">
-            <select
-              className="w-full border border-gray-200 p-2 rounded-md text-xs"
-              value={searchSupplier}
-              onChange={(e) => setSearchSupplier(e.target.value)}
-            >
-              <option value="">Select Supplier</option>
-              {/* Replace these with actual supplier options */}
-              <option value="Supplier A">Supplier A</option>
-              <option value="Supplier B">Supplier B</option>
-              <option value="Supplier C">Supplier C</option>
-            </select>
-          </div>
-        </div>
+      <form className="space-y-4">
 
-        <div className="flex items-center gap-4">
+        <div className='flex space-x-4'>
+        <div className="w-1/3 items-center">
+        <Select
+        options={supplierOptions}
+        value={supplierOptions.find(opt => opt.value === searchSupplier) || { value: searchSupplier, label: searchSupplier || "Select Supplier" }}
+        onChange={(selectedOption) => setSearchSupplier(selectedOption?.value || "")}
+          className="w-full text-xs"
+          styles={{
+            control: (base) => ({
+              ...base,
+              borderColor: "#D7BFDC", // Sama dengan border-gray-200
+              padding: "1px", // Sama dengan p-2
+              borderRadius: "6px", // Sama dengan rounded-md
+              fontSize: "14px", // Sama dengan text-xs
+              
+            }),
+          }}
+        />
+      </div>
+
+        <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">PO Date</label>
           <input
             type="date"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
           <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="GR/SA Date"
-            value={grSaDate}
-            onChange={(e) => setGrSaDate(e.target.value)}
+            type="date"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+            value={invoiceNumber}
+            onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
+        </div>
 
-        <div className="flex items-center gap-4">
+        <div className='flex space-x-4'>
+        <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
           <input
             type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Invoice Number"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+            placeholder="----  ---------"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">PO Number</label>
           <input
             type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="PO Number"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+            placeholder="----  ---------"
             value={poNumber}
             onChange={(e) => setPoNumber(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
           <input
             type="date"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
             value={invoiceNumber}
             onChange={(e) => setInvoiceNumber(e.target.value)}
           />
         </div>
-
-        <div className="flex items-center gap-4">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Transaction Type</label>
-          <input
-            type="text"
-            className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs"
-            placeholder="Transaction Type"
-            value={poNumber}
-            onChange={(e) => setPoNumber(e.target.value)}
-          />
         </div>
       </form>
 
-      <div className="flex justify-end items-center gap-4 mt-2">
-          <button className="bg-red-600 text-xs text-white px-8 py-2 rounded">Search</button>
-          <button
-            className="bg-white text-xs text-black px-8 py-2 rounded border border-gray-300"
-            onClick={() => {
-              setSearchSupplier('');
-              setSearchQuery(''); // Clear both search fields
-            }}
-          >
-            Clear
-          </button>
+      <div className="flex justify-end items-center gap-4 ">
+        <button className="bg-fuchsia-950 text-sm text-white px-8 py-2 rounded hover:bg-fuchsia-800">Search</button>
+        <button
+          className="bg-white text-sm text-black px-8 py-2 rounded border border-purple-800 hover:bg-gray-100"
+          onClick={() => {
+            setSearchSupplier('');
+            setSearchQuery('');
+          }}
+        >
+          Clear
+        </button>
       </div>
 
-        {/* Section for GR/SA Outstanding */}
-        <h3 className="text-xl font-medium text-gray-700 mt-2">GR / SA Outstanding</h3>
-        <div className="bg-white p-4 space-y-2 flex justify-between"> {/* Reduced padding */}
-          <div className="overflow-x-auto shadow-md border rounded-lg w-2/3">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-3 py-3.5 text-center border">Total Record(s)</th>
-                  <th className="px-3 py-3.5 text-center border">Currency</th>
-                  <th className="px-3 py-3.5 text-center border">Total Amount</th>
-                  <th className="px-3 py-3.5 text-center border">Message</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-center">{grSaList.length}</td>
-                  <td className="px-3 py-2 text-center">{grSaList[0]?.currency || '-'}</td>
-                  <td className="px-3 py-2 text-center">{grSaList.reduce((sum, item) => sum + (item.totalAmount || 0), 0)}</td>
-                  <td className="px-3 py-2 text-center">Status message here</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex flex-col gap-4 mb-2">
-            <div className="flex items-center gap-4 mr-20">
-              <label className="w-1/4 text-sm font-medium text-gray-700">Selected Record(s)</label>
-              <input
-                type="text"
-                className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs text-center"
-                readOnly
-                value={(Array.isArray(selectedRecords) ? selectedRecords.length : 0)}
-              />
-            </div>
-            <div className="flex items-center gap-4 mr-20">
-              <label className="w-1/4 text-sm font-medium text-gray-700">Total Amount</label>
-              <input
-                type="text"
-                className="input w-2/3 border border-gray-200 p-2 rounded-md text-xs text-center"
-                readOnly
-                value={(Array.isArray(selectedRecords) ? selectedRecords.reduce((sum, item) => sum + (item.totalAmount || 0), 0) : 0)}
-              />
-            </div>
-          </div>
+      {/* Section for GR/SA Outstanding */}
+      <h3 className="text-xl font-semibold text-gray-700 mb-2">GR / SA Outstanding</h3>
+      <div className="bg-white p-6 flex flex-wrap md:flex-nowrap justify-between gap-4">
+        {/* Table Section */}
+        <div className="overflow-x-auto shadow-md border rounded-lg w-full md:w-2/3">
+          <table className="w-full text-md text-left">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="px-4 py-3 text-md text-gray-800 text-center border">Total Record(s)</th>
+                <th className="px-4 py-3 text-md text-gray-800 text-center border">Currency</th>
+                <th className="px-4 py-3 text-md text-gray-800 text-center border">Total Amount</th>
+                <th className="px-4 py-3 text-md text-gray-800 text-center border">Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b hover:bg-gray-50">
+                <td className="px-3 py-2 text-sm text-center">{grSaList.length}</td>
+                <td className="px-3 py-2 text-sm text-center">{grSaList[0]?.currency || '-'}</td>
+                <td className="px-3 py-2 text-sm text-center">
+                  {grSaList.reduce((sum, item) => sum + (item.totalAmount || 0), 0)}
+                </td>
+                <td className="px-3 py-2 text-sm text-center">Status message here</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
+        {/* Input Section */}
+        <div className="flex flex-col gap-4 w-full md:w-1/3">
+          <div className="flex items-center gap-3">
+            <label className="w-1/3 text-sm md:text-md font-medium text-gray-700">Selected Record(s)</label>
+            <input
+              type="text"
+              className="w-2/3 border border-purple-200 p-2 rounded-md text-xs md:text-sm text-center"
+              readOnly
+              value={(Array.isArray(selectedRecords) ? selectedRecords.length : 0)}
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="w-1/3 text-sm md:text-md font-medium text-gray-700">Total Amount</label>
+            <input
+              type="text"
+              className="w-2/3 border border-purple-200 p-2 rounded-md text-xs md:text-sm text-center"
+              readOnly
+              value={(Array.isArray(selectedRecords) ? selectedRecords.reduce((sum, item) => sum + (item.totalAmount || 0), 0) : 0)}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Separate Section for GR/SA List */}
-      <h3 className="text-xl font-medium text-gray-700">GR / SA List</h3>
+      <h3 className="text-xl font-semibold text-gray-700">GR / SA List</h3>
       <div className="bg-white p-6 space-y-6 mt-8">
         <div className="flex justify-between mb-8">
           <div>
-            <button className="bg-red-500 text-white px-6 py-2 rounded">Invoice Upload</button>
-            <button className="bg-red-500 text-white px-6 py-2 rounded ml-4">Download GR/SA</button>
+            <button className="bg-fuchsia-900 text-sm text-white px-6 py-2 rounded hover:bg-fuchsia-800">Invoice Upload</button>
+            <button className="bg-fuchsia-900 text-sm text-white px-6 py-2 rounded hover:bg-fuchsia-800 ml-4">Download GR/SA</button>
           </div>
           <div>
             <button
-              className="bg-blue-900 text-white px-6 py-2 rounded"
+              className="bg-blue-900 text-sm text-white px-6 py-2 rounded hover:bg-blue-800"
               onClick={handleInvoiceCreation}
             >
               Invoice Creation
             </button>
             <button
-              className="bg-red-600 text-white px-6 py-2 rounded ml-4"
+              className="bg-red-600 text-sm text-white px-6 py-2 rounded hover:bg-red-500 ml-4"
               onClick={handleCancelInvoice}
             >
               Cancel Invoice
             </button>
           </div>
         </div>
-        <div className="overflow-x-auto shadow-md border rounded-lg">
-          <table className="w-full text-sm text-left">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-3 py-2 text-center">
-              </th>
-              <th className="px-3 py-2 text-center">Transaction Type</th>
-              <th className="px-3 py-2 text-center">DN Number</th>
-              <th className="px-3 py-2 text-center">GR/SA Number</th>
-              <th className="px-3 py-2 text-center">PO Number</th>
-              <th className="px-3 py-2 text-center">PO Category</th>
-              <th className="px-3 py-2 text-center">PO Date</th>
-              <th className="px-3 py-2 text-center">Currency</th>
-              <th className="px-3 py-2 text-center">Total Amount</th>
-              <th className="px-3 py-2 text-center">Invoice Number</th>
-              <th className="px-3 py-2 text-center">Supplier</th>
-              <th className="px-3 py-2 text-center">Created By</th>
-              <th className="px-3 py-2 text-center">Created Date</th>
-              <th className="px-3 py-2 text-center">Updated By</th>
-              <th className="px-3 py-2 text-center">Updated Date</th>
-            </tr>
-          </thead>
 
+        <div className="overflow-x-auto shadow-md border rounded-lg">
+          <table className="w-full text-sm text-center">
+            <thead className="bg-gray-100 uppercase">
+              <tr>
+                <th className="px-3 py-2 text-center border">
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                    className="cursor-pointer"
+                  />
+                </th>
+                {/* Keep all existing table headers */}
+                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Code</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Supplier Name</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA No</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR/SA Item</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Category</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">PO Item</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Invoice Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Payment Plan Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Actual Receipt Date</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Actual Receipt QTY</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Payment Actual</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">DN Number</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Part No/Service Desc</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Material/Service Desc</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">UOM</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">GR QTY</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Price Per UOM</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Total Amount</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Currency</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Created by</th>
+                <th className="px-8 py-2 text-gray-700 text-center border">Created Date</th>
+              </tr>
+            </thead>
             <tbody>
               {grSaList.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
                   <td className="px-3 py-2 text-center">
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      checked={selectedRecords.some(r => r.grSaNumber === item.grSaNumber)}
+                      onChange={() => handleRecordSelection(item)}
+                      className="cursor-pointer"
+                    />
                   </td>
-                  <td className="px-3 py-2 text-center">{item.transactionType}</td>
-                  <td className="px-3 py-2 text-center">{item.dnNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.grSaNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.poNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.poCategory}</td>
-                  <td className="px-3 py-2 text-center">{item.poDate}</td>
-                  <td className="px-3 py-2 text-center">{item.currency}</td>
-                  <td className="px-3 py-2 text-center">{item.totalAmount}</td>
-                  <td className="px-3 py-2 text-center">{item.invoiceNumber}</td>
-                  <td className="px-3 py-2 text-center">{item.supplier}</td>
-                  <td className="px-3 py-2 text-center">{item.createdBy}</td>
-                  <td className="px-3 py-2 text-center">{item.createdDate}</td>
-                  <td className="px-3 py-2 text-center">{item.updatedBy}</td>
-                  <td className="px-3 py-2 text-center">{item.updatedDate}</td>
+                  <td className="px-3 py-3 text-center">{item.supplierCode}</td>
+                  <td className="px-3 py-3 text-center">{item.poNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.supplierName}</td>
+                  <td className="px-3 py-3 text-center">{item.grNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.grItem}</td>
+                  <td className="px-3 py-3 text-center">{item.poNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.poCategory}</td>
+                  <td className="px-3 py-3 text-center">{item.poItem}</td>
+                  <td className="px-3 py-3 text-center">{item.invoiceNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.paymentPlanDate || '-'}</td>
+                  <td className="px-3 py-3 text-center">{item.actualReceiptDate || '-'}</td>
+                  <td className="px-3 py-3 text-center">{item.actualReceiptQty || '-'}</td>
+                  <td className="px-3 py-3 text-center">{item.paymentActual || '-'}</td>
+                  <td className="px-3 py-3 text-center">{item.dnNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.partNumber}</td>
+                  <td className="px-3 py-3 text-center">{item.materialDesc}</td>
+                  <td className="px-3 py-3 text-center">{item.uom}</td>
+                  <td className="px-3 py-3 text-center">{item.grQty}</td>
+                  <td className="px-3 py-3 text-center">{item.pricePerUOM}</td>
+                  <td className="px-3 py-3 text-center">{item.totalAmount}</td>
+                  <td className="px-3 py-3 text-center">{item.currency}</td>
+                  <td className="px-3 py-3 text-center">{item.createdBy}</td>
+                  <td className="px-3 py-3 text-center">{item.createdDate}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-         {/* Pagination */}
+
+      {/* Pagination */}
+      <div className="mt-6"> 
         <Pagination
           currentPage={currentPage}
-          totalPages={Math.ceil(filteredData.length / rowsPerPage)}
+          totalRows={filteredData.length}
+          rowsPerPage={rowsPerPage}
           onPageChange={setCurrentPage}
         />
       </div>
+    </div>
+      {showWizard && (
+        <InvoiceCreationWizard
+          onClose={handleWizardClose}
+          onFinish={handleWizardFinish}
+        />
+      )}
     </div>
   );
 };

@@ -30,9 +30,9 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) 
       case '1':
         return 'super-admin';
       case '2':
-        return 'admin-finance';
+        return 'finance';
       case '3':
-        return 'supplier';
+        return 'supplier-finance';
       default:
         return null;
     }
@@ -119,9 +119,9 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role }) 
           {/* Menu Group Based on Role */}
           {mappedRole === 'super-admin' ? (
             <SuperAdmin />
-          ) : mappedRole === 'admin-finance' ? (
+          ) : mappedRole === 'finance' ? (
             <AdminAccounting />
-          ) : mappedRole === 'supplier' ? (
+          ) : mappedRole === 'supplier-finance' ? (
             <Supplier />
           ) : (
             <div className="text-center text-gray-500 mt-4">
