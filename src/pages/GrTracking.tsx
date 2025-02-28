@@ -305,7 +305,7 @@ const GrTracking = () => {
               styles={{
                 control: (base) => ({
                   ...base,
-                  borderColor: "#D7BFDC",
+                  borderColor: "#9867C5",
                   padding: "1px",
                   borderRadius: "6px",
                   fontSize: "14px",
@@ -319,7 +319,7 @@ const GrTracking = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Number</label>
           <input
             type="text"
-            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
             placeholder="---------- ----"
           />
         </div>
@@ -328,7 +328,7 @@ const GrTracking = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">Tax Number</label>
           <input
             type="text"
-            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
             placeholder="---------- ----"
           />
         </div>
@@ -340,7 +340,7 @@ const GrTracking = () => {
           <label className="w-1/4 text-sm font-medium text-gray-700">Supplier Name</label>
           <input
             type="text"
-            className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+            className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
             value={businessPartners.find(p => p.bp_code === selectedSupplier)?.adr_line_1 || ''}
             readOnly
           />
@@ -348,12 +348,12 @@ const GrTracking = () => {
         
         <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
-          <input type="date" className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs" />
+          <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
         </div>
         
         <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">Tax Date</label>
-          <input type="date" className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs" />
+          <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
         </div>
       </div>
       
@@ -364,7 +364,7 @@ const GrTracking = () => {
         <input
           type="text"
           placeholder="---------- ----"
-          className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+          className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
         />
         </div>
 
@@ -373,7 +373,7 @@ const GrTracking = () => {
         <input
           type="text"
           placeholder="---------- ----"
-          className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+          className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
         />
         </div>
         
@@ -382,7 +382,7 @@ const GrTracking = () => {
         <input
           type="text"
           placeholder="---------- ----"
-          className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+          className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
         />
         </div>
       </div>
@@ -391,12 +391,12 @@ const GrTracking = () => {
       <div className='flex space-x-4'>
         <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">PO Date</label>
-          <input type="date" className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs" />
+          <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
         </div>
         
         <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
-          <input type="date" className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs" />
+          <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
         </div>
         
         <div className="flex w-1/3 items-center gap-2">
@@ -404,7 +404,7 @@ const GrTracking = () => {
         <input
           type="text"
           placeholder="---------- ----"
-          className="input w-3/4 border border-purple-300 p-2 rounded-md text-xs"
+          className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
         />
         </div>
       </div>
@@ -413,11 +413,11 @@ const GrTracking = () => {
       <div className="my-6 flex flex-col md:flex-row md:items-center md:justify-between">
         <div></div> {/* Bagian kiri dibiarkan kosong agar tombol tetap di kanan */}
         <div className="flex justify-end gap-4">
-          <button className="bg-fuchsia-950 text-sm text-white px-8 py-2 rounded hover:bg-fuchsia-800">
+          <button className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-800">
             Search
           </button>
           <button
-            className="bg-white text-sm text-black px-8 py-2 rounded border border-fuchsia-800 hover:bg-gray-100"
+            className="bg-white text-sm text-black px-8 py-2 rounded border border-purple-900 hover:bg-gray-100"
             onClick={handleClear}
           >
             Clear

@@ -166,7 +166,7 @@ const ListProgress: React.FC = () => {
           </div>
           <button
             onClick={handleRefresh}
-            className="bg-purple-900 text-sm text-white px-6 py-2 rounded hover:bg-purple-700 "
+            className="bg-purple-900 text-sm text-white px-6 py-2 rounded hover:bg-purple-800 "
           >
             Refresh
           </button>
