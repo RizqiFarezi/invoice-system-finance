@@ -528,11 +528,13 @@ const GrTracking = () => {
                   <td className="px-3 py-2 text-center">{item.updated_at}</td>
                 </tr>
               ))}
+             {data.length === 0 && (
               <tr>
                 <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
                   No data available
                 </td>
               </tr>
+            )}
             </tbody>
           </table>
         </div>
