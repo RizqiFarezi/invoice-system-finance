@@ -66,6 +66,8 @@ const InvoiceReport = () => {
   const [userBpCode, setUserBpCode] = useState<string>('');
   const [rowsPerPage] = useState(10);
 
+  const isSupplierFinance = userRole === '3' || userRole === 'supplier-finance';
+
   useEffect(() => {
     const role = localStorage.getItem('role');
     const bpCode = localStorage.getItem('bp_code');
@@ -76,7 +78,7 @@ const InvoiceReport = () => {
     setUserBpCode(bpCode || '');
 
     // If supplier role, set their bp_code as selected and add to business partners
-    if (role === '3' && bpCode && bpName && bpAddress) {
+    if ((role === '3' || role === 'supplier-finance') && bpCode && bpName && bpAddress) {
       setSearchSupplier(bpCode);
       setBusinessPartners([{
         bp_code: bpCode,
@@ -89,7 +91,7 @@ const InvoiceReport = () => {
   // Fetch business partners
   useEffect(() => {
     const fetchBusinessPartners = async () => {
-      if (userRole === '3') {
+      if (userRole === '3' || userRole === 'supplier-finance') {
         return;
       }
       const token = localStorage.getItem('access_token');
@@ -215,7 +217,14 @@ const InvoiceReport = () => {
   useEffect(() => {
     let filtered = [...data];
 
-    if (searchSupplier) {
+    // For supplier-finance roles, always filter by their bp_code
+    if (isSupplierFinance) {
+      filtered = filtered.filter(
+        (row) => row.bp_code === userBpCode
+      );
+    } 
+    // For other roles, filter by selected supplier if any
+    else if (searchSupplier) {
       filtered = filtered.filter(
         (row) =>
           (row.bp_code && row.bp_code.toLowerCase().includes(searchSupplier.toLowerCase())) ||
@@ -231,7 +240,7 @@ const InvoiceReport = () => {
 
     setFilteredData(filtered);
     setCurrentPage(1);
-  }, [searchSupplier, searchQuery, data]);
+  }, [searchSupplier, searchQuery, data, userBpCode, isSupplierFinance]);
 
   const handleSupplierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
@@ -252,7 +261,10 @@ const InvoiceReport = () => {
   };
 
   const handleClear = () => {
-    setSearchSupplier('');
+    // For supplier roles, don't clear the supplier as they're locked to their own supplier
+    if (!isSupplierFinance) {
+      setSearchSupplier('');
+    }
     setSearchQuery('');
     setInvoiceNumber('');
     setPoDate('');
@@ -283,16 +295,10 @@ const InvoiceReport = () => {
       <ToastContainer />
       <form className="space-y-4">
 
-        <div className='flex space-x-4'>
-          <div className="w-1/3 items-center">
-            {userRole === "3" ? (
-              <input
-                type="text"
-                className="input w-full border border-violet-200 p-2 rounded-md text-xs bg-gray-100"
-                value={`${userBpCode} | ${businessPartners[0]?.bp_name || ""}`}
-                readOnly
-              />
-            ) : (
+        {/* Only show supplier selection for non-supplier-finance users */}
+        {!isSupplierFinance && (
+          <div className='flex space-x-4'>
+            <div className="w-1/3 items-center">
               <Select
                 options={businessPartners.map((partner) => ({
                   value: partner.bp_code,
@@ -321,9 +327,9 @@ const InvoiceReport = () => {
                   }),
                 }}
               />
-            )}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className='flex space-x-4'>
           <div className="flex w-1/3 items-center gap-2">
@@ -413,12 +419,17 @@ const InvoiceReport = () => {
             >
               Download Attachment
             </button>
-            <button
-              className="bg-green-600 text-sm text-white px-6 py-2 rounded hover:bg-green-500 ml-4"
-              onClick={handleCancelInvoice}
-            >
-              Verify
-            </button>
+            
+            {/* Only show Verify button if user is not supplier-finance */}
+            {!isSupplierFinance && (
+              <button
+                className="bg-green-600 text-sm text-white px-6 py-2 rounded hover:bg-green-500 ml-4"
+                onClick={handleCancelInvoice}
+              >
+                Verify
+              </button>
+            )}
+            
             <button
               className="bg-blue-900 text-sm text-white px-6 py-2 rounded hover:bg-blue-800 ml-4"
               onClick={handleCancelInvoice}

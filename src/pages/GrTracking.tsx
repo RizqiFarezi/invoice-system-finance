@@ -68,7 +68,12 @@ const GrTracking = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [userRole, setUserRole] = useState<string>('');
   const [userBpCode, setUserBpCode] = useState<string>('');
+  const [userBpName, setUserBpName] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
   const rowsPerPage = 10;
+
+  // Helper to determine if user is a supplier-finance role
+  const isSupplierFinance = userRole === '3' || userRole === 'supplier-finance';
 
   // Get user role and bp_code on mount
   useEffect(() => {
@@ -79,9 +84,10 @@ const GrTracking = () => {
 
     setUserRole(role || '');
     setUserBpCode(bpCode || '');
+    setUserBpName(bpName || '');
 
     // If supplier role, set their bp_code as selected and add to business partners
-    if (role === '3' && bpCode && bpName && bpAddress) {
+    if ((role === '3' || role === 'supplier-finance') && bpCode && bpName && bpAddress) {
       setSelectedSupplier(bpCode);
       setBusinessPartners([{
         bp_code: bpCode,
@@ -94,9 +100,11 @@ const GrTracking = () => {
   // Fetch business partners
   useEffect(() => {
     const fetchBusinessPartners = async () => {
-      if (userRole === '3') {
+      if (isSupplierFinance) {
         return;
       }
+      
+      setIsLoading(true);
       const token = localStorage.getItem('access_token');
       try {
         const response = await fetch(API_List_Partner_Admin(), {
@@ -161,15 +169,18 @@ const GrTracking = () => {
         } else {
           toast.error('Error fetching business partners');
         }
+      } finally {
+        setIsLoading(false);
       }
     };
   
     fetchBusinessPartners();
-  }, [userRole]);
+  }, [userRole, isSupplierFinance]);
 
   // Fetch inv line data with improved error handling
   useEffect(() => {
     const fetchInvLineData = async () => {
+      setIsLoading(true);
       const token = localStorage.getItem('access_token');
       try {
         const response = await fetch(API_Inv_Line_Admin(), {
@@ -202,9 +213,10 @@ const GrTracking = () => {
     
           if (invLineList.length > 0) {
             setData(invLineList);
-            setFilteredData(invLineList);
+            // Don't set filtered data here, let the useEffect for filtering handle it
           } else {
             toast.warn('No invoice line data found in the response');
+            setData([]);
           }
         } else {
           throw new Error('Invalid response structure from API');
@@ -216,6 +228,9 @@ const GrTracking = () => {
         } else {
           toast.error('Error fetching invoice line data');
         }
+        setData([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -227,9 +242,27 @@ const GrTracking = () => {
     }
   }, []);
 
+  // Filter data when data or filter criteria change
   useEffect(() => {
+    if (data.length === 0) {
+      setFilteredData([]);
+      return;
+    }
+
     let filtered = [...data];
 
+    // Always filter by bp_code for supplier-finance users
+    if (isSupplierFinance && userBpCode) {
+      filtered = filtered.filter(
+        (row) => row.bp_id === userBpCode
+      );
+    } 
+    // For other users, filter by the selected supplier if any
+    else if (selectedSupplier) {
+      filtered = filtered.filter(row => row.bp_id === selectedSupplier);
+    }
+
+    // Additional search filters
     if (searchSupplier) {
       filtered = filtered.filter(
         (row) =>
@@ -244,12 +277,10 @@ const GrTracking = () => {
       );
     }
 
-    if (selectedSupplier) {
-      filtered = filtered.filter(row => row.bp_id === selectedSupplier);
-    }
-
     setFilteredData(filtered);
-  }, [searchSupplier, searchQuery, selectedSupplier, data]);
+    // Reset to first page when filters change
+    setCurrentPage(1);
+  }, [data, searchSupplier, searchQuery, selectedSupplier, userBpCode, isSupplierFinance]);
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * rowsPerPage,
@@ -262,7 +293,7 @@ const GrTracking = () => {
   };
 
   const handleClear = () => {
-    if (userRole !== '3') {
+    if (!isSupplierFinance) {
       setSelectedSupplier('');
     }
     setSearchSupplier('');
@@ -275,15 +306,9 @@ const GrTracking = () => {
     <form className="space-y-4">
       {/* Row 1 */}
       <div className='flex space-x-4'>
-        <div className="w-1/3 items-center">
-          {userRole === "3" ? (
-            <input
-              type="text"
-              className="input w-full border border-purple-200 p-2 rounded-md text-xs bg-gray-100"
-              value={`${userBpCode} | ${businessPartners[0]?.bp_name || ""}`}
-              readOnly
-            />
-          ) : (
+        {/* Only show supplier selection for non-supplier-finance users */}
+        {!isSupplierFinance ? (
+          <div className="w-1/3 items-center">
             <Select
               options={businessPartners.map((partner) => ({
                 value: partner.bp_code,
@@ -293,15 +318,13 @@ const GrTracking = () => {
                 selectedSupplier
                   ? {
                       value: selectedSupplier,
-                      label:
-                        businessPartners.find((p) => p.bp_code === selectedSupplier)?.bp_name ||
-                        "Select Supplier",
+                      label: `${selectedSupplier} | ${businessPartners.find((p) => p.bp_code === selectedSupplier)?.bp_name || ""}`,
                     }
                   : null
               }
               onChange={(selectedOption) => selectedOption && setSelectedSupplier(selectedOption.value)}
               placeholder="Select Supplier"
-              className="w-full text-xs "
+              className="w-full text-xs"
               styles={{
                 control: (base) => ({
                   ...base,
@@ -311,9 +334,10 @@ const GrTracking = () => {
                   fontSize: "14px",
                 }),
               }}
+              isLoading={isLoading}
             />
-          )}
-        </div>
+          </div>
+        ) : null}
 
         <div className="flex w-1/3 items-center gap-2">
           <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Number</label>
@@ -341,7 +365,9 @@ const GrTracking = () => {
           <input
             type="text"
             className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
-            value={businessPartners.find(p => p.bp_code === selectedSupplier)?.adr_line_1 || ''}
+            value={isSupplierFinance 
+              ? businessPartners[0]?.adr_line_1 || '' 
+              : businessPartners.find(p => p.bp_code === selectedSupplier)?.adr_line_1 || ''}
             readOnly
           />
         </div>
@@ -411,7 +437,7 @@ const GrTracking = () => {
     </form>
 
       <div className="my-6 flex flex-col md:flex-row md:items-center md:justify-between">
-        <div></div> {/* Bagian kiri dibiarkan kosong agar tombol tetap di kanan */}
+        <div></div> {/* Empty div to keep buttons to the right */}
         <div className="flex justify-end gap-4">
           <button className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-800">
             Search
@@ -436,7 +462,6 @@ const GrTracking = () => {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-100 uppercase">
               <tr>
-                {/* Keep all existing table headers */}
                 <th className="px-8 py-2 text-gray-700 text-center border">PO No</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">BP ID</th>
                 <th className="px-8 py-2 text-gray-700 text-center border">BP Name</th>
@@ -482,59 +507,66 @@ const GrTracking = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map((item, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="px-3 py-2 text-center">{item.po_no}</td>
-                  <td className="px-3 py-2 text-center">{item.bp_id}</td>
-                  <td className="px-3 py-2 text-center">{item.bp_name}</td>
-                  <td className="px-3 py-2 text-center">{item.currency}</td>
-                  <td className="px-3 py-2 text-center">{item.po_type}</td>
-                  <td className="px-3 py-2 text-center">{item.po_reference}</td>
-                  <td className="px-3 py-2 text-center">{item.po_line}</td>
-                  <td className="px-3 py-2 text-center">{item.po_sequence}</td>
-                  <td className="px-3 py-2 text-center">{item.po_receipt_sequence}</td>
-                  <td className="px-3 py-2 text-center">{item.actual_receipt_date}</td>
-                  <td className="px-3 py-2 text-center">{item.actual_receipt_year}</td>
-                  <td className="px-3 py-2 text-center">{item.actual_receipt_period}</td>
-                  <td className="px-3 py-2 text-center">{item.receipt_no}</td>
-                  <td className="px-3 py-2 text-center">{item.receipt_line}</td>
-                  <td className="px-3 py-2 text-center">{item.gr_no}</td>
-                  <td className="px-3 py-2 text-center">{item.packing_slip}</td>
-                  <td className="px-3 py-2 text-center">{item.item_no}</td>
-                  <td className="px-3 py-2 text-center">{item.ics_code}</td>
-                  <td className="px-3 py-2 text-center">{item.ics_part}</td>
-                  <td className="px-3 py-2 text-center">{item.part_no}</td>
-                  <td className="px-3 py-2 text-center">{item.item_desc}</td>
-                  <td className="px-3 py-2 text-center">{item.item_group}</td>
-                  <td className="px-3 py-2 text-center">{item.item_type}</td>
-                  <td className="px-3 py-2 text-center">{item.item_type_desc}</td>
-                  <td className="px-3 py-2 text-center">{item.request_qty}</td>
-                  <td className="px-3 py-2 text-center">{item.actual_receipt_qty}</td>
-                  <td className="px-3 py-2 text-center">{item.approve_qty}</td>
-                  <td className="px-3 py-2 text-center">{item.unit}</td>
-                  <td className="px-3 py-2 text-center">{item.receipt_amount}</td>
-                  <td className="px-3 py-2 text-center">{item.receipt_unit_price}</td>
-                  <td className="px-3 py-2 text-center">{item.is_final_receipt ? 'Yes' : 'No'}</td>
-                  <td className="px-3 py-2 text-center">{item.is_confirmed ? 'Yes' : 'No'}</td>
-                  <td className="px-3 py-2 text-center">{item.inv_doc_no}</td>
-                  <td className="px-3 py-2 text-center">{item.inv_doc_date}</td>
-                  <td className="px-3 py-2 text-center">{item.inv_qty}</td>
-                  <td className="px-3 py-2 text-center">{item.inv_amount}</td>
-                  <td className="px-3 py-2 text-center">{item.inv_supplier_no}</td>
-                  <td className="px-3 py-2 text-center">{item.inv_due_date}</td>
-                  <td className="px-3 py-2 text-center">{item.payment_doc}</td>
-                  <td className="px-3 py-2 text-center">{item.payment_doc_date}</td>
-                  <td className="px-3 py-2 text-center">{item.created_at}</td>
-                  <td className="px-3 py-2 text-center">{item.updated_at}</td>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={42} className="px-6 py-4 text-center text-gray-500">
+                    Loading...
+                  </td>
                 </tr>
-              ))}
-             {data.length === 0 && (
-              <tr>
-                <td colSpan={14} className="px-6 py-4 text-center text-gray-500">
-                  No data available
-                </td>
-              </tr>
-            )}
+              ) : paginatedData.length > 0 ? (
+                paginatedData.map((item, index) => (
+                  <tr key={index} className="border-b hover:bg-gray-50">
+                    <td className="px-3 py-2 text-center">{item.po_no}</td>
+                    <td className="px-3 py-2 text-center">{item.bp_id}</td>
+                    <td className="px-3 py-2 text-center">{item.bp_name}</td>
+                    <td className="px-3 py-2 text-center">{item.currency}</td>
+                    <td className="px-3 py-2 text-center">{item.po_type}</td>
+                    <td className="px-3 py-2 text-center">{item.po_reference}</td>
+                    <td className="px-3 py-2 text-center">{item.po_line}</td>
+                    <td className="px-3 py-2 text-center">{item.po_sequence}</td>
+                    <td className="px-3 py-2 text-center">{item.po_receipt_sequence}</td>
+                    <td className="px-3 py-2 text-center">{item.actual_receipt_date}</td>
+                    <td className="px-3 py-2 text-center">{item.actual_receipt_year}</td>
+                    <td className="px-3 py-2 text-center">{item.actual_receipt_period}</td>
+                    <td className="px-3 py-2 text-center">{item.receipt_no}</td>
+                    <td className="px-3 py-2 text-center">{item.receipt_line}</td>
+                    <td className="px-3 py-2 text-center">{item.gr_no}</td>
+                    <td className="px-3 py-2 text-center">{item.packing_slip}</td>
+                    <td className="px-3 py-2 text-center">{item.item_no}</td>
+                    <td className="px-3 py-2 text-center">{item.ics_code}</td>
+                    <td className="px-3 py-2 text-center">{item.ics_part}</td>
+                    <td className="px-3 py-2 text-center">{item.part_no}</td>
+                    <td className="px-3 py-2 text-center">{item.item_desc}</td>
+                    <td className="px-3 py-2 text-center">{item.item_group}</td>
+                    <td className="px-3 py-2 text-center">{item.item_type}</td>
+                    <td className="px-3 py-2 text-center">{item.item_type_desc}</td>
+                    <td className="px-3 py-2 text-center">{item.request_qty}</td>
+                    <td className="px-3 py-2 text-center">{item.actual_receipt_qty}</td>
+                    <td className="px-3 py-2 text-center">{item.approve_qty}</td>
+                    <td className="px-3 py-2 text-center">{item.unit}</td>
+                    <td className="px-3 py-2 text-center">{item.receipt_amount}</td>
+                    <td className="px-3 py-2 text-center">{item.receipt_unit_price}</td>
+                    <td className="px-3 py-2 text-center">{item.is_final_receipt ? 'Yes' : 'No'}</td>
+                    <td className="px-3 py-2 text-center">{item.is_confirmed ? 'Yes' : 'No'}</td>
+                    <td className="px-3 py-2 text-center">{item.inv_doc_no}</td>
+                    <td className="px-3 py-2 text-center">{item.inv_doc_date}</td>
+                    <td className="px-3 py-2 text-center">{item.inv_qty}</td>
+                    <td className="px-3 py-2 text-center">{item.inv_amount}</td>
+                    <td className="px-3 py-2 text-center">{item.inv_supplier_no}</td>
+                    <td className="px-3 py-2 text-center">{item.inv_due_date}</td>
+                    <td className="px-3 py-2 text-center">{item.payment_doc}</td>
+                    <td className="px-3 py-2 text-center">{item.payment_doc_date}</td>
+                    <td className="px-3 py-2 text-center">{item.created_at}</td>
+                    <td className="px-3 py-2 text-center">{item.updated_at}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={42} className="px-6 py-4 text-center text-gray-500">
+                    No data available
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -546,7 +578,7 @@ const GrTracking = () => {
           onPageChange={handlePageChange}
         />
       </div>
-</div>
+    </div>
   );
 };
 
