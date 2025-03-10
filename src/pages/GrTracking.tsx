@@ -305,135 +305,138 @@ const GrTracking = () => {
     <Breadcrumb pageName="Good Receive Tracking Retrieval" />
     <form className="space-y-4">
       {/* Row 1 */}
-      <div className='flex space-x-4'>
-        {/* Only show supplier selection for non-supplier-finance users */}
-        {!isSupplierFinance ? (
-          <div className="w-1/3 items-center">
-            <Select
-              options={businessPartners.map((partner) => ({
-                value: partner.bp_code,
-                label: `${partner.bp_code} | ${partner.bp_name}`,
-              }))}
-              value={
-                selectedSupplier
-                  ? {
-                      value: selectedSupplier,
-                      label: `${selectedSupplier} | ${businessPartners.find((p) => p.bp_code === selectedSupplier)?.bp_name || ""}`,
-                    }
-                  : null
+      <div className="flex space-x-4 items-center">
+  {/* Supplier Selection (Only for non-supplier-finance users) */}
+  {!isSupplierFinance && (
+    <div className="w-1/3">
+      <Select
+        options={businessPartners.map((partner) => ({
+          value: partner.bp_code,
+          label: `${partner.bp_code} | ${partner.bp_name}`,
+        }))}
+        value={
+          selectedSupplier
+            ? {
+                value: selectedSupplier,
+                label: `${selectedSupplier} | ${businessPartners.find((p) => p.bp_code === selectedSupplier)?.bp_name || ""}`,
               }
-              onChange={(selectedOption) => selectedOption && setSelectedSupplier(selectedOption.value)}
-              placeholder="Select Supplier"
-              className="w-full text-xs"
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderColor: "#9867C5",
-                  padding: "1px",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                }),
-              }}
-              isLoading={isLoading}
-            />
-          </div>
-        ) : null}
+            : null
+        }
+        onChange={(selectedOption) => selectedOption && setSelectedSupplier(selectedOption.value)}
+        placeholder="Select Supplier"
+        className="w-full text-xs"
+        styles={{
+          control: (base) => ({
+            ...base,
+            borderColor: "#9867C5",
+            padding: "1px",
+            borderRadius: "6px",
+            fontSize: "14px",
+          }),
+        }}
+        isLoading={isLoading}
+      />
+    </div>
+  )}
 
-        <div className="flex w-1/3 items-center gap-2">
-          <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Number</label>
-          <input
-            type="text"
-            className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
-            placeholder="---------- ----"
-          />
-        </div>
+  {/* GR/SA Number */}
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">GR/SA Number</label>
+    <input
+      type="text"
+      placeholder="---------- ----"
+      className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
+    />
+  </div>
 
-        <div className="flex w-1/3 items-center gap-2">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Tax Number</label>
-          <input
-            type="text"
-            className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
-            placeholder="---------- ----"
-          />
-        </div>
-      </div>
+  {/* Tax Number */}
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">Tax Number</label>
+    <input
+      type="text"
+      placeholder="---------- ----"
+      className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
+    />
+  </div>
+</div>
 
-      {/* Row 2 */}
-      <div className='flex space-x-4'>
-        <div className="flex w-1/3 items-center gap-2">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Supplier Name</label>
-          <input
-            type="text"
-            className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
-            value={isSupplierFinance 
-              ? businessPartners[0]?.adr_line_1 || '' 
-              : businessPartners.find(p => p.bp_code === selectedSupplier)?.adr_line_1 || ''}
-            readOnly
-          />
-        </div>
-        
-        <div className="flex w-1/3 items-center gap-2">
-          <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
-          <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
-        </div>
-        
-        <div className="flex w-1/3 items-center gap-2">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Tax Date</label>
-          <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
-        </div>
-      </div>
-      
-      {/* Row 3 */}
-      <div className='flex space-x-4'>
-        <div className="flex w-1/3 items-center gap-2">
-        <label className="w-1/4 text-sm font-medium text-gray-700">PO Number</label>
-        <input
-          type="text"
-          placeholder="---------- ----"
-          className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
-        />
-        </div>
+{/* Row 2 */}
+<div className='flex space-x-4'>
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">Supplier Name</label>
+    <input
+      type="text"
+      className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
+      value={isSupplierFinance 
+        ? (businessPartners[0]?.adr_line_1 || '') 
+        : (businessPartners.find(p => p.bp_code === selectedSupplier)?.adr_line_1 || '')}
+      readOnly
+    />
+  </div>
+  
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">GR / SA Date</label>
+    <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
+  </div>
+  
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">Tax Date</label>
+    <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
+  </div>
+</div>
 
-        <div className="flex w-1/3 items-center gap-2">
-        <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
-        <input
-          type="text"
-          placeholder="---------- ----"
-          className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
-        />
-        </div>
-        
-        <div className="flex w-1/3 items-center gap-2">
-        <label className="w-1/4 text-sm font-medium text-gray-700">Status</label>
-        <input
-          type="text"
-          placeholder="---------- ----"
-          className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
-        />
-        </div>
-      </div>
-      
-      {/* Row 4 */}
-      <div className='flex space-x-4'>
-        <div className="flex w-1/3 items-center gap-2">
-          <label className="w-1/4 text-sm font-medium text-gray-700">PO Date</label>
-          <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
-        </div>
-        
-        <div className="flex w-1/3 items-center gap-2">
-          <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
-          <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
-        </div>
-        
-        <div className="flex w-1/3 items-center gap-2">
-        <label className="w-1/4 text-sm font-medium text-gray-700">DN Number</label>
-        <input
-          type="text"
-          placeholder="---------- ----"
-          className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
-        />
-        </div>
-      </div>
+{/* Row 3 */}
+<div className='flex space-x-4'>
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">PO Number</label>
+    <input
+      type="text"
+      placeholder="---------- ----"
+      className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
+    />
+  </div>
+
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Number</label>
+    <input
+      type="text"
+      placeholder="---------- ----"
+      className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
+    />
+  </div>
+  
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">Status</label>
+    <input
+      type="text"
+      placeholder="---------- ----"
+      className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
+    />
+  </div>
+</div>
+
+{/* Row 4 */}
+<div className='flex space-x-4'>
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">PO Date</label>
+    <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
+  </div>
+  
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">Invoice Date</label>
+    <input type="date" className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs" />
+  </div>
+  
+  <div className="flex w-1/3 items-center gap-2">
+    <label className="w-1/4 text-sm font-medium text-gray-700">DN Number</label>
+    <input
+      type="text"
+      placeholder="---------- ----"
+      className="input w-3/4 border border-violet-200 p-2 rounded-md text-xs"
+    />
+  </div>
+</div>
+
     </form>
 
       <div className="my-6 flex flex-col md:flex-row md:items-center md:justify-between">
