@@ -10,6 +10,7 @@ import AddUser from './pages/ManageUser/Pages/AddUser';  // Ensure this path is 
 import EditUser from './pages/ManageUser/Pages/EditUser';  // Ensure this path is correct
 import { AuthProvider } from './pages/Authentication/AuthContext';
 import GrTracking from './pages/GrTracking';
+import GrTrackingSup from './pages/GrTrackingSup';
 import InvoiceCreation from './pages/InvoiceCreation';
 import InvoiceReport from './pages/InvoiceReport';
 
@@ -80,8 +81,17 @@ const App = () => {
             <Route
               path="/gr-tracking"
               element={
-                <ProtectedRoute allowedRoles={['1', '2', '3']}>
+                <ProtectedRoute allowedRoles={['1', '2']}>
                   <GrTracking/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/grtracking"
+              element={
+                <ProtectedRoute allowedRoles={['3']}>
+                  <GrTrackingSup/>
                 </ProtectedRoute>
               }
             />
