@@ -1,11 +1,11 @@
 import { FaList } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
-const GRTracking = () => {
+const GRTrackingSup = () => {
     return (
         <li>
             <NavLink
-                to="/gr-tracking"
+                to="/grtracking"
                 className={({ isActive }) =>
                     `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out ${
                         isActive
@@ -21,4 +21,4 @@ const GRTracking = () => {
     );
 };
 
-export default GRTracking;
+export default GRTrackingSup;

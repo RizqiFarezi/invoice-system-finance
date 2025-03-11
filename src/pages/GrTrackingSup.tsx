@@ -12,7 +12,21 @@ interface BusinessPartner {
   adr_line_1: string;
 }
 
-interface GrTracking {
+interface FilterParams {
+  bp_id?: string;
+  gr_no?: string;
+  tax_number?: string;
+  po_no?: string;
+  invoice_no?: string;
+  status?: string;
+  gr_date?: string;
+  tax_date?: string;
+  po_date?: string;
+  invoice_date?: string;
+  dn_number?: string;
+}
+
+interface GrTrackingSup {
   po_no: string;
   bp_id: string;
   bp_name: string;
@@ -57,23 +71,9 @@ interface GrTracking {
   updated_at: string;
 }
 
-interface FilterParams {
-  bp_id?: string;
-  gr_no?: string;
-  tax_number?: string;
-  po_no?: string;
-  invoice_no?: string;
-  status?: string;
-  gr_date?: string;
-  tax_date?: string;
-  po_date?: string;
-  invoice_date?: string;
-  dn_number?: string;
-}
-
-const GrTracking = () => {
-  const [data, setData] = useState<GrTracking[]>([]);
-  const [filteredData, setFilteredData] = useState<GrTracking[]>([]);
+const GrTrackingSup = () => {
+  const [data, setData] = useState<GrTrackingSup[]>([]);
+  const [filteredData, setFilteredData] = useState<GrTrackingSup[]>([]);
   const [businessPartners, setBusinessPartners] = useState<BusinessPartner[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState('');
   const [searchSupplier, setSearchSupplier] = useState('');
@@ -207,6 +207,79 @@ const GrTracking = () => {
       setInitialDataFetched(true);
     }
   }, [isSupplierFinance, userBpCode, initialDataFetched]);
+
+  // Client-side filtering for supplier-finance users
+  const filterDataClientSide = () => {
+    if (data.length === 0) {
+      return;
+    }
+
+    let filtered = [...data];
+    
+    // Apply filters based on filter params
+    if (filterParams.gr_no) {
+      filtered = filtered.filter(row => 
+        row.gr_no?.toLowerCase().includes(filterParams.gr_no!.toLowerCase())
+      );
+    }
+    
+    if (filterParams.tax_number) {
+      filtered = filtered.filter(row => 
+        row.inv_doc_no?.toLowerCase().includes(filterParams.tax_number!.toLowerCase())
+      );
+    }
+    
+    if (filterParams.po_no) {
+      filtered = filtered.filter(row => 
+        row.po_no?.toLowerCase().includes(filterParams.po_no!.toLowerCase())
+      );
+    }
+    
+    if (filterParams.invoice_no) {
+      filtered = filtered.filter(row => 
+        row.inv_doc_no?.toLowerCase().includes(filterParams.invoice_no!.toLowerCase())
+      );
+    }
+    
+    if (filterParams.status) {
+      filtered = filtered.filter(row => 
+        row.is_confirmed !== undefined && String(row.is_confirmed).toLowerCase().includes(filterParams.status!.toLowerCase())
+      );
+    }
+    
+    if (filterParams.gr_date) {
+      filtered = filtered.filter(row => 
+        row.actual_receipt_date?.includes(filterParams.gr_date!)
+      );
+    }
+    
+    if (filterParams.tax_date) {
+      filtered = filtered.filter(row => 
+        row.inv_doc_date?.includes(filterParams.tax_date!)
+      );
+    }
+    
+    if (filterParams.po_date) {
+      filtered = filtered.filter(row => 
+        row.created_at?.includes(filterParams.po_date!)
+      );
+    }
+    
+    if (filterParams.invoice_date) {
+      filtered = filtered.filter(row => 
+        row.inv_doc_date?.includes(filterParams.invoice_date!)
+      );
+    }
+    
+    if (filterParams.dn_number) {
+      filtered = filtered.filter(row => 
+        row.inv_doc_no?.toLowerCase().includes(filterParams.dn_number!.toLowerCase())
+      );
+    }
+    
+    setFilteredData(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
 
   // Fetch invoice line data with filter params
   const fetchInvLineData = async (params: FilterParams = {}) => {
@@ -368,8 +441,13 @@ const GrTracking = () => {
       return;
     }
     
-    // Fetch data with current filter params
-    fetchInvLineData(filterParams);
+    if (isSupplierFinance && data.length > 0) {
+      // For supplier-finance users, just apply client-side filtering if data is already fetched
+      filterDataClientSide();
+    } else {
+      // Fetch data with current filter params
+      fetchInvLineData(filterParams);
+    }
   };
 
   // Update filter params when inputs change
@@ -705,4 +783,4 @@ const GrTracking = () => {
   );
 };
 
-export default GrTracking;
+export default GrTrackingSup;

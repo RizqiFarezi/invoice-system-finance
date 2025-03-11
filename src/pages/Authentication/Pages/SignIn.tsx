@@ -1,4 +1,4 @@
-import FotoSanoh from '../../../images/cover/cover-new.png';
+import FotoSanoh from '../../../images/cover/cover-new2.png';
 import Logo from '../../../images/logo-sanoh.png';
 import PasswordInput from '../../../components/PasswordInput';
 import React, { useState } from 'react';
@@ -74,7 +74,7 @@ const SignIn: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) =
                 </div>
                 <button
                   type="submit"
-                  className="px-4 py-3.5 bg-purple-900 text-white py-2 rounded-lg mt-6 hover:bg-purple-600 transition"
+                  className="px-4 py-3.5 bg-violet-900 text-white py-2 rounded-lg mt-6 hover:bg-violet-8/Users/mac/Downloads/cover-new2.png00 transition"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Loading...' : 'Log In'}
