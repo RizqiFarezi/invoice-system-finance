@@ -26,10 +26,10 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ selectedR
 
   // Document state
   const [documents, setDocuments] = useState([
-    { type: 'Invoice *', fileName: '', required: true },
-    { type: 'Tax Invoice *', fileName: '', required: true },
-    { type: 'Delivery Note *', fileName: '', required: true },
-    { type: 'Purchase Order *', fileName: '', required: true },
+    { type: 'invoice', fileName: '', required: true },
+    { type: 'fakturpajak', fileName: '', required: true },
+    { type: 'suratjalan', fileName: '', required: true },
+    { type: 'po', fileName: '', required: true },
   ]);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -252,6 +252,16 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ selectedR
     </div>
   );
 
+  const getDocumentDisplayName = (type: string) => {
+    switch (type) {
+      case 'invoice': return 'Invoice *';
+      case 'fakturpajak': return 'Tax Invoice *';
+      case 'suratjalan': return 'Delivery Note *';
+      case 'po': return 'Purchase Order *';
+      default: return type;
+    }
+  };
+
   const renderAttachDocuments = () => (
     <div className="space-y-6">
       <h2 className="text-lg font-medium text-gray-900">Attach and Submit Document</h2>
@@ -282,13 +292,25 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ selectedR
                   </button>
                   <input
                     type="file"
-                    ref={(el) => (fileInputRefs.current[index] = el)}
+                    accept="application/pdf" // Only accept PDF files
+                    ref={(el) => {
+                      fileInputRefs.current[index] = el;
+                      console.log(`Set fileInputRef[${index}] to:`, el);
+                    }}
                     className="hidden"
-                    onChange={(e) => handleFileUpload(index, e.target.files?.[0] || null)}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      if (file) {
+                        console.log(`File selected for ${doc.type}:`, file.name, file.type, file.size);
+                        handleFileUpload(index, file);
+                      } else {
+                        console.log(`No file selected for ${doc.type}`);
+                      }
+                    }}
                   />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
-                  <span className="text-sm text-purple-800 font-medium">{doc.type}</span>
+                  <span className="text-sm text-purple-800 font-medium">{getDocumentDisplayName(doc.type)}</span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center justify-center gap-2">
@@ -382,7 +404,7 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ selectedR
         alert('Please log in to create an invoice.');
         return;
       }
-
+  
       // Compute values based on selected records
       const computedTaxBase = selectedRecords.reduce(
         (acc, record) => acc + Number(record.receipt_amount),
@@ -391,7 +413,8 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ selectedR
       const ppnRate = 0.11; // Fixed rate; the backend looks it up by ppn_id.
       const computedTaxAmount = computedTaxBase * ppnRate;
       const computedTotalInvoiceAmount = computedTaxBase + computedTaxAmount;
-
+  
+      // Create FormData object without Content-Type header to allow browser to set it
       const formData = new FormData();
       formData.append('inv_no', invoiceNumber);
       formData.append('inv_date', invoiceDate);
@@ -404,57 +427,96 @@ const InvoiceCreationWizard: React.FC<InvoiceCreationWizardProps> = ({ selectedR
       formData.append('total_amount', computedTotalInvoiceAmount.toString());
       formData.append('status', 'New');
       formData.append('created_by', '');
-
-      // IMPORTANT: Use the invoice line ID (inv_line_id) expected by the backend.
-      // Check that each record has a valid inv_line_id. If not, update or log for debugging.
-      selectedRecords.forEach((record, idx) => {
-        if (!record.inv_line_id) {
-          console.error(`Record at index ${idx} is missing inv_line_id`, record);
-        }
-        formData.append('inv_line_detail[]', record.inv_line_id || '');
-      });
-
-      documents.forEach((doc, index) => {
-        const fileInput = fileInputRefs.current[index];
-        if (fileInput && fileInput.files && fileInput.files[0]) {
-          if (doc.type.includes('Invoice')) {
-            formData.append('invoice_file', fileInput.files[0]);
-          } else if (doc.type.includes('Tax Invoice')) {
-            formData.append('fakturpajak_file', fileInput.files[0]);
-          } else if (doc.type.includes('Delivery Note')) {
-            formData.append('suratjalan_file', fileInput.files[0]);
-          } else if (doc.type.includes('Purchase Order')) {
-            formData.append('po_file', fileInput.files[0]);
-          }
+  
+      // Add invoice line details
+      selectedRecords.forEach(record => {
+        if (record.inv_line_id) {
+          formData.append('inv_line_detail[]', record.inv_line_id);
         }
       });
-
-      // Log the FormData object for debugging
-      for (const pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
+  
+      // Debug: check file refs before adding to FormData
+      console.log('File input refs count:', fileInputRefs.current.length);
+      fileInputRefs.current.forEach((ref, idx) => {
+        if (ref) {
+          console.log(`Ref ${idx} exists, has files:`, (ref.files?.length ?? 0) > 0);
+        } else {
+          console.log(`Ref ${idx} is null`);
+        }
+      });
+  
+      // Directly add files from input elements to avoid any possible mapping issues
+      const invoiceFile = fileInputRefs.current[0]?.files?.[0];
+      if (invoiceFile) {
+        console.log('Adding invoice_file:', invoiceFile.name, invoiceFile.size, invoiceFile.type);
+        formData.append('invoice_file', invoiceFile);
       }
-
+  
+      const fakturFile = fileInputRefs.current[1]?.files?.[0];
+      if (fakturFile) {
+        console.log('Adding fakturpajak_file:', fakturFile.name, fakturFile.size, fakturFile.type);
+        formData.append('fakturpajak_file', fakturFile);
+      }
+  
+      const suratJalanFile = fileInputRefs.current[2]?.files?.[0];
+      if (suratJalanFile) {
+        console.log('Adding suratjalan_file:', suratJalanFile.name, suratJalanFile.size, suratJalanFile.type);
+        formData.append('suratjalan_file', suratJalanFile);
+      }
+  
+      const poFile = fileInputRefs.current[3]?.files?.[0];
+      if (poFile) {
+        console.log('Adding po_file:', poFile.name, poFile.size, poFile.type);
+        formData.append('po_file', poFile);
+      }
+  
+      // Debug: Log all form data entries
+      console.log('--- FormData contents ---');
+      for (const pair of formData.entries()) {
+        if (pair[1] instanceof File) {
+          console.log(`${pair[0]}: File - ${(pair[1] as File).name}, size: ${(pair[1] as File).size}`);
+        } else {
+          console.log(`${pair[0]}: ${pair[1]}`);
+        }
+      }
+  
+      // Make API request WITHOUT setting Content-Type header
+      console.log('Making API request to:', API_Create_Inv_Header_Admin());
       const response = await fetch(API_Create_Inv_Header_Admin(), {
         method: 'POST',
         body: formData,
         headers: {
-          Authorization: `Bearer ${token}`, // Include the token in the headers
+          'Authorization': `Bearer ${token}`,
+          // DO NOT set Content-Type here, browser will set it automatically for multipart/form-data
         },
       });
-      if (!response.ok) {
-        throw new Error(`Invoice creation failed with status: ${response.status}`);
+  
+      // Get raw response text for debugging
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+      
+      // Parse the JSON if possible
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+        console.log('Parsed response:', responseData);
+      } catch (e) {
+        console.error('Could not parse response as JSON:', e);
       }
-      await response.json();
-
+      
+      if (!response.ok) {
+        throw new Error(`Invoice creation failed: ${response.status} ${responseData ? JSON.stringify(responseData) : responseText}`);
+      }
+  
       alert("Invoice created successfully!");
-
-      // The invoice has been stored—now trigger the next steps.
-      // Ensure that onFinish (or your parent component) clears the invoice lines (selectedRecords)
-      // so they no longer appear in the UI.
       onFinish();
     } catch (error) {
       console.error('Error creating invoice:', error);
-      alert("Failed to create invoice. Please try again.");
+      if (error instanceof Error) {
+        alert(`Failed to create invoice: ${error.message}`);
+      } else {
+        alert(`Failed to create invoice: ${String(error)}`);
+      }
     }
   };
 
