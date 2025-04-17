@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import LogoIcon from '/images/Logo-sanoh.png';
+import LogoIcon from '../images/Logo-sanoh.png';
 import { toast } from 'react-toastify';
 import {
   API_Update_Inv_Header_Admin,
