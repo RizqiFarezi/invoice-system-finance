@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+
 const InvoiceDetail = () => {
   const router = useRouter();
   const { invoiceNumber } = router.query;

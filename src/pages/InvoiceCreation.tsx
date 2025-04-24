@@ -1,3 +1,4 @@
+import { Search, XCircle } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
@@ -534,19 +535,22 @@ const InvoiceCreation = () => {
             </div>
           </form>
 
-          <div className="flex justify-end items-center gap-4 ">
+          <div className="flex justify-end items-center gap-4">
             <button 
-              type="button" // Added type="button" to prevent form submission
-              className="bg-purple-900 text-sm text-white px-8 py-2 rounded hover:bg-purple-800" 
+              type="button"
               onClick={handleSearch}
+              className="flex items-center gap-2 bg-purple-900 text-sm text-white px-6 py-2 rounded shadow-md hover:bg-purple-800 disabled:opacity-50 transition"
             >
+              <Search className="w-4 h-4" />
               Search
             </button>
+
             <button
-              type="button" // Added type="button" here as well
-              className="bg-white text-sm text-black px-8 py-2 rounded border border-purple-800 hover:bg-gray-100"
+              type="button"
               onClick={handleClear}
+              className="flex items-center gap-2 bg-red-700 text-sm text-white px-6 py-2 rounded border border-red-700 hover:bg-red-800 shadow-sm transition"
             >
+              <XCircle className="w-4 h-4 text-white" />
               Clear
             </button>
           </div>
