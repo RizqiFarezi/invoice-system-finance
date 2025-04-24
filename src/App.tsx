@@ -99,7 +99,7 @@ const App = () => {
             <Route
               path="/invoice-creation"
               element={
-                <ProtectedRoute allowedRoles={['1', '3']}>
+                <ProtectedRoute allowedRoles={['1', '3', '2']}>
                   <InvoiceCreation/>
                 </ProtectedRoute>
               }
